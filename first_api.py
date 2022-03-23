@@ -2,8 +2,8 @@ from fastapi import FastAPI
 #import requests
 import os
 import boto3
-from dotenv import load_dotenv
-load_dotenv()
+#from dotenv import load_dotenv
+#load_dotenv()
 from fastapi.middleware.cors import CORSMiddleware
 
 
