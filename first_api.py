@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-import requests
+#import requests
 import os
 import boto3
 from dotenv import load_dotenv
