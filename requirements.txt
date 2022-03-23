@@ -1,5 +1,5 @@
 anyio==3.5.0
-boto==1.4.4
+boto3==1.21.24
 fastapi==0.75.0
 idna==3.3
 pydantic==1.9.0
