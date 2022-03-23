@@ -7,9 +7,9 @@ import boto3
 from fastapi.middleware.cors import CORSMiddleware
 
 
-apli = FastAPI()
+app= FastAPI()
 
-apli.add_middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=['*']
 )
