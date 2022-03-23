@@ -16,7 +16,7 @@ app.add_middleware(
 
 #app = FastAPI()
 
-@apli.post("/api/{mail},{password}")
+@app.post("/{mail},{password}")
 def registro(mail:str, password: str):
     username =mail
     password =password
