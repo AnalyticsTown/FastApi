@@ -29,8 +29,7 @@ def registro(mail:str, password: str):
     )
     print(response)
     
-    
-   @app.post("/login/{mail},{password}")
+@app.post("/login/{mail},{password}")
 def login(mail:str,password:str):
     username= mail,
     password=password
