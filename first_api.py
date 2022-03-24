@@ -18,13 +18,13 @@ app.add_middleware(
 
 @app.post("/{mail},{password}")
 def registro(mail:str, password: str):
-    username =mail
-    password =password
+    #username =mail
+    #password =password
 
     client = boto3.client('cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
     response = client.sign_up(
     ClientId = os.getenv('COGNITO_USER_CLIENT_ID'),
-    Username = username,
+    Username = mail,
     Password = password
     )
     print(response)
