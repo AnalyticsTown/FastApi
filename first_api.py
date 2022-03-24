@@ -46,9 +46,9 @@ def login(mail:str, password:str):
     try:
         print (response)
         at= response['AuthenticationResult']['AccessToken']
-        return ("logueo exitoso")
+        return {"message": "logueo exitoso"}
     except:
-        return ("algo fallo")
+        return {"message": "algo falló"}
 
 
 
