@@ -51,8 +51,7 @@ def login(mail:str, password:str):
     except:
         return {"message": "algo falló"}
 
-    @app.post("/forgotpass/{mail}")
-
+@app.post("/forgotpass/{mail}")
 def olvidoPass(mail:str):
     
     client = boto3.client('cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
