@@ -67,7 +67,7 @@ def olvidoPass(mail:str):
     except:
         return("algo falló")
 
-@app.post("/ForgotPassNew/{mail},{codigo},{newpass}")
+@app.post("/forgotpassnew/{mail},{codigo},{newpass}")
 def confirmaolivopass(mail:str,codigo:str,newpass:str):
     client = boto3.client('cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
 
