@@ -51,6 +51,40 @@ def login(mail:str, password:str):
     except:
         return {"message": "algo falló"}
 
+    @app.post("/forgotpass/{mail}")
+
+def olvidoPass(mail:str):
+    
+    client = boto3.client('cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
+
+    response = client.forgot_password(
+    ClientId = os.getenv('COGNITO_USER_CLIENT_ID'),
+    Username = mail
+)
+    try:
+        return(response)
+        return("se ha enviado su correo")
+        
+    except:
+        return("algo falló")
+
+@app.post("/ForgotPassNew/{mail},{codigo},{newpass}")
+def confirmaolivopass(mail:str,codigo:str,newpass:str):
+    client = boto3.client('cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
+
+    response = client.confirm_forgot_password(
+    ClientId = os.getenv('COGNITO_USER_CLIENT_ID'),
+    Username = mail,
+    ConfirmationCode = codigo,
+    Password = newpass
+
+    )
+    try:
+        print(response)
+        return("se ha cambiado la contraseña")
+    except:
+        return("algo falló")
+
 
 
 
