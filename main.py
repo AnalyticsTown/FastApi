@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from db.database import SessionLocal, engine, get_db, Base
-import re
 
 #%% Es para crear la base de datos. Importo todos los modelos
 from empresa.models import *
