@@ -1,5 +1,4 @@
-from pydantic import BaseModel, validator, ValidationError
-from fastapi.exceptions import HTTPException
+from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 
@@ -12,16 +11,10 @@ class EmpresaBase(BaseModel):
     direccion_pais: str
     direccion_cod_postal: str
     cuit: Optional[int] | None = None
-    cond_iva_id: Optional[str]
+    cond_iva_id: Optional[str] | None = None
     fecha_cierre: date
     moneda_primaria_id: Optional[str]
     moneda_secundaria_id: Optional[str]
-
-    # @validator('cuit')
-    # def cuit_if_argentina(cls, v, values, **kwargs):
-    #     if (values['direccion_pais'] == 'Argentina' and v == None):
-    #         raise HTTPException(status_code=400, detail="Completar CUIT")
-    #     return v
 
 class Empresa(EmpresaBase):
     id: int
