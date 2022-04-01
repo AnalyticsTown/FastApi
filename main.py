@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
- allow_origins=['*']
+allow_origins=['*']
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,,
@@ -32,7 +32,7 @@ from establecimiento.crud import *
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+
 
 @app.post("/create_empresas/", response_model=Empresa, status_code=status.HTTP_201_CREATED)
 def crear_empresa(empresa: EmpresaBase, db: Session = Depends(get_db)):
