@@ -79,3 +79,54 @@ def read_establecimientos(skip: int = 0, limit: int = 100, db: Session = Depends
 def delete_establecimientos(db: Session = Depends(get_db)):
     drop_establecimientos(db)
     return "Los establecimientos fueron borrados"
+
+@app.post("/create_almacenes/", response_model=Almacen, status_code=status.HTTP_201_CREATED)
+def crear_almacen(almacen: AlmacenBase, db: Session = Depends(get_db)):
+    db_almacen = get_almacen(db, nombre=almacen.nombre, establecimiento_id=almacen.establecimiento_id)
+    if db_almacen:
+        raise HTTPException(status_code=400, detail="El almacen ya existe!")
+    return create_almacen(db=db, almacen=almacen)
+
+@app.get("/almacenes/", response_model=list[Almacen])
+def read_almacenes(db: Session = Depends(get_db)):
+    almacenes = get_almacenes(db)
+    return almacenes
+
+@app.delete("/delete_almacenes")
+def delete_almacenes(db: Session = Depends(get_db)):
+    drop_almacenes(db)
+    return "Los almacenes fueron borrados"
+
+@app.post("/create_facturaciones/", response_model=Facturacion, status_code=status.HTTP_201_CREATED)
+def crear_facturacion(facturacion: FacturacionBase, db: Session = Depends(get_db)):
+    db_facturacion = get_facturacion(db, nro_tarjeta=facturacion.nro_tarjeta)
+    if db_facturacion:
+        raise HTTPException(status_code=400, detail="La tarjeta ya existe!")
+    return create_facturacion(db=db, facturacion=facturacion)
+
+@app.get("/facturaciones/", response_model=list[Facturacion])
+def read_facturaciones(db: Session = Depends(get_db)):
+    facturaciones = get_facturaciones(db)
+    return facturaciones
+
+@app.delete("/delete_facturaciones")
+def delete_facturaciones(db: Session = Depends(get_db)):
+    drop_facturaciones(db)
+    return "Las facturaciones fueron borradas"
+
+@app.post("/create_insumos/", response_model=Insumo, status_code=status.HTTP_201_CREATED)
+def crear_insumo(insumo: InsumoBase, db: Session = Depends(get_db)):
+    db_insumo = get_insumo(db, nombre=insumo.nombre)
+    if db_insumo:
+        raise HTTPException(status_code=400, detail="El insumo ya existe!")
+    return create_insumo(db=db, insumo=insumo)
+
+@app.get("/insumos/", response_model=list[Insumo])
+def read_insumos(db: Session = Depends(get_db)):
+    insumos = get_insumos(db)
+    return insumos
+
+@app.delete("/delete_insumos")
+def delete_insumos(db: Session = Depends(get_db)):
+    drop_insumos(db)
+    return "Los insumos fueron borrados"
