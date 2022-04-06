@@ -30,6 +30,12 @@ from empresa.schemas import *
 from empresa.crud import *
 from establecimiento.schemas import *
 from establecimiento.crud import *
+from almacen.schemas import *
+from almacen.crud import *
+from facturacion.schemas import *
+from facturacion.crud import *
+from insumo.schemas import *
+from insumo.crud import *
 
 Base.metadata.create_all(bind=engine)
 
