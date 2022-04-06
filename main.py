@@ -13,6 +13,7 @@ from almacen.models import *
 from insumo.models import *
 from facturacion.models import *
 from tablas_relacionales.models import *
+from lote.models import *
 
 #%%
 from empresa.schemas import *
@@ -25,6 +26,8 @@ from facturacion.schemas import *
 from facturacion.crud import *
 from insumo.schemas import *
 from insumo.crud import *
+from lote.schemas import *
+from lote.crud import *
 
 Base.metadata.create_all(bind=engine)
 
@@ -130,3 +133,20 @@ def read_insumos(db: Session = Depends(get_db)):
 def delete_insumos(db: Session = Depends(get_db)):
     drop_insumos(db)
     return "Los insumos fueron borrados"
+
+@app.post("/create_lotes/", response_model=Lote, status_code=status.HTTP_201_CREATED)
+def crear_lote(lote: LoteBase, db: Session = Depends(get_db)):
+    db_lote = get_lote(db, codigo=lote.codigo)
+    if db_lote:
+        raise HTTPException(status_code=400, detail="El lote ya existe!")
+    return create_lote(db=db, lote=lote)
+
+@app.get("/lotes/", response_model=list[Lote])
+def read_lotes(db: Session = Depends(get_db)):
+    lotes = get_lotes(db)
+    return lotes
+
+@app.delete("/delete_lotes")
+def delete_lotes(db: Session = Depends(get_db)):
+    drop_lotes(db)
+    return "Los lotes fueron borrados"

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from establecimiento import models, schemas
 
 def get_establecimientos(db: Session):
-    return db.query(models.Alta_establecimiento_modelo)
+    return db.query(models.Alta_establecimiento_modelo).all()
 
 def get_establecimiento(db: Session, localidad: str, nombre: str):
     return db.query(models.Alta_establecimiento_modelo).filter(models.Alta_establecimiento_modelo.localidad == localidad).filter(models.Alta_establecimiento_modelo.nombre == nombre).first()

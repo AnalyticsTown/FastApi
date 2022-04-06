@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from insumo import models, schemas
 
 def get_insumos(db: Session):
-    return db.query(models.Alta_insumo_modelo)
+    return db.query(models.Alta_insumo_modelo).all()
 
 def get_insumo(db: Session, nombre: str):
     return db.query(models.Alta_insumo_modelo).filter(models.Alta_insumo_modelo.nombre == nombre).first()

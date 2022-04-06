@@ -1,6 +1,5 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
 
 from db.database import Base
 
@@ -22,8 +21,7 @@ class Alta_empresa_modelo(Base):
     fecha_cierre = Column(Date, nullable=False)
     moneda_primaria_id = Column(Integer, ForeignKey("monedas.id"), nullable=True)
     moneda_secundaria_id = Column(Integer, ForeignKey("monedas.id"), nullable=True)
-
-    establecimientos = relationship("Alta_establecimiento_modelo", back_populates="id")
+    establecimiento_id = Column(Integer, ForeignKey("establecimientos.id"), nullable=True)
 
 class Alta_cond_IVA_modelo(Base):
     __tablename__ = "cond_ivas"

@@ -1,7 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import date, datetime
-from establecimiento.schemas import EstablecimientoBase
+from datetime import date
 
 class RubroEmpresa(BaseModel):
     id: int
@@ -25,8 +24,7 @@ class EmpresaBase(BaseModel):
     fecha_cierre: date
     moneda_primaria_id: Optional[str]
     moneda_secundaria_id: Optional[str]
-
-    establecimientos: list[EstablecimientoBase]
+    establecimiento_id: Optional[int]
 
 class Empresa(EmpresaBase):
     id: int

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from empresa import models, schemas
 
 def get_empresas(db: Session):
-    return db.query(models.Alta_empresa_modelo)
+    return db.query(models.Alta_empresa_modelo).all()
 
 def get_rubro_empresas(db: Session):
     return db.query(models.Alta_rubro_empresa_modelo).all()#.options(selectinload(models.Alta_rubro_empresa_modelo.nombre)).first()
