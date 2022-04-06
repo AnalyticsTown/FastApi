@@ -1,5 +1,5 @@
 import os
-import boto3
+# import boto3
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
