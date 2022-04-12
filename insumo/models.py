@@ -1,5 +1,4 @@
-from datetime import datetime
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, Date
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date
 
 from db.database import Base
 
@@ -7,25 +6,28 @@ class Alta_insumo_modelo(Base):
     __tablename__ = "insumos"
 
     id = Column(Integer, primary_key=True, index=True)
+    activo = Column(Boolean, default=True)
     nombre = Column(String, nullable=False)
     abreviatura = Column(String, nullable=False)
     codigo_externo = Column(String, nullable=True)
     lote_control = Column(Boolean, nullable=True)
-    lote_numero = Column(String, nullable=True)
     vencimiento_control = Column(Boolean, nullable=True)
-    vencimiento_fecha = Column(Date, nullable=True)
     reposicion_control = Column(Boolean, nullable=True)
     reposicion_cantidad = Column(Integer, nullable=True)
-    reposicion_alerta = Column(String, nullable=True)
-    tipo_erogacione_id = Column(Integer, ForeignKey("tipo_erogaciones.id"))
-    unidade_id = Column(Integer, ForeignKey("unidades.id"))
-    rubro_insumo_id = Column(Integer, ForeignKey("rubro_insumos.id"))
-    familia_id = Column(Integer, ForeignKey("familias.id"))
-    subfamilia_id = Column(Integer, ForeignKey("subfamilias.id"))
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    created = Column(DateTime, default=datetime.utcnow)
-    modified = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
-    deleted = Column(DateTime, nullable=True)
+    reposicion_alerta = Column(Boolean, nullable=True)
+    reposicion_alerta_email = Column(String, nullable=True)
+    tarea_id = Column(Integer, ForeignKey("tareas.id"), nullable=True)
+    unidad_id = Column(Integer, ForeignKey("unidades.id"), nullable=True)
+    familia_id = Column(Integer, ForeignKey("familias.id"), nullable=True)
+    subfamilia_id = Column(Integer, ForeignKey("subfamilias.id"), nullable=True)
+    rubro_insumo_id = Column(Integer, ForeignKey("rubro_insumos.id"), nullable=True)
+    tipo_erogacion_id = Column(Integer, ForeignKey("tipo_erogaciones.id"), nullable=True)
+
+class Alta_tarea_modelo(Base):
+    __tablename__ = "tareas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    detalle = Column(String, nullable=False)
 
 class Alta_erogacion_modelo(Base):
     __tablename__ = "tipo_erogaciones"
@@ -33,47 +35,27 @@ class Alta_erogacion_modelo(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, nullable=False)
     abreviatura = Column(String, nullable=False)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    created = Column(DateTime, default=datetime.utcnow)
-    modified = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
-    deleted = Column(DateTime, nullable=True)
 
 class Alta_unidad_modelo(Base):
     __tablename__ = "unidades"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, nullable=False)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    created = Column(DateTime, default=datetime.utcnow)
-    modified = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
-    deleted = Column(DateTime, nullable=True)
+    detalle = Column(String, nullable=False)
 
 class Alta_familia_modelo(Base):
     __tablename__ = "familias"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, nullable=False)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    created = Column(DateTime, default=datetime.utcnow)
-    modified = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
-    deleted = Column(DateTime, nullable=True)
+    detalle = Column(String, nullable=False)
 
 class Alta_subfamilia_modelo(Base):
     __tablename__ = "subfamilias"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, nullable=False)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    created = Column(DateTime, default=datetime.utcnow)
-    modified = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
-    deleted = Column(DateTime, nullable=True)
+    detalle = Column(String, nullable=False)
 
 class Alta_rubro_insumo_modelo(Base):
     __tablename__ = "rubro_insumos"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, nullable=False)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    created = Column(DateTime, default=datetime.utcnow)
-    modified = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
-    deleted = Column(DateTime, nullable=True)
+    detalle = Column(String, nullable=False)

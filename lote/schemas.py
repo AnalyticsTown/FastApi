@@ -1,19 +1,15 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 class LoteBase(BaseModel):
     codigo: str
-    establecimiento_id: Optional[int]
-    superficie: float
-    poligono: float
+    superficie: Optional[float]
+    poligono: Optional[str]
 
 class Lote(LoteBase):
     id: int
-    usuario_id: Optional[int]
-    created: datetime
-    modified: datetime
-    deleted: Optional[datetime]
+    activo: bool
+    establecimiento_id: Optional[int]
 
     class Config:
         orm_mode = True

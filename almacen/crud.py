@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 
 from almacen import models, schemas
 
+def get_tipo_almacenes(db: Session):
+    return db.query(models.Tipo_almacen_modelo).all()
+
 def get_almacenes(db: Session):
     return db.query(models.Alta_almacen_modelo).all()
 

@@ -1,5 +1,4 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 
 from db.database import Base
 
@@ -7,8 +6,8 @@ class Usuario_empresa_modelo(Base):
     __tablename__ = "usuario_empresas"
 
     id = Column(Integer, primary_key=True, index=True)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    empresa_id = Column(Integer, ForeignKey("empresas.id"))
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
+    empresa_id = Column(Integer, ForeignKey("empresas.id"), nullable=True)
 
 class Alta_inquilino_modelo(Base):
     __tablename__ = "inquilinos"

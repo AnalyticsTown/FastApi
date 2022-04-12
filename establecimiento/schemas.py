@@ -1,27 +1,38 @@
-from pydantic import BaseModel, validator, ValidationError
-from fastapi.exceptions import HTTPException
+from pydantic import BaseModel
 from typing import Optional
-from datetime import date, datetime
+
+class TipoEstablecimiento(BaseModel):
+    id: int
+    detalle: str
+
+    class Config:
+        orm_mode = True
+
+class Zona(BaseModel):
+    id: int
+    detalle: str
+
+    class Config:
+        orm_mode = True
 
 class EstablecimientoBase(BaseModel):
     nombre: str
     abreviatura: str
-    establecimiento_tipo_id: Optional[int]
     direccion: Optional[str]
     localidad: Optional[str]
     provincia: Optional[str]
     pais: Optional[str]
     latitud: Optional[str]
     longitud: Optional[str]
-    zona_id: Optional[int]
     observaciones: Optional[str]
+    contacto: Optional[str]
+    zona_id: Optional[int]
+    establecimiento_tipo_id: Optional[int]
 
 class Establecimiento(EstablecimientoBase):
     id: int
-    usuario_id: Optional[int]
-    created: datetime
-    modified: datetime
-    deleted: Optional[datetime]
+    activo: bool
+    empresa_id: Optional[int]
 
     class Config:
         orm_mode = True

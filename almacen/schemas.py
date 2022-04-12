@@ -1,22 +1,25 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+
+class TipoAlmacen(BaseModel):
+    id: int
+    detalle: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 class AlmacenBase(BaseModel):
     nombre: str
     abreviatura: str
-    descripcion: str
-    establecimiento_id: Optional[int]
+    descripcion: Optional[str]
+    geoposicion: Optional[str]
+    observaciones: Optional[str]
     almacenes_tipo_id: Optional[int]
-    geoposicion: str
-    observaciones: str
 
 class Almacen(AlmacenBase):
     id: int
-    usuario_id: Optional[int]
-    created: datetime
-    modified: datetime
-    deleted: Optional[datetime]
+    activo: bool
+    establecimiento_id: Optional[int]
 
     class Config:
         orm_mode = True

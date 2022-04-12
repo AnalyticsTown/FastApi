@@ -10,6 +10,7 @@ python-dotenv = "*"
 sqlalchemy = "*"
 boto3 = "*"
 loadenv = "*"
+email-validator = "*"
 
 [dev-packages]
 

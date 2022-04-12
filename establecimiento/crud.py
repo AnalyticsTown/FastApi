@@ -2,6 +2,12 @@ from sqlalchemy.orm import Session
 
 from establecimiento import models, schemas
 
+def get_zonas(db: Session):
+    return db.query(models.Zona_modelo).all()
+
+def get_tipo_establecimientos(db: Session):
+    return db.query(models.Tipo_establecimiento_modelo).all()
+
 def get_establecimientos(db: Session):
     return db.query(models.Alta_establecimiento_modelo).all()
 
