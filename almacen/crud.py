@@ -8,8 +8,8 @@ def get_tipo_almacenes(db: Session):
 def get_almacenes(db: Session):
     return db.query(models.Alta_almacen_modelo).all()
 
-def get_almacen(db: Session, nombre: str, establecimiento_id: int):
-    return db.query(models.Alta_almacen_modelo).filter(models.Alta_almacen_modelo.nombre == nombre).filter(models.Alta_almacen_modelo.establecimiento_id == establecimiento_id).first()
+def get_almacen(db: Session, nombre: str):
+    return db.query(models.Alta_almacen_modelo).filter(models.Alta_almacen_modelo.nombre == nombre).first()
 
 def drop_almacenes(db: Session):
     db.query(models.Alta_almacen_modelo).delete()

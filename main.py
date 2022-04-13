@@ -78,7 +78,7 @@ def delete_establecimientos(db: Session = Depends(get_db)):
 
 @app.post("/create_almacenes/", response_model=Almacen, status_code=status.HTTP_201_CREATED)
 def crear_almacen(almacen: AlmacenBase, db: Session = Depends(get_db)):
-    db_almacen = get_almacen(db, nombre=almacen.nombre, establecimiento_id=almacen.establecimiento_id)
+    db_almacen = get_almacen(db, nombre=almacen.nombre)
     if db_almacen:
         raise HTTPException(status_code=400, detail="El almacen ya existe!")
     return create_almacen(db=db, almacen=almacen)
