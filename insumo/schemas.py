@@ -1,46 +1,92 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional
 from datetime import date
+from typing import Optional
 
-class TipoErogacion(BaseModel):
+from pydantic import BaseModel, EmailStr, Field
+
+class Tarea(BaseModel):
     id: int
-    nombre: str
-    abreviatura: str
+    detalle_tarea: str
 
     class Config:
         orm_mode = True
 
 class Unidad(BaseModel):
     id: int
-    detalle: str
-
-    class Config:
-        orm_mode = True
-
-class Tarea(BaseModel):
-    id: int
-    detalle: str
+    detalle_unidad: str
 
     class Config:
         orm_mode = True
 
 class Familia(BaseModel):
     id: int
-    detalle: str
+    detalle_familia: str
 
     class Config:
         orm_mode = True
 
 class Subfamilia(BaseModel):
     id: int
-    detalle: str
+    detalle_subfamilia: str
 
     class Config:
         orm_mode = True
 
 class RubroInsumo(BaseModel):
     id: int
-    detalle: str
+    detalle_rubro_insumo: str
+
+    class Config:
+        orm_mode = True
+
+class TipoErogacion(BaseModel):
+    id: int
+    nombre_tipo_erogacion: str
+    abreviatura_tipo_erogacion: str
+
+    class Config:
+        orm_mode = True
+
+class LoteInsumo(BaseModel):
+    id: int
+    nro_lote: str
+    fecha_vencimiento: date
+    stock_id: Optional[int] = Field(default=None, foreign_key="stock_almacen_insumos.id")
+
+    class Config:
+        orm_mode = True
+
+class TipoMovimientoInsumo(BaseModel):
+    id: int
+    detalle_tipo_movimiento_insumo: str
+
+    class Config:
+        orm_mode = True
+
+class MovimientoInsumoBase(BaseModel):
+    cantidad: float
+    fecha_movimiento: date
+    insumo_id: int = Field(default=None, foreign_key="insumos.id")
+    origen_almacen_id: int = Field(default=None, foreign_key="almacenes.id")
+    destino_almacen_id: int = Field(default=None, foreign_key="almacenes.id")
+    tipo_movimiento_id: int = Field(default=None, foreign_key="tipo_movimiento_insumos.id")
+
+class MovimientoInsumo(MovimientoInsumoBase):
+    id: int
+    created_at: date
+
+    class Config:
+        orm_mode = True
+
+class StockAlmacenInsumoBase(BaseModel):
+    detalle: Optional[str]
+    cantidad: Optional[float]
+    reposicion_cantidad: Optional[float]
+    reposicion_alerta_email: Optional[EmailStr]
+    insumo_id: Optional[int] = Field(default=None, foreign_key="insumos.id")
+    almacen_id: Optional[int] = Field(default=None, foreign_key="almacenes.id")
+
+class StockAlmacenInsumo(StockAlmacenInsumoBase):
+    id: int
 
     class Config:
         orm_mode = True
@@ -52,15 +98,13 @@ class InsumoBase(BaseModel):
     lote_control: Optional[bool]
     vencimiento_control: Optional[bool]
     reposicion_control: Optional[bool]
-    reposicion_cantidad: Optional[int]
     reposicion_alerta: Optional[bool]
-    reposicion_alerta_email: Optional[EmailStr]
-    tarea_id: Optional[int]
-    unidad_id: Optional[int]
-    familia_id: Optional[int]
-    subfamilia_id: Optional[int]
-    rubro_insumo_id: Optional[int]
-    tipo_erogacion_id: Optional[int]
+    tarea_id: Optional[int] = Field(default=None, foreign_key="tareas.id")
+    unidad_id: Optional[int] = Field(default=None, foreign_key="unidades.id")
+    familia_id: Optional[int] = Field(default=None, foreign_key="familias.id")
+    subfamilia_id: Optional[int] = Field(default=None, foreign_key="subfamilias.id")
+    rubro_insumo_id: Optional[int] = Field(default=None, foreign_key="rubro_insumos.id")
+    tipo_erogacion_id: Optional[int] = Field(default=None, foreign_key="tipo_erogaciones.id")
 
 class Insumo(InsumoBase):
     id: int

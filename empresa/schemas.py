@@ -1,24 +1,25 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import date
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 class CondicionIva(BaseModel):
     id: int
-    detalle: str
+    detalle_cond_iva: str
 
     class Config:
         orm_mode = True
 
 class Moneda(BaseModel):
     id: int
-    detalle: str
+    detalle_moneda: str
 
     class Config:
         orm_mode = True
 
 class RubroEmpresa(BaseModel):
     id: int
-    detalle: str
+    detalle_rubro_empresa: str
 
     class Config:
         orm_mode = True
@@ -33,15 +34,15 @@ class EmpresaBase(BaseModel):
     direccion_cod_postal: str
     cuit: Optional[int] | None = None
     fecha_cierre: date
-    cond_iva_id: Optional[int] | None = None
-    moneda_primaria_id: Optional[int]
-    moneda_secundaria_id: Optional[int]
-    rubro_empresa_id: Optional[int]
+    cond_iva_id: Optional[int] = Field(default=None, foreign_key="cond_ivas.id")
+    moneda_primaria_id: Optional[int] = Field(default=None, foreign_key="monedas.id")
+    moneda_secundaria_id: Optional[int] = Field(default=None, foreign_key="monedas.id")
+    rubro_empresa_id: Optional[int] = Field(default=None, foreign_key="rubro_empresas.id")
 
 class Empresa(EmpresaBase):
     id: int
     activo: bool
-    usuario_id: Optional[int]
+    usuario_id: Optional[int] = Field(default=None, foreign_key="usuario_empresas.usuario_id")
 
     class Config:
         orm_mode = True

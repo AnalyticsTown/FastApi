@@ -1,9 +1,10 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel, Field
 
 class TipoAlmacen(BaseModel):
     id: int
-    detalle: Optional[str]
+    detalle_tipo_almacen: Optional[str]
 
     class Config:
         orm_mode = True
@@ -14,12 +15,12 @@ class AlmacenBase(BaseModel):
     descripcion: Optional[str]
     geoposicion: Optional[str]
     observaciones: Optional[str]
-    almacenes_tipo_id: Optional[int]
+    almacenes_tipo_id: Optional[int] = Field(default=None, foreign_key="tipo_almacenes.id")
 
 class Almacen(AlmacenBase):
     id: int
     activo: bool
-    establecimiento_id: Optional[int]
+    establecimiento_id: Optional[int] = Field(default=None, foreign_key="establecimiento_almacenes.establecimiento_id")
 
     class Config:
         orm_mode = True

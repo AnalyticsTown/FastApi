@@ -1,16 +1,17 @@
-from pydantic import BaseModel
 from typing import Optional
 
-class TipoEstablecimiento(BaseModel):
+from pydantic import BaseModel, Field
+
+class Zona(BaseModel):
     id: int
-    detalle: str
+    detalle_zona: str
 
     class Config:
         orm_mode = True
 
-class Zona(BaseModel):
+class TipoEstablecimiento(BaseModel):
     id: int
-    detalle: str
+    detalle_tipo_establecimiento: str
 
     class Config:
         orm_mode = True
@@ -26,13 +27,14 @@ class EstablecimientoBase(BaseModel):
     longitud: Optional[str]
     observaciones: Optional[str]
     contacto: Optional[str]
-    zona_id: Optional[int]
-    establecimiento_tipo_id: Optional[int]
+    zona_id: Optional[int] = Field(default=None, foreign_key="zonas.id")
+    establecimiento_tipo_id: Optional[int] = Field(default=None, foreign_key="tipo_establecimientos.id")
 
 class Establecimiento(EstablecimientoBase):
     id: int
     activo: bool
-    empresa_id: Optional[int]
+    empresa_id: Optional[int] = Field(default=None, foreign_key="empresas.id")
+    almacen_id: Optional[int] = Field(default=None, foreign_key="establecimiento_almacenes.almacen_id")
 
     class Config:
         orm_mode = True

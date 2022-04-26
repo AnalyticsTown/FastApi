@@ -11,8 +11,20 @@ def get_monedas(db: Session):
 def get_cond_ivas(db: Session):
     return db.query(models.Alta_cond_IVA_modelo).all()
 
+# def get_empresas(db: Session):
+#     return db.query(models.Alta_empresa_modelo).all()
+
 def get_empresas(db: Session):
-    return db.query(models.Alta_empresa_modelo).all()
+    statement = """select empresas.id, activo, razon_social, direccion_calle, direccion_nro, direccion_localidad, direccion_provincia,
+                          direccion_pais, direccion_cod_postal, cuit, fecha_cierre, detalle_cond_iva, monedas.detalle_moneda as detalle_moneda_primaria, 
+                          monedas1.detalle_moneda as detalle_moneda_secundaria, detalle_rubro_empresa
+                   from empresas
+                   inner join cond_ivas on cond_ivas.id = empresas.cond_iva_id
+                   inner join monedas on monedas.id = empresas.moneda_primaria_id
+                   inner join monedas as monedas1 on monedas1.id = empresas.moneda_secundaria_id
+                   inner join rubro_empresas on rubro_empresas.id = empresas.rubro_empresa_id"""
+
+    return db.execute(statement).all()
 
 def get_empresa(db: Session, razon: str, pais: str):
     return db.query(models.Alta_empresa_modelo).filter(models.Alta_empresa_modelo.razon_social == razon).filter(models.Alta_empresa_modelo.direccion_pais == pais).first()

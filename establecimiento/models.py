@@ -2,6 +2,18 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 
 from db.database import Base
 
+class Zona_modelo(Base):
+    __tablename__ = "zonas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    detalle_zona = Column(String, nullable=True)
+
+class Tipo_establecimiento_modelo(Base):
+    __tablename__ = "tipo_establecimientos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    detalle_tipo_establecimiento = Column(String, nullable=True)
+
 class Alta_establecimiento_modelo(Base):
     __tablename__ = "establecimientos"
 
@@ -19,16 +31,5 @@ class Alta_establecimiento_modelo(Base):
     contacto = Column(String, nullable=True)
     zona_id = Column(Integer, ForeignKey("zonas.id"), nullable=True)
     empresa_id = Column(Integer, ForeignKey("empresas.id"), nullable=True)
+    almacen_id = Column(Integer, ForeignKey("establecimiento_almacenes.almacen_id"), nullable=True)
     establecimiento_tipo_id = Column(Integer, ForeignKey("tipo_establecimientos.id"), nullable=True)
-
-class Tipo_establecimiento_modelo(Base):
-    __tablename__ = "tipo_establecimientos"
-
-    id = Column(Integer, primary_key=True, index=True)
-    detalle = Column(String, nullable=True)
-
-class Zona_modelo(Base):
-    __tablename__ = "zonas"
-
-    id = Column(Integer, primary_key=True, index=True)
-    detalle = Column(String, nullable=True)

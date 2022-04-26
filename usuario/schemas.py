@@ -4,7 +4,7 @@ from datetime import date
 
 class Rol(BaseModel):
     id: int
-    detalle: str
+    detalle_rol: str
 
     class Config:
         orm_mode = True

@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel, Field
 
 class LoteBase(BaseModel):
     codigo: str
@@ -9,7 +10,7 @@ class LoteBase(BaseModel):
 class Lote(LoteBase):
     id: int
     activo: bool
-    establecimiento_id: Optional[int]
+    establecimiento_id: Optional[int] = Field(default=None, foreign_key="establecimientos.id")
 
     class Config:
         orm_mode = True

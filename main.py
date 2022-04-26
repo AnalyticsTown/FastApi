@@ -1,3 +1,6 @@
+from typing import Union
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -49,27 +52,32 @@ def crear_empresa(empresa: EmpresaBase, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="Completar condición ante el IVA ")
     return create_empresa(db=db, empresa=empresa)
 
-@app.get("/empresas/", response_model=list[Empresa])
+# @app.get("/empresas/", response_model=list[Empresa])
+# def read_empresas(db: Session = Depends(get_db)):
+#     empresas = get_empresas(db)
+#     return empresas
+
+@app.get("/empresas/")
 def read_empresas(db: Session = Depends(get_db)):
     empresas = get_empresas(db)
-    return empresas
+    return JSONResponse(jsonable_encoder(empresas))
 
 @app.delete("/delete_empresas/")
 def delete_empresas(db: Session = Depends(get_db)):
     drop_empresas(db)
     return "Las empresas fueron borradas"
 
-@app.post("/create_establecimientos/", response_model=Establecimiento, status_code=status.HTTP_201_CREATED)
-def crear_establecimiento(establecimiento: EstablecimientoBase, db: Session = Depends(get_db)):
+@app.post("/{empresa_id}/create_establecimientos/", response_model=Establecimiento, status_code=status.HTTP_201_CREATED)
+def crear_establecimiento(empresa_id: int, establecimiento: EstablecimientoBase, db: Session = Depends(get_db)):
     db_establecimiento = get_establecimiento(db, localidad=establecimiento.localidad, nombre=establecimiento.nombre)
     if db_establecimiento:
         raise HTTPException(status_code=400, detail="El establecimiento ya existe!")
-    return create_establecimiento(db=db, establecimiento=establecimiento)
+    return create_establecimiento(db=db, establecimiento=establecimiento, empresa_id=empresa_id)
 
-@app.get("/establecimientos/", response_model=list[Establecimiento])
-def read_establecimientos(db: Session = Depends(get_db)):
-    establecimientos = get_establecimientos(db)
-    return establecimientos
+@app.get("/{empresa_id}/establecimientos/")
+async def read_establecimientos(empresa_id: int, db: Session = Depends(get_db)):
+    establecimientos = get_establecimientos(db, empresa=empresa_id)
+    return JSONResponse(jsonable_encoder(establecimientos))
 
 @app.delete("/delete_establecimientos/")
 def delete_establecimientos(db: Session = Depends(get_db)):
@@ -83,10 +91,10 @@ def crear_almacen(almacen: AlmacenBase, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="El almacen ya existe!")
     return create_almacen(db=db, almacen=almacen)
 
-@app.get("/almacenes/", response_model=list[Almacen])
+@app.get("/almacenes/")
 def read_almacenes(db: Session = Depends(get_db)):
     almacenes = get_almacenes(db)
-    return almacenes
+    return JSONResponse(jsonable_encoder(almacenes))
 
 @app.delete("/delete_almacenes/")
 def delete_almacenes(db: Session = Depends(get_db)):
@@ -117,10 +125,15 @@ def crear_insumo(insumo: InsumoBase, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="El insumo ya existe!")
     return create_insumo(db=db, insumo=insumo)
 
-@app.get("/insumos/", response_model=list[Insumo])
+# @app.get("/insumos/", response_model=list[Insumo])
+# def read_insumos(db: Session = Depends(get_db)):
+#     insumos = get_insumos(db)
+#     return insumos
+
+@app.get("/insumos/")
 def read_insumos(db: Session = Depends(get_db)):
     insumos = get_insumos(db)
-    return insumos
+    return JSONResponse(jsonable_encoder(insumos))
 
 @app.delete("/delete_insumos/")
 def delete_insumos(db: Session = Depends(get_db)):
