@@ -19,10 +19,10 @@ def get_empresas(db: Session):
                           direccion_pais, direccion_cod_postal, cuit, fecha_cierre, detalle_cond_iva, monedas.detalle_moneda as detalle_moneda_primaria, 
                           monedas1.detalle_moneda as detalle_moneda_secundaria, detalle_rubro_empresa
                    from empresas
-                   inner join cond_ivas on cond_ivas.id = empresas.cond_iva_id
-                   inner join monedas on monedas.id = empresas.moneda_primaria_id
-                   inner join monedas as monedas1 on monedas1.id = empresas.moneda_secundaria_id
-                   inner join rubro_empresas on rubro_empresas.id = empresas.rubro_empresa_id"""
+                   left join cond_ivas on cond_ivas.id = empresas.cond_iva_id
+                   left join monedas on monedas.id = empresas.moneda_primaria_id
+                   left join monedas as monedas1 on monedas1.id = empresas.moneda_secundaria_id
+                   left join rubro_empresas on rubro_empresas.id = empresas.rubro_empresa_id"""
 
     return db.execute(statement).all()
 

@@ -5,11 +5,6 @@ name = "pypi"
 
 [packages]
 fastapi = {extras = ["all"], version = "*"}
-python-multipart = "*"
-python-dotenv = "*"
-sqlalchemy = "*"
-boto3 = "*"
-loadenv = "*"
 email-validator = "*"
 sqlmodel = "*"
 
