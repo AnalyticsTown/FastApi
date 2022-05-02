@@ -73,10 +73,9 @@ class Stock_almacen_insumo_modelo(Base):
     id = Column(Integer, primary_key=True, index=True)
     detalle = Column(String, nullable=True)
     cantidad = Column(Float, nullable=False)
-    reposicion_cantidad = Column(Float, nullable=True)
-    reposicion_alerta_email = Column(String, nullable=True)
     insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
     almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
+    # Falta un campo reposicion control id y reposicion alerta id que sean FK a insumos (el maestro)
 
 class Alta_insumo_modelo(Base):
     __tablename__ = "insumos"
@@ -89,7 +88,9 @@ class Alta_insumo_modelo(Base):
     lote_control = Column(Boolean, nullable=True)
     vencimiento_control = Column(Boolean, nullable=True)
     reposicion_control = Column(Boolean, nullable=True)
+    reposicion_cantidad = Column(Float, nullable=True)
     reposicion_alerta = Column(Boolean, nullable=True)
+    reposicion_alerta_email = Column(String, nullable=True)
     tarea_id = Column(Integer, ForeignKey("tareas.id"), nullable=True)
     unidad_id = Column(Integer, ForeignKey("unidades.id"), nullable=True)
     familia_id = Column(Integer, ForeignKey("familias.id"), nullable=True)

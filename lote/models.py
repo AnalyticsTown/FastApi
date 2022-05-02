@@ -8,6 +8,7 @@ class Alta_lote_modelo(Base):
     id = Column(Integer, primary_key=True, index=True)
     activo = Column(Boolean, default=True)
     codigo = Column(String, nullable=False)
-    superficie = Column(Float, nullable=True)
     poligono = Column(String, nullable=True)
+    superficie = Column(Float, nullable=True)
+    superficie_calculada = Column(Float, nullable=True)
     establecimiento_id = Column(Integer, ForeignKey("establecimientos.id"), nullable=True)

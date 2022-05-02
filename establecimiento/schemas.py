@@ -23,8 +23,7 @@ class EstablecimientoBase(BaseModel):
     localidad: Optional[str]
     provincia: Optional[str]
     pais: Optional[str]
-    latitud: Optional[str]
-    longitud: Optional[str]
+    geoposicion: Optional[str]
     observaciones: Optional[str]
     contacto: Optional[str]
     zona_id: Optional[int] = Field(default=None, foreign_key="zonas.id")

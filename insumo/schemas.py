@@ -80,8 +80,6 @@ class MovimientoInsumo(MovimientoInsumoBase):
 class StockAlmacenInsumoBase(BaseModel):
     detalle: Optional[str]
     cantidad: Optional[float]
-    reposicion_cantidad: Optional[float]
-    reposicion_alerta_email: Optional[EmailStr]
     insumo_id: Optional[int] = Field(default=None, foreign_key="insumos.id")
     almacen_id: Optional[int] = Field(default=None, foreign_key="almacenes.id")
 
@@ -98,7 +96,9 @@ class InsumoBase(BaseModel):
     lote_control: Optional[bool]
     vencimiento_control: Optional[bool]
     reposicion_control: Optional[bool]
+    reposicion_cantidad: Optional[float]
     reposicion_alerta: Optional[bool]
+    reposicion_alerta_email: Optional[EmailStr]
     tarea_id: Optional[int] = Field(default=None, foreign_key="tareas.id")
     unidad_id: Optional[int] = Field(default=None, foreign_key="unidades.id")
     familia_id: Optional[int] = Field(default=None, foreign_key="familias.id")
