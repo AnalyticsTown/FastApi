@@ -96,9 +96,9 @@ class InsumoBase(BaseModel):
     lote_control: Optional[bool]
     vencimiento_control: Optional[bool]
     reposicion_control: Optional[bool]
-    reposicion_cantidad: Optional[float]
+    reposicion_cantidad: Optional[float] # Se agrego este campo. Viene de la tabla stock_almacen_insumos
     reposicion_alerta: Optional[bool]
-    reposicion_alerta_email: Optional[EmailStr]
+    reposicion_alerta_email: Optional[EmailStr] # Se agrego este campo. Viene de la tabla stock_almacen_insumos
     tarea_id: Optional[int] = Field(default=None, foreign_key="tareas.id")
     unidad_id: Optional[int] = Field(default=None, foreign_key="unidades.id")
     familia_id: Optional[int] = Field(default=None, foreign_key="familias.id")

@@ -20,6 +20,9 @@ def get_rubro_insumos(db: Session):
 def get_tipo_erogaciones(db: Session):
     return db.query(models.Alta_erogacion_modelo).all()
 
+def get_movimiento_insumos(db: Session): # Se agregó
+    return db.query(models.Alta_tipo_movimiento_modelo).all()
+
 # def get_insumos(db: Session):
 #     return db.query(models.Alta_insumo_modelo).all()
 
@@ -45,6 +48,20 @@ def drop_insumos(db: Session):
 
 def create_insumo(db: Session, insumo: schemas.InsumoBase):
     db_insumo = models.Alta_insumo_modelo(**insumo.dict())
+    db.add(db_insumo)
+    db.commit()
+    db.refresh(db_insumo)
+    return db_insumo
+
+def create_movimiento_insumo(db: Session, movimiento: schemas.MovimientoInsumoBase): # Se agregó
+    db_insumo = models.Moviemiento_insumos_modelo(**movimiento.dict())
+    db.add(db_insumo)
+    db.commit()
+    db.refresh(db_insumo)
+    return db_insumo
+
+def create_stock_almacen_insumo(db: Session, stock: schemas.StockAlmacenInsumoBase): # Se agregó
+    db_insumo = models.Stock_almacen_insumo_modelo(**stock.dict())
     db.add(db_insumo)
     db.commit()
     db.refresh(db_insumo)

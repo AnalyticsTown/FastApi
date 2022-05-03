@@ -25,7 +25,7 @@ class Alta_establecimiento_modelo(Base):
     localidad = Column(String, nullable=True)
     provincia = Column(String, nullable=True)
     pais = Column(String, nullable=True)
-    geoposicion = Column(String, nullable=True)
+    geoposicion = Column(String, nullable=True) # Se cambiaron los campos latitud y longitud por este
     observaciones = Column(String, nullable=True)
     contacto = Column(String, nullable=True)
     zona_id = Column(Integer, ForeignKey("zonas.id"), nullable=True)

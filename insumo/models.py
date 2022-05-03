@@ -88,9 +88,9 @@ class Alta_insumo_modelo(Base):
     lote_control = Column(Boolean, nullable=True)
     vencimiento_control = Column(Boolean, nullable=True)
     reposicion_control = Column(Boolean, nullable=True)
-    reposicion_cantidad = Column(Float, nullable=True)
+    reposicion_cantidad = Column(Float, nullable=True) # Se agrego este campo. Viene de la tabla stock_almacen_insumos
     reposicion_alerta = Column(Boolean, nullable=True)
-    reposicion_alerta_email = Column(String, nullable=True)
+    reposicion_alerta_email = Column(String, nullable=True) # Se agrego este campo. Viene de la tabla stock_almacen_insumos
     tarea_id = Column(Integer, ForeignKey("tareas.id"), nullable=True)
     unidad_id = Column(Integer, ForeignKey("unidades.id"), nullable=True)
     familia_id = Column(Integer, ForeignKey("familias.id"), nullable=True)

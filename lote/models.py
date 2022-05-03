@@ -10,5 +10,5 @@ class Alta_lote_modelo(Base):
     codigo = Column(String, nullable=False)
     poligono = Column(String, nullable=True)
     superficie = Column(Float, nullable=True)
-    superficie_calculada = Column(Float, nullable=True)
+    superficie_calculada = Column(Float, nullable=True) # Se agrego este campo
     establecimiento_id = Column(Integer, ForeignKey("establecimientos.id"), nullable=True)
