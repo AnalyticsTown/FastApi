@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Boolean
-
+from sqlalchemy import Column, ForeignKey 
+from sqlalchemy.sql.sqltypes import Integer, String, Date, Boolean
 from db.database import Base
 
 class Alta_cond_IVA_modelo(Base):
@@ -23,10 +23,10 @@ class Alta_rubro_empresa_modelo(Base):
 class Alta_empresa_modelo(Base):
     __tablename__ = "empresas"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, unique=True)
     activo = Column(Boolean, default=True)
-    razon_social = Column(String, nullable=False)
-    direccion_calle = Column(String, nullable=False)
+    razon_social = Column(String(50), nullable=False)
+    direccion_calle = Column(String(50), nullable=False)
     direccion_nro = Column(String, nullable=False)
     direccion_localidad = Column(String, nullable=False)
     direccion_provincia = Column(String, nullable=False)

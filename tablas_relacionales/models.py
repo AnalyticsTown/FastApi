@@ -15,12 +15,12 @@ class Usuario_empresa_modelo(Base):
     __tablename__ = "usuario_empresas"
 
     id = Column(Integer, primary_key=True, index=True)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
-    empresa_id = Column(Integer, ForeignKey("empresas.id"), nullable=True)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True, unique=True)
+    empresa_id = Column(Integer, ForeignKey("empresas.id"), nullable=True, unique=True)
 
 class Establecimiento_almacen_modelo(Base):
     __tablename__ = "establecimiento_almacenes"
 
     id = Column(Integer, primary_key=True, index=True)
-    almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
-    establecimiento_id = Column(Integer, ForeignKey("establecimientos.id"), nullable=True)
+    almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True, unique=True)
+    establecimiento_id = Column(Integer, ForeignKey("establecimientos.id"), nullable=True, unique=True)
