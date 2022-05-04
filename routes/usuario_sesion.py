@@ -23,7 +23,7 @@ async def registro(usuario: UsuarioRegistro):
             Username= usuario.email,
             Password= usuario.password,
         )
-        print(response)    
+        return response    
     except:
         return 'error'
     
