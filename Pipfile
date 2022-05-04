@@ -8,6 +8,8 @@ fastapi = {extras = ["all"], version = "*"}
 email-validator = "*"
 sqlmodel = "*"
 requests = "*"
+boto3 = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

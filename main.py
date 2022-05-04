@@ -18,6 +18,9 @@ from facturacion.models import *
 from tablas_relacionales.models import *
 from lote.models import *
 
+from routes.usuario_sesion import usuario
+
+
 # %%
 from empresa.schemas import *
 from empresa.crud import *
@@ -35,7 +38,7 @@ from lote.crud import *
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
+app.include_router(usuario)
 app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],
                    allow_credentials=True,
