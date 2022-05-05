@@ -40,7 +40,8 @@ class UsuarioRegistro(BaseModel):
         orm_mode = True
 
 
-class RecuperarUsuario(UsuarioRegistro):
+class RecuperarUsuario(BaseModel):
+    email: Optional[EmailStr]
     newpassword: str
     codigo: str
 
