@@ -10,6 +10,7 @@ sqlmodel = "*"
 requests = "*"
 boto3 = "*"
 python-dotenv = "*"
+python-decouple = "*"
 
 [dev-packages]
 

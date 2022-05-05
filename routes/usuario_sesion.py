@@ -1,88 +1,99 @@
 from fastapi import APIRouter
-# import requests
-
-import os
-import boto3
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from decouple import config
 from usuario.schemas import UsuarioRegistro, RecuperarUsuario
-
 from dotenv import load_dotenv
+import boto3
+
 load_dotenv()
 
 
 usuario = APIRouter()
 
 
+"""
+{
+  "email": "torresfram19@gmail.com",
+  "password": "#String1234"
+}
+"""
+
 @usuario.post("/usuario/registro/", response_model=UsuarioRegistro, tags=['USUARIO'])
-async def registro(usuario: UsuarioRegistro):
-    print(usuario)
+def registro(usuario: UsuarioRegistro):
     try:
-        client = await boto3.client(
-            'cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
-        response =  await client.sign_up(
-            ClientId= os.getenv('COGNITO_USER_CLIENT_ID'),
-            Username= usuario.email,
-            Password= usuario.password,
+        client = boto3.client(
+            'cognito-idp', region_name=config('COGNITO_REGION_NAME'))
+
+        response = client.sign_up(
+            ClientId=config('COGNITO_USER_CLIENT_ID'),
+            Username=usuario.email,
+            Password=usuario.password,
         )
-        return response    
+
+        return JSONResponse("Usuario Registrado", 200)
+
     except:
-        return 'error'
-    
-    
+
+        return JSONResponse("No se ha podido registrar el usuario", 500)
+
 
 @usuario.post("/usuario/login/", response_model=UsuarioRegistro, tags=['USUARIO'])
-async def login(usuario: UsuarioRegistro):
+def login(usuario: UsuarioRegistro):
 
     try:
-        client= await boto3.client(
-            'cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
-        response= await client.initiate_auth(
-            ClientId=os.getenv('COGNITO_USER_CLIENT_ID'),
+        client = boto3.client(
+            'cognito-idp', region_name=config('COGNITO_REGION_NAME'))
+
+        response = client.initiate_auth(
+            ClientId=config('COGNITO_USER_CLIENT_ID'),
             AuthFlow='USER_PASSWORD_AUTH',
             AuthParameters={
                 'USERNAME': usuario.email,
                 'PASSWORD': usuario.password
             }
         )
-        print(response)
-        # at = response['AuthenticationResult']['AccessToken']
-        # return {"message": "logueo exitoso"}
+
+        return JSONResponse(jsonable_encoder({
+            "AccessToken": response['AuthenticationResult']['AccessToken']
+        }))
+
     except:
-        return {"message": "algo falló"}
+        return JSONResponse("No se pudo iniciar sesión", 500)
 
 
-@ usuario.post("/usuario/forgotpass/", tags=['USUARIO'])
-async def olvido_password(email: str):
+@usuario.post("/usuario/forgotpass/", tags=['USUARIO'])
+def olvido_password(email: str):
     try:
-        client= await boto3.client(
-            'cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME'))
+        client = boto3.client(
+            'cognito-idp', region_name=config('COGNITO_REGION_NAME'))
 
-        response= await client.forgot_password(
-            ClientId=os.getenv('COGNITO_USER_CLIENT_ID'),
+        response = client.forgot_password(
+            ClientId=config('COGNITO_USER_CLIENT_ID'),
             Username=email
         )
 
-        return(response)
-        # return("se ha enviado su correo")
+        return JSONResponse("Email de recuperación enviado, verifique su dirección de correo", 200)
 
     except:
-        return "algo falló"
+        return JSONResponse("Algo falló", 500)
 
 
-@ usuario.post("/usuario/forgotpassnew/", response_model=RecuperarUsuario, tags=['USUARIO'])
-async def confirmar_olvido_password(usuario: RecuperarUsuario):
+@usuario.post("/usuario/forgotpassnew/", response_model=RecuperarUsuario, tags=['USUARIO'])
+def confirmar_olvido_password(usuario: RecuperarUsuario):
 
     try:
-        client= await boto3.client(
-            'cognito-idp', region_name=os.getenv('COGNITO_REGION_NAME')
+        client = boto3.client(
+            'cognito-idp', region_name=config('COGNITO_REGION_NAME')
         )
-        response= await client.confirm_forgot_password(
-            ClientId=os.getenv('COGNITO_USER_CLIENT_ID'),
+
+        client.confirm_forgot_password(
+            ClientId=config('COGNITO_USER_CLIENT_ID'),
             Username=usuario.email,
             ConfirmationCode=usuario.codigo,
             Password=usuario.newpassword
         )
 
-        print(response)
-        return "se ha cambiado la contraseña"
+        return JSONResponse("Se ha cambiado la contraseña", 200)
     except:
-        return "algo falló"
+        return JSONResponse("Algun error insesperado ha ocurrido", 500)
