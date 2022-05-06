@@ -27,7 +27,8 @@ jobs:
 
       # Step-2 Install Python Virtual ENV
       - name: Install Python Virtual ENV
-        run: pip install virtualenv
+        run: pip install --upgrade virtualenv
+        
       
 
       # Step-3 Setup Virtual ENV
@@ -51,6 +52,7 @@ jobs:
         # because GitHub actions doesn't preserve the environment   
         run: . venv/bin/activate 
       - name: Create archive of dependencies
+        
         run: |
           cd ./venv/lib/python3.9.12/site-packages
           zip -r9 ../../../../api.zip .
