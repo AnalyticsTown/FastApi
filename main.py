@@ -7,6 +7,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from db.database import engine, get_db, Base  # , SessionLocal
+from mangum import Mangum 
 
 # %% Es para crear la base de datos. Importo todos los modelos
 from empresa.models import *
@@ -274,3 +275,5 @@ def read_tipo_erogaciones(db: Session = Depends(get_db)):
 def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
     tipo_erogaciones = get_movimiento_insumos(db)
     return tipo_erogaciones
+
+handler =mangum (app=app)
