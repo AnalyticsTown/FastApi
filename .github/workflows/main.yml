@@ -22,7 +22,7 @@ jobs:
         # This action sets up a Python environment for use in actions
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
           # optional: architecture: x64 x64 or x86. Defaults to x64 if not specified
 
       # Step-2 Install Python Virtual ENV
@@ -53,7 +53,7 @@ jobs:
         run: . venv/bin/activate 
       - name: Create archive of dependencies
         run: |
-          cd ./vnv/lib/python/3.7/site-packages
+          cd ./vnv/lib/python3.9/site-packages
           zip -r9 ../../../../api.zip .
       - name: Add FastApi files to Zip file
         run: cd ./api && zip -g ../api.zip -r .
