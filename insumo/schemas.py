@@ -66,8 +66,8 @@ class MovimientoInsumoBase(BaseModel):
     cantidad: float
     fecha_movimiento: date
     insumo_id: int = Field(default=None, foreign_key="insumos.id")
-    origen_almacen_id: int = Field(default=None, foreign_key="almacenes.id")
-    destino_almacen_id: int = Field(default=None, foreign_key="almacenes.id")
+    origen_almacen_id: int = Field(default=None, foreign_key="stock_almacen_insumos.id")
+    destino_almacen_id: int = Field(default=None, foreign_key="stock_almacen_insumos.id")
     tipo_movimiento_id: int = Field(default=None, foreign_key="tipo_movimiento_insumos.id")
 
 class MovimientoInsumo(MovimientoInsumoBase):

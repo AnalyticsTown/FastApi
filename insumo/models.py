@@ -40,6 +40,7 @@ class Alta_erogacion_modelo(Base):
     nombre_tipo_erogacion = Column(String, nullable=False)
     abreviatura_tipo_erogacion = Column(String, nullable=False)
 
+
 class Lote_insumo_modelo(Base):
     __tablename__ = "lote_insumos"
 
@@ -61,20 +62,21 @@ class Moviemiento_insumos_modelo(Base):
     cantidad = Column(Float)
     fecha_movimiento = Column(Date)
     insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
-    origen_almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
-    destino_almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
+    origen_almacen_id = Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
+    destino_almacen_id = Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     tipo_movimiento_id = Column(Integer, ForeignKey("tipo_movimiento_insumos.id"), nullable=True)
 
     created_at = Column(Date, default=datetime.datetime.utcnow().date())
 
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
-
+    #INSUMO_ALMACEN
     id = Column(Integer, primary_key=True, index=True)
     detalle = Column(String, nullable=True)
     cantidad = Column(Float, nullable=False)
     insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
     almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
+    
     # Falta un campo reposicion control id y reposicion alerta id que sean FK a insumos (el maestro)
 
 class Alta_insumo_modelo(Base):

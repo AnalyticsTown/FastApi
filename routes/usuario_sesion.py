@@ -2,12 +2,18 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+
 from decouple import config
-from usuario.schemas import UsuarioRegistro, RecuperarUsuario
+from dotenv import load_dotenv
+
+from usuario.models import *
+from usuario.schemas import *
+from usuario.crud import *
+
 from admin.crud import *
 from admin.models import *
 from admin.schemas import *
-from dotenv import load_dotenv
+
 from db.database import get_db
 from fastapi import Depends
 import requests
@@ -29,6 +35,15 @@ usuario = APIRouter()
 }
 """
 
+# URLS COGNITO
+
+url = "https://cognito-idp.{COGNITO_REGION_NAME}.amazonaws.com/".format(
+    COGNITO_REGION_NAME=COGNITO_REGION_NAME)
+
+headers = {"Content-Type": "application/x-amz-json-1.1",
+           "Content-Length": "1162 // Access Token bytes length",
+           "X-Amz-Target": "AWSCognitoIdentityProviderService.GetUser"}
+
 
 @usuario.post("/usuario/registro/", response_model=UsuarioRegistro, tags=['USUARIO'])
 def registro(usuario: UsuarioRegistro):
@@ -41,17 +56,17 @@ def registro(usuario: UsuarioRegistro):
             Username=usuario.email,
             Password=usuario.password,
         )
-        
+
         return JSONResponse("Usuario Registrado", 200)
 
     except:
 
         return JSONResponse("No se ha podido registrar el usuario", 500)
 
-
+#INICIO DE SESION
 @usuario.post("/usuario/login/", response_model=UsuarioRegistro, tags=['USUARIO'])
 def login(usuario: UsuarioRegistro, db: Session = Depends(get_db)):
-
+    # ARMAR PARA VERIFICAR SI EL USUARIO ES ADMIN O EMPLEADO
     try:
         client = boto3.client(
             'cognito-idp', region_name=COGNITO_REGION_NAME)
@@ -68,13 +83,6 @@ def login(usuario: UsuarioRegistro, db: Session = Depends(get_db)):
         access_token = {
             "AccessToken": response['AuthenticationResult']['AccessToken']
         }
-        
-        url = "https://cognito-idp.{COGNITO_REGION_NAME}.amazonaws.com/".format(
-            COGNITO_REGION_NAME=COGNITO_REGION_NAME)
-
-        headers = {"Content-Type": "application/x-amz-json-1.1",
-                   "Content-Length": "1162 // Access Token bytes length",
-                   "X-Amz-Target": "AWSCognitoIdentityProviderService.GetUser"}
 
         get_info_user = requests.post(
             url=url,
@@ -87,13 +95,18 @@ def login(usuario: UsuarioRegistro, db: Session = Depends(get_db)):
         admin = {
             "id_token": aws_response["UserAttributes"][0]["Value"]
         }
-        
         create_admin(db=db, admin=admin)
-        return JSONResponse(jsonable_encoder(response))
+        empleado = get_usuario(db=db, email=usuario.email)
+        if empleado:
+            return JSONResponse(jsonable_encoder(response))
+        #else:
+        
+        
     except:
         return JSONResponse("No se pudo iniciar sesión", 500)
 
 
+# OLVIDO DE CONTRASEÑA
 @usuario.post("/usuario/forgotpass/", tags=['USUARIO'])
 def olvido_password(email: str):
     try:
@@ -110,7 +123,7 @@ def olvido_password(email: str):
     except:
         return JSONResponse("Algo falló", 500)
 
-
+# REESTABLECIMIENTO DE CONTRASEÑA
 @usuario.post("/usuario/forgotpassnew/", response_model=RecuperarUsuario, tags=['USUARIO'])
 def confirmar_olvido_password(usuario: RecuperarUsuario):
 
@@ -130,19 +143,40 @@ def confirmar_olvido_password(usuario: RecuperarUsuario):
     except:
         return JSONResponse("Algun error insesperado ha ocurrido", 500)
 
-@usuario.post("/usuario/crear_cuenta_empleado", tags=['USUARIO'])
-def crear_cuenta_empleado():
+#CERRAR SESION
+@usuario.post('/usuario/logout', tags=['USUARIO'])
+def logout(access_token: str):
+    try:
+        client = boto3.client(
+            'cognito-idp', region_name=COGNITO_REGION_NAME
+        )
+        response = client.logout(
+            accessToken=access_token
+        )
+    except:
+        return JSONResponse("No se pudo cerrrar sesión", 500)
+
+
+# CREAR EMPLEADO
+@usuario.post('/usuario/crear_empleado', tags=['USUARIO'])
+def crear_empleado(usuario: UsuarioBase, db: Session = Depends(get_db)):
+
+    try:
+        client = boto3.client(
+            'cognito-idp',
+            region_name=COGNITO_REGION_NAME
+        )
+
+        response = client.sign_up(
+            ClientId=COGNITO_USER_CLIENT_ID,
+            Username=usuario.email,
+            Password="#Elagronomo1234",
+        )
+
+        crear_empleado(db=db, usuario=usuario)
+
+        return JSONResponse("Cuenta de empleado creada", 200)
     
-    '''
-        armar para crear cuenta de empleados
-    '''
-    
-    
-# @usuario.get('/usuario/logout',tags=['USUARIO'])
-# def logout():
-#     try:
-#         client = boto3.client(
-#             'cognito-idp', region_name=COGNITO_REGION_NAME
-#         )
-#         client.lo
-#     except:
+    except:
+
+        return JSONResponse("No se ha podido registrar el empleado", 500)
