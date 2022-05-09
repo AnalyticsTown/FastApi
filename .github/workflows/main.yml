@@ -50,10 +50,10 @@ jobs:
       - name: Run Tests   
         # Note that you have to activate the virtualenv in every step
         # because GitHub actions doesn't preserve the environment   
-        run: . venv/bin/activate && pytest
+        run: . venv/bin/activate 
       - name: Create archive of dependencies
         run: |
-          cd ./vnv/lib/python3.9/site-packages
+          cd ./usr/lib/python3.9/site-packages
           zip -r9 ../../../../api.zip .
       - name: Add FastApi files to Zip file
         run: cd ./api && zip -g ../api.zip -r .
