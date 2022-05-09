@@ -53,7 +53,7 @@ jobs:
         run: . venv/bin/activate 
       - name: Create archive of dependencies
         run: |
-          cd ./vnv/lib/python3.9/site-packages
+          cd ./usr/lib/python3.9/site-packages
           zip -r9 ../../../../api.zip .
       - name: Add FastApi files to Zip file
         run: cd ./api && zip -g ../api.zip -r .
