@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from insumo import models, schemas
 from sqlalchemy import update
 import datetime
+import json
 
 
 def get_tareas(db: Session):
@@ -94,42 +95,37 @@ def get_stock_almacen(db: Session):
 def create_movimiento_insumos_almacen(db: Session, cantidad: float, insumo_id: int, id_almacen_origen: int, id_almacen_destino: int):
     # actualizamos las cantidades de insumos de los almacenes
 
-    insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
+    insumo_en_almacen_destino = db.query(models.Stock_almacen_insumo_modelo).\
         filter(
             models.Stock_almacen_insumo_modelo.insumo_id == insumo_id,
-            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino
     )
 
-    # if insumo_en_almacen:
-    # ALMACEN ORIGEN
-    db.query(models.Stock_almacen_insumo_modelo).filter(
-        models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
-        models.Stock_almacen_insumo_modelo.insumo_id == insumo_id).\
-        update({
-            models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
-        }, synchronize_session=True)
+    if insumo_en_almacen_destino:
+        # ALMACEN ORIGEN
+        db.query(models.Stock_almacen_insumo_modelo).filter(
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.insumo_id == insumo_id).\
+            update({
+                models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
+            })
 
-    # ALMACEN DESTINO
-    db.query(models.Stock_almacen_insumo_modelo).filter(
-        models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
-        models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
-    ).\
-        update({
-            models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
-        }, synchronize_session=True)
-    # else:
-    #     db.query(models.Stock_almacen_insumo_modelo).filter(
-    #         models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
-    #         models.Stock_almacen_insumo_modelo.insumo_id == insumo_id).\
-    #         update({
-    #             models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
-    #         }, synchronize_session=True)
+        # ALMACEN DESTINO
+        db.query(models.Stock_almacen_insumo_modelo).filter(
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
+            models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
+        ).\
+            update({
+                models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
+            })
 
-    #     insumo_stock = {
-    #         "detalle": detalle,
-    #         "cantidad": cantidad,
-    #         "insumo_id": insumo_id,
-    #         "almacen_id": id_almacen_destino
+    else:
+        # Añado el insumo en el almacen
 
-    #     }
-    #     create_stock_almacen_insumo(db=db, stock=insumo_stock)
+        insumo_stock = {
+            "cantidad": cantidad,
+            "insumo_id": insumo_id,
+            "almacen_id": id_almacen_destino
+        }
+
+        create_stock_almacen_insumo(db=db, stock=insumo_stock)

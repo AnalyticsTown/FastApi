@@ -77,15 +77,14 @@ def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
 
 
 # STOCK ALMACEN/INSUMOS/MOVIMIENTOS
+@insumo.get("/stock_almacen_insumos/",  tags=['INSUMO'])
+def stocks(db: Session = Depends(get_db)):
+    return get_stock_almacen(db=db)
+
+
 @insumo.post("/create_stock_almacen_insumos/", response_model=StockAlmacenInsumo, status_code=status.HTTP_201_CREATED, tags=['INSUMO'])
 def crear_stock_almacen_insumo(stock: StockAlmacenInsumoBase, db: Session = Depends(get_db)):
     return create_stock_almacen_insumo(db=db, stock=stock)
-
-
-@insumo.get("/stock_almacen/",  tags=['INSUMO'])
-def stocks(db: Session = Depends(get_db)):
-
-    return get_stock_almacen(db=db)
 
 
 @insumo.post("/create_movimiento_insumos/", response_model=MovimientoInsumo, status_code=status.HTTP_201_CREATED, tags=['INSUMO'])
@@ -96,7 +95,12 @@ def crear_movimiento_insumo(movimiento: MovimientoInsumoBase, db: Session = Depe
         cantidad=movimiento.cantidad,
         insumo_id=movimiento.insumo_id,
         id_almacen_origen=movimiento.origen_almacen_id,
-        id_almacen_destino=movimiento.destino_almacen_id
+        id_almacen_destino=movimiento.destino_almacen_id,
     )
 
     return create_movimiento_insumo(db=db, movimiento=movimiento)
+
+
+@insumo.get("/movimiento_insumo/")
+def get_movimiento_insumos(db: Session = Depends(get_db)):
+    return get_movimiento_insumos(db=db)

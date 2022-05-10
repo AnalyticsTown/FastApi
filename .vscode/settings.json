@@ -3,8 +3,15 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "database": "${workspaceFolder:FastApi}/db/data.db",
-            "name": "sqllite"
+            "name": "main",
+            "database": "${workspaceFolder:FastApi}/db/data.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "main",
+            "group": "main",
+            "database": "${workspaceFolder:FastApi}/db/data.db"
         }
     ],
     "sqltools.useNodeRuntime": true

@@ -65,7 +65,6 @@ class Moviemiento_insumos_modelo(Base):
     origen_almacen_id = Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     destino_almacen_id = Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     tipo_movimiento_id = Column(Integer, ForeignKey("tipo_movimiento_insumos.id"), nullable=True)
-
     created_at = Column(Date, default=datetime.datetime.utcnow().date())
 
 class Stock_almacen_insumo_modelo(Base):
