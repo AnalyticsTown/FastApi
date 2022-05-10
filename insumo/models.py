@@ -70,7 +70,7 @@ class Moviemiento_insumos_modelo(Base):
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
     #INSUMO_ALMACEN
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     detalle = Column(String, nullable=True)
     cantidad = Column(Float, nullable=False)
     insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
