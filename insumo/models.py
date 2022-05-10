@@ -58,7 +58,7 @@ class Alta_tipo_movimiento_modelo(Base):
 class Moviemiento_insumos_modelo(Base):
     __tablename__ = "movimiento_insumos"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, unique=True)
     cantidad = Column(Float)
     fecha_movimiento = Column(Date)
     insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
@@ -70,7 +70,7 @@ class Moviemiento_insumos_modelo(Base):
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
     #INSUMO_ALMACEN
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, unique=True)
     detalle = Column(String, nullable=True)
     cantidad = Column(Float, nullable=False)
     insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)

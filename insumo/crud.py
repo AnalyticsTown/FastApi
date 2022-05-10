@@ -106,9 +106,12 @@ def create_movimiento_insumos_almacen(db: Session, cantidad: float, insumo_id: i
         db.query(models.Stock_almacen_insumo_modelo).filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
             models.Stock_almacen_insumo_modelo.insumo_id == insumo_id).\
-            update({
-                models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
-            })
+            update(
+                {
+
+                    models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
+                }
+                )
 
         # ALMACEN DESTINO
         db.query(models.Stock_almacen_insumo_modelo).filter(

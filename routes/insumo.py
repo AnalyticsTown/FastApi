@@ -87,6 +87,18 @@ def crear_stock_almacen_insumo(stock: StockAlmacenInsumoBase, db: Session = Depe
     return create_stock_almacen_insumo(db=db, stock=stock)
 
 
+@insumo.delete("/stock_almacen_insumos/{id}",  tags=['STOCK'])
+def delete_stock(id: str, db: Session = Depends(get_db)):
+    try:
+        db.query(Stock_almacen_insumo_modelo).filter(Stock_almacen_insumo_modelo.id == id).\
+            delete(synchronize_session=False)
+        db.commit()
+
+        return JSONResponse("Stock eliminado", 200)
+    except:
+        return JSONResponse("Hubo un error", 500)
+
+
 @insumo.get("/movimiento_insumo/", tags=['STOCK-MOVIMIENTOS'])
 def get_movimiento_insumos(db: Session = Depends(get_db)):
     return db.query(Moviemiento_insumos_modelo).all()
@@ -104,3 +116,16 @@ def crear_movimiento_insumo(movimiento: MovimientoInsumoBase, db: Session = Depe
     )
 
     return create_movimiento_insumo(db=db, movimiento=movimiento)
+
+
+@insumo.delete("/delete_movimiento_insumo/{id}", tags=['STOCK-MOVIMIENTOS'])
+def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
+
+    try:
+
+        db.query(Moviemiento_insumos_modelo).filter(Moviemiento_insumos_modelo.id == id).\
+            delete(synchronize_session=False)
+        db.commit()
+        return JSONResponse("Movimiento eliminado", 200)
+    except:
+        return JSONResponse("Hubo un error", 500)
