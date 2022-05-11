@@ -40,7 +40,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
         #profile_name: default
-        project_name: ea
+        project_name: elagronomo
         runtime: python3.9
         s3_bucket: desarrolloelagronomo
     
