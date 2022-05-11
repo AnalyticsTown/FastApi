@@ -2,17 +2,17 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from decouple import config
-#SQLALCHEMY_DATABASE_URL = "sqlite:///db/data.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///db/data.db"
 #SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
 
 #SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg2://postgres:1234@localhost:5432/prueba'
-HEROKU_POSTGRES = config('HEROKU_POSTGRES')
-POSTGRES_DATABASE_URL = 'postgresql+psycopg2://{HEROKU_POSTGRES}'.format(HEROKU_POSTGRES=HEROKU_POSTGRES)
+#HEROKU_POSTGRES = config('HEROKU_POSTGRES')
+#POSTGRES_DATABASE_URL = 'postgresql+psycopg2://{HEROKU_POSTGRES}'.format(HEROKU_POSTGRES=HEROKU_POSTGRES)
 engine = create_engine(
-    #SQLALCHEMY_DATABASE_URL#, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     #POSTGRES_DATABASE_URL
-    "postgresql+psycopg2://ikawmvsrmevpmv:09457109e5916dd4691f1cf3fd06ef37fab412e5dd45c82d60a774a7d73002c6@ec2-54-172-175-251.compute-1.amazonaws.com:5432/d9306ulpf2vg72"
+    
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
