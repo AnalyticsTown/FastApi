@@ -105,16 +105,28 @@ def get_movimiento_insumos(db: Session = Depends(get_db)):
     return db.query(Movimiento_detalle_modelo).all()
 
 
+# MOVIMIENTO Y ENCABEZADO
+@insumo.get("/encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
+def get_encabezado_movimiento(db: Session = Depends(get_db)):
+    return db.query(Encabezado_insumos_modelo).all()
+
+
 @insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
 def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_db)):
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
 
+#MOVIMIENTO DETALLE
+@insumo.get('/movimiento_detalle', tags=['DETALLE-MOVIMIENTO'])
+def movimiento_detalle(db: Session = Depends(get_db)):
+   return db.query(Movimiento_detalle_modelo).join(Encabezado_insumos_modelo).all()    
+    
+    
 @insumo.post("/create_movimiento_detalle/", response_model=MovimientoDetalle, status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
 def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
-    
+
     encabezado2 = jsonable_encoder(encabezado)
     print(encabezado2['origen_almacen_id'])
     create_movimiento_insumos_almacen(
@@ -128,7 +140,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
     return create_movimiento_detalle(db=db, movimiento=movimiento)
 
 
-@insumo.delete("/delete_movimiento_insumo/{id}", tags=['STOCK-MOVIMIENTOS'])
+@insumo.delete("/delete_movimiento_detalle/{id}", tags=['STOCK-MOVIMIENTOS'])
 def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
 
     try:
@@ -139,3 +151,4 @@ def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
         return JSONResponse("Movimiento eliminado", 200)
     except:
         return JSONResponse("Hubo un error", 500)
+#===============================================================================#
