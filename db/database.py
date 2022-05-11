@@ -6,7 +6,7 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///db/data.db"
 #SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
 
-#SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg2://postgres:1234@localhost:5432/prueba'
+
 #HEROKU_POSTGRES = config('HEROKU_POSTGRES')
 #POSTGRES_DATABASE_URL = 'postgresql+psycopg2://{HEROKU_POSTGRES}'.format(HEROKU_POSTGRES=HEROKU_POSTGRES)
 engine = create_engine(
