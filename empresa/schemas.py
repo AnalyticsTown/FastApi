@@ -43,6 +43,6 @@ class Empresa(EmpresaBase):
     id: int
     activo: bool
     usuario_id: Optional[int] = Field(default=None, foreign_key="usuario_empresas.usuario_id")
-
+    #usuario_admin: Optional[str] = Field(default=None, foreign_key="admins.id_token")
     class Config:
         orm_mode = True

@@ -1,6 +1,6 @@
 from datetime import date
 from sqlalchemy import Boolean, Column, Integer, String, Date, ForeignKey
-
+from tablas_relacionales.models import *
 from db.database import Base
 
 class Alta_rol_modelo(Base):
@@ -30,4 +30,4 @@ class Alta_usuario_modelo(Base):
     fecha_alta = Column(Date, default=date.today)
     fecha_baja = Column(Date, nullable=True)
     rol_id = Column(Integer, ForeignKey("roles.id"), nullable=True)
-    empresa_id = Column(Integer, ForeignKey("usuario_empresas.empresa_id"), nullable=True)
+    empresa_id = Column(Integer, ForeignKey(Usuario_empresa_modelo.empresa_id), nullable=True)

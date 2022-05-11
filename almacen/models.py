@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
-
+from tablas_relacionales.models import *
 from db.database import Base
 
 class Tipo_almacen_modelo(Base):
@@ -19,4 +19,4 @@ class Alta_almacen_modelo(Base):
     geoposicion = Column(String, nullable=True)
     observaciones = Column(String, nullable=True)
     almacenes_tipo_id = Column(Integer, ForeignKey("tipo_almacenes.id"), nullable=True)
-    establecimiento_id = Column(Integer, ForeignKey("establecimiento_almacenes.establecimiento_id"), nullable=True)
+    establecimiento_id = Column(Integer, ForeignKey(Establecimiento_almacen_modelo.establecimiento_id), nullable=True)

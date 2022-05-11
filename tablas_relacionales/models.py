@@ -12,7 +12,7 @@ class Alta_inquilino_modelo(Base):
     accesos_por_rol = Column(String, nullable=True)
 
 class Usuario_empresa_modelo(Base):
-    __tablename__ = "usuario_empresas"
+    __tablename__ = "usuarios_empresas"
 
     id = Column(Integer, primary_key=True, index=True)
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True, unique=True)
