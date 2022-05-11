@@ -38,7 +38,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{AWS_DEFAULT_REGION}}
+        aws-region: ${{secrets.AWS_DEFAULT_REGION}}
         #profile_name: default
         project_name: elagronomo
         runtime: python3.9
