@@ -108,7 +108,21 @@ def get_movimiento_insumos(db: Session = Depends(get_db)):
 # MOVIMIENTO Y ENCABEZADO
 @insumo.get("/encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
 def get_encabezado_movimiento(db: Session = Depends(get_db)):
-    return db.query(Encabezado_insumos_modelo).all()
+    statement = """
+        select 
+        encabezado_movimiento.id,
+        fecha_movimiento,
+        origen_almacen_id,
+        orden_de_compra,
+        almacenes.nombre as nombre_almacen_origen,
+        detalle_tipo_movimiento_insumo
+        from encabezado_movimiento
+        left join almacenes on almacenes.id = encabezado_movimiento.origen_almacen_id
+        left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = encabezado_movimiento.tipo_movimiento_id
+         
+    """
+
+    return db.execute(statement).all()
 
 
 @insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
@@ -116,12 +130,16 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
 
-#MOVIMIENTO DETALLE
-@insumo.get('/movimiento_detalle', tags=['DETALLE-MOVIMIENTO'])
+# MOVIMIENTO DETALLE
+@insumo.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
 def movimiento_detalle(db: Session = Depends(get_db)):
-   return db.query(Movimiento_detalle_modelo).join(Encabezado_insumos_modelo).all()    
     
-    
+    return db.query(Movimiento_detalle_modelo).join(Encabezado_insumos_modelo,
+
+                                                    Movimiento_detalle_modelo.encabezado_movimiento_id == Encabezado_insumos_modelo.id,
+                                                    ).all()
+
+
 @insumo.post("/create_movimiento_detalle/", response_model=MovimientoDetalle, status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
 def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
