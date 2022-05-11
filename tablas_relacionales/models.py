@@ -24,3 +24,5 @@ class Establecimiento_almacen_modelo(Base):
     id = Column(Integer, primary_key=True, index=True)
     almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True, unique=True)
     establecimiento_id = Column(Integer, ForeignKey("establecimientos.id"), nullable=True, unique=True)
+    
+    

@@ -1,3 +1,4 @@
+import json
 from insumo.schemas import *
 from insumo.models import *
 from insumo.crud import *
@@ -101,21 +102,30 @@ def delete_stock(id: str, db: Session = Depends(get_db)):
 
 @insumo.get("/movimiento_insumo/", tags=['STOCK-MOVIMIENTOS'])
 def get_movimiento_insumos(db: Session = Depends(get_db)):
-    return db.query(Moviemiento_insumos_modelo).all()
+    return db.query(Movimiento_detalle_modelo).all()
 
 
-@insumo.post("/create_movimiento_insumos/", response_model=MovimientoInsumo, status_code=status.HTTP_201_CREATED, tags=['STOCK-MOVIMIENTOS'])
-def crear_movimiento_insumo(movimiento: MovimientoInsumoBase, db: Session = Depends(get_db)):
+@insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
+def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_db)):
+    return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
+
+@insumo.post("/create_movimiento_detalle/", response_model=MovimientoDetalle, status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
+def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
+    encabezado = db.query(Encabezado_insumos_modelo).filter_by(
+        id=movimiento.encabezado_movimiento_id).first()
+    
+    encabezado2 = jsonable_encoder(encabezado)
+    print(encabezado2['origen_almacen_id'])
     create_movimiento_insumos_almacen(
         db=db,
         cantidad=movimiento.cantidad,
         insumo_id=movimiento.insumo_id,
-        id_almacen_origen=movimiento.origen_almacen_id,
-        id_almacen_destino=movimiento.destino_almacen_id,
+        id_almacen_origen=encabezado2['origen_almacen_id'],
+        id_almacen_destino=encabezado2['destino_almacen_id'],
     )
 
-    return create_movimiento_insumo(db=db, movimiento=movimiento)
+    return create_movimiento_detalle(db=db, movimiento=movimiento)
 
 
 @insumo.delete("/delete_movimiento_insumo/{id}", tags=['STOCK-MOVIMIENTOS'])
@@ -123,7 +133,7 @@ def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
 
     try:
 
-        db.query(Moviemiento_insumos_modelo).filter(Moviemiento_insumos_modelo.id == id).\
+        db.query(Movimiento_detalle_modelo).filter(Movimiento_detalle_modelo.id == id).\
             delete(synchronize_session=False)
         db.commit()
         return JSONResponse("Movimiento eliminado", 200)

@@ -67,12 +67,20 @@ def create_insumo(db: Session, insumo: schemas.InsumoBase):
     return db_insumo
 
 
-def create_movimiento_insumo(db: Session, movimiento: schemas.MovimientoInsumoBase):  # Se agregó
-    db_insumo = models.Moviemiento_insumos_modelo(**movimiento.dict())
-    db.add(db_insumo)
+def create_encabezado_movimiento(db: Session, encabezado: schemas.EncabezadoInsumos):
+    db_encabezado = models.Encabezado_insumos_modelo(**encabezado.dict())
+    db.add(db_encabezado)
     db.commit()
-    db.refresh(db_insumo)
-    return db_insumo
+    db.refresh(db_encabezado)
+    return db_encabezado
+
+
+def create_movimiento_detalle(db: Session, movimiento: schemas.MovimientoDetalle):  # Se agregó
+    db_movimiento = models.Movimiento_detalle_modelo(**movimiento.dict())
+    db.add(db_movimiento)
+    db.commit()
+    db.refresh(db_movimiento)
+    return db_movimiento
 
 
 def create_stock_almacen_insumo(db: Session, stock: schemas.StockAlmacenInsumoBase):  # Se agregó
@@ -111,7 +119,7 @@ def create_movimiento_insumos_almacen(db: Session, cantidad: float, insumo_id: i
 
                     models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
                 }
-                )
+        )
 
         # ALMACEN DESTINO
         db.query(models.Stock_almacen_insumo_modelo).filter(
