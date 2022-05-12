@@ -1,6 +1,6 @@
-import datetime
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date, Float
 from db.database import Base
+import datetime
 
 
 class Alta_tarea_modelo(Base):
@@ -83,22 +83,6 @@ class Encabezado_insumos_modelo(Base):
     orden_de_compra = Column(String(255), nullable=True)
 
 
-class Movimiento_detalle_modelo(Base):
-    __tablename__ = "movimiento_detalle"
-    id = Column(Integer, primary_key=True, index=True, unique=True)
-    insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
-    cantidad = Column(Float)
-    unidad_id = Column(Integer, ForeignKey(
-        Alta_unidad_modelo.id), nullable=True)
-    nro_lote = Column(Integer, ForeignKey(
-        Lote_insumo_modelo.id), nullable=True)
-    fecha_vencimiento = Column(Date)
-    precio_unitario = Column(String, nullable=True)
-    observaciones = Column(String, nullable=True)
-    encabezado_movimiento_id = Column(Integer, ForeignKey(
-        Encabezado_insumos_modelo.id), nullable=False)
-
-
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
     # INSUMO_ALMACEN
@@ -136,3 +120,20 @@ class Alta_insumo_modelo(Base):
         "rubro_insumos.id"), nullable=True)
     tipo_erogacion_id = Column(Integer, ForeignKey(
         "tipo_erogaciones.id"), nullable=True)
+
+
+class Movimiento_detalle_modelo(Base):
+    __tablename__ = "movimiento_detalle"
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    insumo_id = Column(Integer, ForeignKey(
+        Alta_insumo_modelo.id), nullable=False)
+    cantidad = Column(Float)
+    unidad_id = Column(Integer, ForeignKey(
+        Alta_unidad_modelo.id), nullable=True)
+    nro_lote = Column(Integer, ForeignKey(
+        Lote_insumo_modelo.id), nullable=True)
+    fecha_vencimiento = Column(Date)
+    precio_unitario = Column(String, nullable=True)
+    observaciones = Column(String, nullable=True)
+    encabezado_movimiento_id = Column(Integer, ForeignKey(
+        Encabezado_insumos_modelo.id), nullable=False)

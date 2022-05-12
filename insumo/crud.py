@@ -140,3 +140,23 @@ def create_movimiento_insumos_almacen(db: Session, cantidad: float, insumo_id: i
         }
 
         create_stock_almacen_insumo(db=db, stock=insumo_stock)
+
+
+def get_movimiento_encabezado(db: Session):
+
+    statement = """
+            select 
+            encabezado_movimiento.id,
+            detalle_tipo_movimiento_insumo,
+            fecha_movimiento,
+            origen_almacen_id,
+            orden_de_compra,
+            almacenes.nombre as nombre_almacen_origen,
+            a.nombre as almacen_destino,
+            detalle_tipo_movimiento_insumo
+            from encabezado_movimiento
+            left join almacenes on almacenes.id = encabezado_movimiento.origen_almacen_id 
+            left join almacenes as a  on a.id = encabezado_movimiento.destino_almacen_id
+            left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = encabezado_movimiento.tipo_movimiento_id        
+            """
+    return db.execute(statement).all()
