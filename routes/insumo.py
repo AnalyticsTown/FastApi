@@ -115,15 +115,14 @@ def get_encabezado_movimiento(db: Session = Depends(get_db)):
         origen_almacen_id,
         orden_de_compra,
         almacenes.nombre as nombre_almacen_origen,
+        a.nombre as almacen_destino,
         detalle_tipo_movimiento_insumo
         from encabezado_movimiento
-        left join almacenes on almacenes.id = encabezado_movimiento.origen_almacen_id
-        left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = encabezado_movimiento.tipo_movimiento_id
-         
-    """
-
+        left join almacenes on almacenes.id = encabezado_movimiento.origen_almacen_id 
+        left join almacenes as a  on a.id = encabezado_movimiento.destino_almacen_id
+        left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = encabezado_movimiento.tipo_movimiento_id        
+        """
     return db.execute(statement).all()
-
 
 @insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
 def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_db)):
@@ -133,7 +132,7 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
 # MOVIMIENTO DETALLE
 @insumo.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
 def movimiento_detalle(db: Session = Depends(get_db)):
-    
+
     return db.query(Movimiento_detalle_modelo).join(Encabezado_insumos_modelo,
 
                                                     Movimiento_detalle_modelo.encabezado_movimiento_id == Encabezado_insumos_modelo.id,

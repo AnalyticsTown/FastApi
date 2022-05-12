@@ -1,6 +1,5 @@
 import datetime
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date, Float
-
 from db.database import Base
 
 
@@ -66,7 +65,6 @@ class Alta_tipo_movimiento_modelo(Base):
 # class Movimiento_detalle_modelo(Base):
 
 
-
 class Encabezado_insumos_modelo(Base):
     __tablename__ = "encabezado_movimiento"
 
@@ -76,11 +74,14 @@ class Encabezado_insumos_modelo(Base):
         Alta_tipo_movimiento_modelo.id), nullable=True)
 
     fecha_movimiento = Column(Date)
-    origen_almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
+    origen_almacen_id = Column(
+        Integer, ForeignKey("almacenes.id"), nullable=True)
     #Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
-    destino_almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
+    destino_almacen_id = Column(
+        Integer, ForeignKey("almacenes.id"), nullable=True)
     #Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     orden_de_compra = Column(String(255), nullable=True)
+
 
 class Movimiento_detalle_modelo(Base):
     __tablename__ = "movimiento_detalle"
@@ -89,11 +90,14 @@ class Movimiento_detalle_modelo(Base):
     cantidad = Column(Float)
     unidad_id = Column(Integer, ForeignKey(
         Alta_unidad_modelo.id), nullable=True)
-    nro_lote = Column(Integer, ForeignKey(Lote_insumo_modelo.id), nullable=True)
+    nro_lote = Column(Integer, ForeignKey(
+        Lote_insumo_modelo.id), nullable=True)
     fecha_vencimiento = Column(Date)
     precio_unitario = Column(String, nullable=True)
     observaciones = Column(String, nullable=True)
-    encabezado_movimiento_id = Column(Integer, ForeignKey(Encabezado_insumos_modelo.id), nullable=False)
+    encabezado_movimiento_id = Column(Integer, ForeignKey(
+        Encabezado_insumos_modelo.id), nullable=False)
+
 
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
