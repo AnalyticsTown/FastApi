@@ -111,6 +111,7 @@ def get_encabezado_movimiento(db: Session = Depends(get_db)):
     statement = """
         select 
         encabezado_movimiento.id,
+        detalle_tipo_movimiento_insumo,
         fecha_movimiento,
         origen_almacen_id,
         orden_de_compra,
