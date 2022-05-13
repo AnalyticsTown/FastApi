@@ -11,6 +11,7 @@ requests = "*"
 boto3 = "*"
 python-dotenv = "*"
 python-decouple = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
