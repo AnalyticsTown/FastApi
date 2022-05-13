@@ -1,4 +1,4 @@
-insert into main.tareas (id, detalle_tarea)
+insert into tareas (id, detalle_tarea)
 values  (1, 'SIEMBRA'),
         (2, 'COSECHA'),
         (3, 'PREPARACION'),

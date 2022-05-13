@@ -1,4 +1,4 @@
-insert into main.familias (id, detalle_familia)
+insert into familias (id, detalle_familia)
 values  (1, 'AGROQUIMICOS'),
         (2, 'COMBUSTIBLES Y LUBRICANTES'),
         (3, 'ENVASES'),

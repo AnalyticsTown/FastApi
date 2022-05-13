@@ -1,18 +1,4 @@
 {
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "driver": "SQLite",
-            "name": "main",
-            "database": "${workspaceFolder:FastApi}/db/data.db"
-        },
-        {
-            "previewLimit": 50,
-            "driver": "SQLite",
-            "name": "main",
-            "group": "main",
-            "database": "${workspaceFolder:FastApi}/db/data.db"
-        }
-    ],
+    "sqltools.connections": [],
     "sqltools.useNodeRuntime": true
 }

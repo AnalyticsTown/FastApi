@@ -4,6 +4,7 @@ from db.database import Base
 import datetime
 import uuid
 
+
 class Alta_tarea_modelo(Base):
     __tablename__ = "tareas"
 
@@ -67,12 +68,13 @@ class Alta_tipo_movimiento_modelo(Base):
 class Encabezado_insumos_modelo(Base):
     __tablename__ = "encabezado_movimiento"
 
-    id =  Column(Integer, primary_key=True, index=True, unique=True)
-    nro_movimiento = Column(UUID(as_uuid=True), default=uuid.uuid4)    
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                index=True, unique=True, default=uuid.uuid4)
     tipo_movimiento_id = Column(Integer, ForeignKey(
         Alta_tipo_movimiento_modelo.id), nullable=True
     )
-    offline = Column(Boolean, default=False)
+
+    nro_movimiento = Column(String, unique=True)
     fecha_movimiento = Column(Date)
     origen_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)
@@ -81,7 +83,7 @@ class Encabezado_insumos_modelo(Base):
         Integer, ForeignKey("almacenes.id"), nullable=True)
     #Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     orden_de_compra = Column(String(255), nullable=True)
-    
+
 
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
@@ -135,5 +137,5 @@ class Movimiento_detalle_modelo(Base):
     fecha_vencimiento = Column(Date)
     precio_unitario = Column(String, nullable=True)
     observaciones = Column(String, nullable=True)
-    encabezado_movimiento_id = Column(Integer, ForeignKey(
+    encabezado_movimiento_id = Column(UUID, ForeignKey(
         Encabezado_insumos_modelo.id), nullable=False)

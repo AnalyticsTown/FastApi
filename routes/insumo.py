@@ -152,15 +152,16 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
         id=movimiento.encabezado_movimiento_id).first()
 
     encabezado2 = jsonable_encoder(encabezado)
-    print(encabezado2['origen_almacen_id'])
-    create_movimiento_insumos_almacen(
-        db=db,
-        cantidad=movimiento.cantidad,
-        insumo_id=movimiento.insumo_id,
-        id_almacen_origen=encabezado2['origen_almacen_id'],
-        id_almacen_destino=encabezado2['destino_almacen_id'],
-    )
-
+    
+    if encabezado2['tipo_movimiento_id'] == 3:
+        create_movimiento_insumos_almacen(
+            db=db,
+            cantidad=movimiento.cantidad,
+            insumo_id=movimiento.insumo_id,
+            id_almacen_origen=encabezado2['origen_almacen_id'],
+            id_almacen_destino=encabezado2['destino_almacen_id'],
+        )
+        
     return create_movimiento_detalle(db=db, movimiento=movimiento)
 
 

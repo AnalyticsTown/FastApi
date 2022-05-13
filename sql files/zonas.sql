@@ -1,4 +1,4 @@
-insert into main.zonas (id, detalle_zona)
+insert into zonas (id, detalle_zona)
 values  (1, 'NOA'),
         (2, 'NEA'),
         (3, 'PAMPEANA'),

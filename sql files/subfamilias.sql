@@ -1,4 +1,4 @@
-insert into main.subfamilias (id, detalle_subfamilia)
+insert into subfamilias (id, detalle_subfamilia)
 values  (1, 'CURASEMILLAS'),
         (2, 'FUNGICIDAS'),
         (3, 'HERBICIDAS'),

@@ -1,4 +1,4 @@
-insert into main.unidades (id, detalle_unidad)
+insert into unidades (id, detalle_unidad)
 values  (1, 'KILOGRAMO'),
         (2, 'METRO CUBICO'),
         (3, 'GALON'),

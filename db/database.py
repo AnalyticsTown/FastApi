@@ -20,9 +20,8 @@ POSTGRES_DATABASE_URL = 'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}/{DATABAS
     DATABASE=DATABASE
 )
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    #POSTGRES_DATABASE_URL
-
+    #SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    POSTGRES_DATABASE_URL
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
