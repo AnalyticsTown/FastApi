@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from decouple import config
-# SQLALCHEMY_DATABASE_URL = "sqlite:///db/data.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///db/data.db"
 #SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
 USER = config("USER")
@@ -20,8 +20,8 @@ POSTGRES_DATABASE_URL = 'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}/{DATABAS
     DATABASE=DATABASE
 )
 engine = create_engine(
-    #SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    POSTGRES_DATABASE_URL
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    #POSTGRES_DATABASE_URL
 
 )
 
