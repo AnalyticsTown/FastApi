@@ -1,7 +1,8 @@
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date, Float
+from sqlalchemy.dialects.postgresql import UUID
 from db.database import Base
 import datetime
-
+import uuid
 
 class Alta_tarea_modelo(Base):
     __tablename__ = "tareas"
@@ -62,17 +63,16 @@ class Alta_tipo_movimiento_modelo(Base):
     id = Column(Integer, primary_key=True, index=True)
     detalle_tipo_movimiento_insumo = Column(String)
 
-# class Movimiento_detalle_modelo(Base):
-
 
 class Encabezado_insumos_modelo(Base):
     __tablename__ = "encabezado_movimiento"
 
-    id = Column(Integer, primary_key=True, index=True, unique=True)
-
+    id =  Column(Integer, primary_key=True, index=True, unique=True)
+    nro_movimiento = Column(UUID(as_uuid=True), default=uuid.uuid4)    
     tipo_movimiento_id = Column(Integer, ForeignKey(
-        Alta_tipo_movimiento_modelo.id), nullable=True)
-
+        Alta_tipo_movimiento_modelo.id), nullable=True
+    )
+    offline = Column(Boolean, default=False)
     fecha_movimiento = Column(Date)
     origen_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)
@@ -81,7 +81,7 @@ class Encabezado_insumos_modelo(Base):
         Integer, ForeignKey("almacenes.id"), nullable=True)
     #Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     orden_de_compra = Column(String(255), nullable=True)
-
+    
 
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"

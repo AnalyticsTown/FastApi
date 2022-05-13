@@ -108,7 +108,7 @@ def get_movimiento_insumos(db: Session = Depends(get_db)):
 # MOVIMIENTO Y ENCABEZADO
 @insumo.get("/encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
 def get_encabezado_movimiento(db: Session = Depends(get_db)):
-    return get_encabezado_movimiento(db=db)
+    return get_movimiento_encabezado(db=db)
 
 
 @insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
@@ -118,7 +118,8 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
 
 # MOVIMIENTO DETALLE
 @insumo.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
-def movimiento_detalle(db: Session = Depends(get_db)):
+def movimiento_detalle(id: Optional[int] = None, db: Session = Depends(get_db)):
+
     statement = """
                 select
                 movimiento_detalle.encabezado_movimiento_id,
@@ -130,10 +131,19 @@ def movimiento_detalle(db: Session = Depends(get_db)):
                 i.nombre as insumo
                 from movimiento_detalle
                 left join unidades as u on u.id = movimiento_detalle.unidad_id
-                left join insumos as i on i.id = movimiento_detalle.insumo_id                
+                left join insumos as i on i.id = movimiento_detalle.insumo_id
                 """
 
-    return db.execute(statement).all()
+    if id:
+        def filtrar(detalle):
+            return detalle['encabezado_movimiento_id'] == id
+
+        detalles = jsonable_encoder(db.execute(statement).all())
+        filtrado = [d for d in detalles if filtrar(d)]
+
+        return filtrado
+    else:
+        return db.execute(statement).all()
 
 
 @insumo.post("/create_movimiento_detalle/", response_model=MovimientoDetalle, status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])

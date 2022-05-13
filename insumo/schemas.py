@@ -93,7 +93,7 @@ class MovimientoDetalleBase(BaseModel):
     fecha_vencimiento: date
     precio_unitario: float
     observaciones: Optional[str]
-    encabezado_movimiento_id: int
+    encabezado_movimiento_id: str
 
     class Config:
         orm_mode = True
