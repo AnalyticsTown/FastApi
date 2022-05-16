@@ -177,4 +177,3 @@ def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
     except:
         return JSONResponse("Hubo un error", 500)
 #===============================================================================#
-@insumo.get("/insumo")
