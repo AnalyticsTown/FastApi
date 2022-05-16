@@ -102,7 +102,7 @@ def delete_stock(id: str, db: Session = Depends(get_db)):
 
 @insumo.get("/movimiento_insumo/", tags=['STOCK-MOVIMIENTOS'])
 def get_movimiento_insumos(db: Session = Depends(get_db)):
-    return db.query(Movimiento_detalle_modelo).all()
+    return db.query(Alta_tipo_movimiento_modelo.detalle_tipo_movimiento_insumo).all()
 
 
 # MOVIMIENTO Y ENCABEZADO
