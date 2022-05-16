@@ -73,9 +73,8 @@ def read_tipo_erogaciones(db: Session = Depends(get_db)):
 # Se agregó
 @insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['INSUMO'])
 def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
-    # tipo_erogaciones = get_movimiento_insumos(db)
-    # return tipo_erogaciones
-    return db.query(Alta_tipo_movimiento_modelo.detalle_tipo_movimiento_insumo).all()
+    #return get_movimiento_insumos(db)
+    return db.query(Alta_tipo_movimiento_modelo).all()
 
 # STOCK ALMACEN/INSUMOS/MOVIMIENTOS
 @insumo.get("/stock_almacen_insumos/",  tags=['STOCK'])
@@ -102,7 +101,7 @@ def delete_stock(id: str, db: Session = Depends(get_db)):
 
 @insumo.get("/movimiento_insumo/", tags=['STOCK-MOVIMIENTOS'])
 def get_movimiento_insumos(db: Session = Depends(get_db)):
-    return db.query(Alta_tipo_movimiento_modelo.detalle_tipo_movimiento_insumo).all()
+    return db.query(Movimiento_detalle_modelo).all()
 
 
 # MOVIMIENTO Y ENCABEZADO
@@ -152,7 +151,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
         id=movimiento.encabezado_movimiento_id).first()
 
     encabezado2 = jsonable_encoder(encabezado)
-    
+
     if encabezado2['tipo_movimiento_id'] == 3:
         create_movimiento_insumos_almacen(
             db=db,
@@ -161,7 +160,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             id_almacen_origen=encabezado2['origen_almacen_id'],
             id_almacen_destino=encabezado2['destino_almacen_id'],
         )
-        
+
     return create_movimiento_detalle(db=db, movimiento=movimiento)
 
 
