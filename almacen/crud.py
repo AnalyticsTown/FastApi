@@ -6,9 +6,16 @@ def get_tipo_almacenes(db: Session):
     return db.query(models.Tipo_almacen_modelo).all()
 
 def get_almacenes(db: Session):
-    statement = """select almacenes.id, activo, nombre, abreviatura, descripcion, geoposicion, observaciones, detalle_tipo_almacen, establecimiento_id
+    statement = """select almacenes.id, 
+                   activo, 
+                   nombre, 
+                   abreviatura, 
+                   descripcion, 
+                   geoposicion, 
+                   observaciones, 
+                   detalle_tipo_almacen
                    from almacenes
-                   inner join tipo_almacenes on tipo_almacenes.id == almacenes.almacenes_tipo_id"""
+                   inner join tipo_almacenes on tipo_almacenes.id = almacenes.almacenes_tipo_id"""
 
     return db.execute(statement).all()
 
