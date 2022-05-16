@@ -73,9 +73,9 @@ def read_tipo_erogaciones(db: Session = Depends(get_db)):
 # Se agregó
 @insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['INSUMO'])
 def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
-    tipo_erogaciones = get_movimiento_insumos(db)
-    return tipo_erogaciones
-
+    # tipo_erogaciones = get_movimiento_insumos(db)
+    # return tipo_erogaciones
+    return db.query(Alta_tipo_movimiento_modelo.detalle_tipo_movimiento_insumo).all()
 
 # STOCK ALMACEN/INSUMOS/MOVIMIENTOS
 @insumo.get("/stock_almacen_insumos/",  tags=['STOCK'])
@@ -177,3 +177,4 @@ def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
     except:
         return JSONResponse("Hubo un error", 500)
 #===============================================================================#
+@insumo.get("/insumo")
