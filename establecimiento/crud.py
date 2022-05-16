@@ -13,7 +13,7 @@ def get_tipo_establecimientos(db: Session):
 
 def get_establecimientos(db: Session, empresa: int):
     statement = """select establecimientos.id, activo, nombre, abreviatura, direccion, localidad, provincia, pais, 
-                   geoposicion, observaciones, contacto, detalle_zona, detalle_tipo_establecimiento, almacen_id, empresa_id
+                   geoposicion, observaciones, contacto, detalle_zona, detalle_tipo_establecimiento, empresa_id
                    from establecimientos
                    left join zonas on establecimientos.zona_id = zonas.id
                    left join tipo_establecimientos on tipo_establecimientos.id = establecimientos.establecimiento_tipo_id
