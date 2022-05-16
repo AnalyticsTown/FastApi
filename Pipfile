@@ -7,11 +7,11 @@ name = "pypi"
 fastapi = {extras = ["all"], version = "*"}
 email-validator = "*"
 sqlmodel = "*"
-requests = "*"
 boto3 = "*"
 python-dotenv = "*"
 python-decouple = "*"
 psycopg2 = "*"
+requests = "*"
 
 [dev-packages]
 

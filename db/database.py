@@ -1,7 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+
 from decouple import config
+from dotenv import load_dotenv
 #SQLALCHEMY_DATABASE_URL = "sqlite:///db/data.db"
 #SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 

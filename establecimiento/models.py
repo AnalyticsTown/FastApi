@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
-
+from sqlalchemy.orm import relationship
 from db.database import Base
+#from almacen.models import Alta_almacen_modelo
 
 class Zona_modelo(Base):
     __tablename__ = "zonas"
@@ -8,11 +9,13 @@ class Zona_modelo(Base):
     id = Column(Integer, primary_key=True, index=True)
     detalle_zona = Column(String, nullable=True)
 
+
 class Tipo_establecimiento_modelo(Base):
     __tablename__ = "tipo_establecimientos"
 
     id = Column(Integer, primary_key=True, index=True)
     detalle_tipo_establecimiento = Column(String, nullable=True)
+
 
 class Alta_establecimiento_modelo(Base):
     __tablename__ = "establecimientos"
@@ -25,10 +28,12 @@ class Alta_establecimiento_modelo(Base):
     localidad = Column(String, nullable=True)
     provincia = Column(String, nullable=True)
     pais = Column(String, nullable=True)
-    geoposicion = Column(String, nullable=True) # Se cambiaron los campos latitud y longitud por este
+    # Se cambiaron los campos latitud y longitud por este
+    geoposicion = Column(String, nullable=True)
     observaciones = Column(String, nullable=True)
     contacto = Column(String, nullable=True)
     zona_id = Column(Integer, ForeignKey("zonas.id"), nullable=True)
     empresa_id = Column(Integer, ForeignKey("empresas.id"), nullable=True)
-    almacen_id = Column(Integer, ForeignKey("establecimiento_almacenes.almacen_id"), nullable=True)
-    establecimiento_tipo_id = Column(Integer, ForeignKey("tipo_establecimientos.id"), nullable=True)
+    establecimiento_tipo_id = Column(Integer, ForeignKey(
+        "tipo_establecimientos.id"), nullable=True)
+    almacenes = relationship("Alta_almacen_modelo", secondary="establecimiento_almacenes")

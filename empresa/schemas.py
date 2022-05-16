@@ -38,11 +38,10 @@ class EmpresaBase(BaseModel):
     moneda_primaria_id: Optional[int] = Field(default=None, foreign_key="monedas.id")
     moneda_secundaria_id: Optional[int] = Field(default=None, foreign_key="monedas.id")
     rubro_empresa_id: Optional[int] = Field(default=None, foreign_key="rubro_empresas.id")
-
+    admin_id: str = Field(default=None, foreign_key="admins.id_token")
 class Empresa(EmpresaBase):
     id: int
     activo: bool
-    usuario_id: Optional[int] = Field(default=None, foreign_key="usuario_empresas.usuario_id")
-    #usuario_admin: Optional[str] = Field(default=None, foreign_key="admins.id_token")
+    
     class Config:
         orm_mode = True
