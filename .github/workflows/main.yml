@@ -65,7 +65,7 @@ jobs:
   CD:
     runs-on: ubuntu-latest
     needs: [CI]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/desarrollo' && github.event_name == 'push'
     steps:
       - name: Install AWS CLI
         uses: unfor19/install-aws-cli-action@v1
