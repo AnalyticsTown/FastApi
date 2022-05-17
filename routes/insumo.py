@@ -117,7 +117,7 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
 
 # MOVIMIENTO DETALLE
 @insumo.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
-def movimiento_detalle(id: Optional[int] = None, db: Session = Depends(get_db)):
+def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
 
     statement = """
                 select
