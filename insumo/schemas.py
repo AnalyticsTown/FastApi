@@ -73,12 +73,14 @@ class TipoMovimientoInsumo(BaseModel):
 
 
 class EncabezadoInsumos(BaseModel):
+    
     tipo_movimiento_id: int
     fecha_movimiento: date
     origen_almacen_id: int
     destino_almacen_id: Optional[int]
     orden_de_compra: Optional[str]
     nro_movimiento: str
+    
     class Config:
         orm_mode = True
 

@@ -20,5 +20,5 @@ class Alta_almacen_modelo(Base):
     geoposicion = Column(String, nullable=True)
     observaciones = Column(String, nullable=True)
     almacenes_tipo_id = Column(Integer, ForeignKey("tipo_almacenes.id"), nullable=True)
-    establecimientos = relationship("Alta_establecimiento_modelo", secondary='establecimiento_almacenes')
+    #establecimientos = relationship("Alta_establecimiento_modelo", secondary='establecimiento_almacenes')
      
