@@ -13,7 +13,7 @@ from routes.facturacion import facturacion
 from routes.insumo import insumo
 from routes.lote import lote
 
-#from mangum import Mangum
+from mangum import Mangum
 
 Base.metadata.create_all(bind=engine)
 
@@ -34,4 +34,4 @@ app.include_router(insumo)
 app.include_router(lote)
 
 
-#handler = mangum (app=app)
+handler = mangum (app=app)
