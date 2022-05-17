@@ -149,6 +149,7 @@ def get_movimiento_encabezado(db: Session):
             encabezado_movimiento.id,
             detalle_tipo_movimiento_insumo,
             fecha_movimiento,
+            nro_movimiento,
             origen_almacen_id,
             orden_de_compra,
             almacenes.nombre as nombre_almacen_origen,

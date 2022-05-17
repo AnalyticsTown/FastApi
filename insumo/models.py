@@ -52,7 +52,7 @@ class Lote_insumo_modelo(Base):
     __tablename__ = "lote_insumos"
 
     id = Column(Integer, primary_key=True, index=True)
-    nro_lote = Column(String, nullable=True)
+    nro_lote = Column(String, nullable=True, unique=True)
     fecha_vencimiento = Column(Date, nullable=True)
     stock_id = Column(Integer, ForeignKey(
         "stock_almacen_insumos.id"), nullable=True)
@@ -74,7 +74,7 @@ class Encabezado_insumos_modelo(Base):
         Alta_tipo_movimiento_modelo.id), nullable=True
     )
 
-    nro_movimiento = Column(String, unique=True)
+    nro_movimiento = Column(String, nullable=False,unique=True)
     fecha_movimiento = Column(Date)
     origen_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)

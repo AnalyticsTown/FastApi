@@ -110,7 +110,7 @@ def get_encabezado_movimiento(db: Session = Depends(get_db)):
     return get_movimiento_encabezado(db=db)
 
 
-@insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
+@insumo.post("/create_encabezado_movimiento/", response_model=EncabezadoInsumos, tags=['ENCABEZADO MOVIMIENTO'])
 def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_db)):
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 

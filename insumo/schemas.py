@@ -1,6 +1,5 @@
 from datetime import date
 from typing import Optional
-
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import FetchedValue
 
@@ -79,7 +78,7 @@ class EncabezadoInsumos(BaseModel):
     origen_almacen_id: int
     destino_almacen_id: Optional[int]
     orden_de_compra: Optional[str]
-
+    nro_movimiento: str
     class Config:
         orm_mode = True
 
@@ -89,7 +88,7 @@ class MovimientoDetalleBase(BaseModel):
     insumo_id: int
     cantidad: float
     unidad_id: int
-    nro_lote: Optional[int]
+    nro_lote: Optional[str]
     fecha_vencimiento: date
     precio_unitario: float
     observaciones: Optional[str]
