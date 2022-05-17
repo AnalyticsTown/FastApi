@@ -36,4 +36,4 @@ class Alta_establecimiento_modelo(Base):
     empresa_id = Column(Integer, ForeignKey("empresas.id"), nullable=True)
     establecimiento_tipo_id = Column(Integer, ForeignKey(
         "tipo_establecimientos.id"), nullable=True)
-    almacenes = relationship("Alta_almacen_modelo", secondary="establecimiento_almacenes")
+    almacenes = relationship("Alta_almacen_modelo", secondary="establecimiento_almacenes", backref="almacenes")

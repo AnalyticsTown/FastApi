@@ -13,6 +13,7 @@ from db.database import engine, get_db, Base  # , SessionLocal
 
 insumo = APIRouter()
 
+nro_movimiento = 00000000
 
 @insumo.get("/insumos/", tags=['INSUMO'])
 def read_insumos(db: Session = Depends(get_db)):
@@ -112,6 +113,7 @@ def get_encabezado_movimiento(db: Session = Depends(get_db)):
 
 @insumo.post("/create_encabezado_movimiento/", response_model=EncabezadoInsumos, tags=['ENCABEZADO MOVIMIENTO'])
 def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_db)):
+        
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
 
