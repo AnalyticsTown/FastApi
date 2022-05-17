@@ -111,7 +111,7 @@ def get_encabezado_movimiento(db: Session = Depends(get_db)):
     return get_movimiento_encabezado(db=db)
 
 
-@insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
+@insumo.post("/create_encabezado_movimiento/", response_model=EncabezadoInsumos, tags=['ENCABEZADO MOVIMIENTO'])
 def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_db)):
         
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
@@ -126,6 +126,7 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
                 movimiento_detalle.encabezado_movimiento_id,
                 movimiento_detalle.fecha_vencimiento,
                 movimiento_detalle.cantidad,
+                movimiento_detalle.observaciones,
                 movimiento_detalle.nro_lote,
                 movimiento_detalle.precio_unitario,
                 detalle_unidad as unidad,
