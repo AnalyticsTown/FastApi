@@ -34,4 +34,4 @@ app.include_router(insumo)
 app.include_router(lote)
 
 
-handler = mangum (app=app)
+handler = Mangum(app=app)

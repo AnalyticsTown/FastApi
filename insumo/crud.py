@@ -72,6 +72,7 @@ def create_encabezado_movimiento(db: Session, encabezado: schemas.EncabezadoInsu
     db.add(db_encabezado)
     db.commit()
     db.refresh(db_encabezado)
+    print(db_encabezado)
     return db_encabezado
 
 

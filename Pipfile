@@ -12,6 +12,7 @@ python-dotenv = "*"
 python-decouple = "*"
 psycopg2 = "*"
 requests = "*"
+mangum = "*"
 
 [dev-packages]
 
