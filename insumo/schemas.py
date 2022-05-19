@@ -110,8 +110,8 @@ class MovimientoDetalle(MovimientoDetalleBase):
 class StockAlmacenInsumoBase(BaseModel):
     detalle: Optional[str]
     cantidad: Optional[float]
-    insumo_id: Optional[int] = Field(default=None, foreign_key="insumos.id")
-    almacen_id: Optional[int] = Field(default=None, foreign_key="almacenes.id")
+    insumo_id: Optional[int] #= Field(default=None, foreign_key="insumos.id")
+    almacen_id: Optional[int] #= Field(default=None, foreign_key="almacenes.id")
 
 
 class StockAlmacenInsumo(StockAlmacenInsumoBase):

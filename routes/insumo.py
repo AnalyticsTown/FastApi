@@ -1,4 +1,6 @@
 import json
+
+from requests import session
 from insumo.schemas import *
 from insumo.models import *
 from insumo.crud import *
@@ -14,6 +16,7 @@ from db.database import engine, get_db, Base  # , SessionLocal
 insumo = APIRouter()
 
 nro_movimiento = 00000000
+
 
 @insumo.get("/insumos/", tags=['INSUMO'])
 def read_insumos(db: Session = Depends(get_db)):
@@ -74,35 +77,30 @@ def read_tipo_erogaciones(db: Session = Depends(get_db)):
 # Se agregó
 @insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['INSUMO'])
 def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
-    #return get_movimiento_insumos(db)
+    # return get_movimiento_insumos(db)
     return db.query(Alta_tipo_movimiento_modelo).all()
 
 # STOCK ALMACEN/INSUMOS/MOVIMIENTOS
-@insumo.get("/stock_almacen_insumos/",  tags=['STOCK'])
-def stocks(db: Session = Depends(get_db)):
-    return get_stock_almacen(db=db)
+# @insumo.get("/stock_almacen_insumos/",  tags=['STOCK'])
+# def stocks(db: Session = Depends(get_db)):
+#     return get_stock_almacen(db=db)
 
 
-@insumo.post("/create_stock_almacen_insumos/", response_model=StockAlmacenInsumo, status_code=status.HTTP_201_CREATED, tags=['STOCK'])
-def crear_stock_almacen_insumo(stock: StockAlmacenInsumoBase, db: Session = Depends(get_db)):
-    return create_stock_almacen_insumo(db=db, stock=stock)
+# @insumo.post("/create_stock_almacen_insumos/", response_model=StockAlmacenInsumo, status_code=status.HTTP_201_CREATED, tags=['STOCK'])
+# def crear_stock_almacen_insumo(stock: StockAlmacenInsumoBase, db: Session = Depends(get_db)):
+#     return create_stock_almacen_insumo(db=db, stock=stock)
 
 
-@insumo.delete("/stock_almacen_insumos/{id}",  tags=['STOCK'])
-def delete_stock(id: str, db: Session = Depends(get_db)):
-    try:
-        db.query(Stock_almacen_insumo_modelo).filter(Stock_almacen_insumo_modelo.id == id).\
-            delete(synchronize_session=False)
-        db.commit()
+# @insumo.delete("/stock_almacen_insumos/{id}",  tags=['STOCK'])
+# def delete_stock(id: str, db: Session = Depends(get_db)):
+#     try:
+#         db.query(Stock_almacen_insumo_modelo).filter(Stock_almacen_insumo_modelo.id == id).\
+#             delete(synchronize_session=False)
+#         db.commit()
 
-        return JSONResponse("Stock eliminado", 200)
-    except:
-        return JSONResponse("Hubo un error", 500)
-
-
-@insumo.get("/movimiento_insumo/", tags=['STOCK-MOVIMIENTOS'])
-def get_movimiento_insumos(db: Session = Depends(get_db)):
-    return db.query(Movimiento_detalle_modelo).all()
+#         return JSONResponse("Stock eliminado", 200)
+#     except:
+#         return JSONResponse("Hubo un error", 500)
 
 
 # MOVIMIENTO Y ENCABEZADO
@@ -113,7 +111,7 @@ def get_encabezado_movimiento(db: Session = Depends(get_db)):
 
 @insumo.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
 def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_db)):
-        
+
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
 
@@ -148,16 +146,30 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
         return db.execute(statement).all()
 
 
-@insumo.post("/create_movimiento_detalle/", response_model=MovimientoDetalle, status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
+@insumo.post("/create_movimiento_detalle/",  status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
 def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
 
     encabezado2 = jsonable_encoder(encabezado)
 
-    if encabezado2['tipo_movimiento_id'] == 3:
-        create_movimiento_insumos_almacen(
+    if encabezado2['tipo_movimiento_id'] == 1:
+        create_compra(
             db=db,
+            cantidad=movimiento.cantidad,
+            insumo_id=movimiento.insumo_id,
+            id_almacen_origen=encabezado2['origen_almacen_id'],
+            observaciones=movimiento.observaciones
+        )
+
+    if encabezado2['tipo_movimiento_id'] == 2:
+        create_ajuste(db=db, cantidad=movimiento.cantidad,
+                      id_almacen_origen=encabezado2['origen_almacen_id'], insumo_id=movimiento.insumo_id)
+
+    if encabezado2['tipo_movimiento_id'] == 3:
+        create_traslado(
+            db=db,
+            observaciones=movimiento.observaciones,
             cantidad=movimiento.cantidad,
             insumo_id=movimiento.insumo_id,
             id_almacen_origen=encabezado2['origen_almacen_id'],
@@ -167,7 +179,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
     return create_movimiento_detalle(db=db, movimiento=movimiento)
 
 
-@insumo.delete("/delete_movimiento_detalle/{id}", tags=['STOCK-MOVIMIENTOS'])
+@insumo.delete("/delete_movimiento_detalle/{id}", tags=['DETALLE-MOVIMIENTO'])
 def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
 
     try:
@@ -179,3 +191,19 @@ def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
     except:
         return JSONResponse("Hubo un error", 500)
 #===============================================================================#
+
+
+@insumo.get("/existencias/", tags=['EXISTENCIAS'])
+def get_movimiento_insumos(db: Session = Depends(get_db)):
+    statement = """select 
+                    stock_almacen_insumos.id,
+                    insumos.nombre as insumo,
+                    almacenes.nombre as almacen,
+                    stock_almacen_insumos.detalle as detalle,
+                    stock_almacen_insumos.cantidad as cantidad
+                    from stock_almacen_insumos
+                    left join insumos on insumos.id = stock_almacen_insumos.insumo_id
+                    left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
+                    """
+                    
+    return db.execute(statement).all()

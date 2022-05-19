@@ -85,7 +85,7 @@ def create_movimiento_detalle(db: Session, movimiento: schemas.MovimientoDetalle
 
 
 def create_stock_almacen_insumo(db: Session, stock: schemas.StockAlmacenInsumoBase):  # Se agregó
-    db_insumo = models.Stock_almacen_insumo_modelo(**stock.dict())
+    db_insumo = models.Stock_almacen_insumo_modelo(**stock)
     db.add(db_insumo)
     db.commit()
     db.refresh(db_insumo)
@@ -101,14 +101,54 @@ def get_stock_almacen(db: Session):
     return db.execute(statement).all()
 
 
-def create_movimiento_insumos_almacen(db: Session, cantidad: float, insumo_id: int, id_almacen_origen: int, id_almacen_destino: int):
+# FUNCIONES QUE MODIFICAN LOS STOCKS (EXISTENCIAS)
+def create_compra(db: Session, cantidad: float, insumo_id: int, id_almacen_origen: int, observaciones: str):
+    insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
+        filter(
+        models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+        models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
+    ).first()
+    print(insumo_en_almacen)
+    if insumo_en_almacen:
+        db.query(models.Stock_almacen_insumo_modelo).filter(
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
+        ).\
+            update({
+                models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
+            })
+    else:
+        # Añado el insumo en el almacen
+
+        insumo_stock = {
+            "detalle": observaciones,
+            "cantidad": cantidad,
+            "insumo_id": insumo_id,
+            "almacen_id": id_almacen_origen
+        }
+
+        create_stock_almacen_insumo(db=db, stock=insumo_stock)
+
+
+def create_ajuste(db: Session, cantidad: float, id_almacen_origen: int, insumo_id: int):
+
+    db.query(models.Stock_almacen_insumo_modelo).filter(
+        models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+        models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
+    ).\
+        update({
+            models.Stock_almacen_insumo_modelo.cantidad: cantidad
+        })
+
+
+def create_traslado(db: Session, cantidad: float, insumo_id: int, id_almacen_origen: int, id_almacen_destino: int, observaciones: str):
     # actualizamos las cantidades de insumos de los almacenes
 
     insumo_en_almacen_destino = db.query(models.Stock_almacen_insumo_modelo).\
         filter(
             models.Stock_almacen_insumo_modelo.insumo_id == insumo_id,
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino
-    )
+    ).first()
 
     if insumo_en_almacen_destino:
         # ALMACEN ORIGEN
@@ -132,9 +172,21 @@ def create_movimiento_insumos_almacen(db: Session, cantidad: float, insumo_id: i
             })
 
     else:
-        # Añado el insumo en el almacen
 
+        # ALMACEN ORIGEN
+        db.query(models.Stock_almacen_insumo_modelo).filter(
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.insumo_id == insumo_id).\
+            update(
+                {
+
+                    models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
+                }
+        )
+
+        # Añado el insumo en el almacen
         insumo_stock = {
+            "detalle": observaciones,
             "cantidad": cantidad,
             "insumo_id": insumo_id,
             "almacen_id": id_almacen_destino

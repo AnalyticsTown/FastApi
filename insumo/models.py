@@ -84,7 +84,7 @@ class Encabezado_insumos_modelo(Base):
     #Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     orden_de_compra = Column(String(255), nullable=True)
 
-
+#MODIFICAR ESTA TABLA
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
     # INSUMO_ALMACEN
@@ -93,8 +93,11 @@ class Stock_almacen_insumo_modelo(Base):
     cantidad = Column(Float, nullable=False)
     insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
     almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
-
-    # Falta un campo reposicion control id y reposicion alerta id que sean FK a insumos (el maestro)
+    #nro_lote
+    #fecha_vencimiento
+    #reposicion cantidad fk insumos.reposicion_cantidad
+    
+    #Falta un campo reposicion control id y reposicion alerta id que sean FK a insumos (el maestro)
 
 
 class Alta_insumo_modelo(Base):
@@ -122,7 +125,7 @@ class Alta_insumo_modelo(Base):
         "rubro_insumos.id"), nullable=True)
     tipo_erogacion_id = Column(Integer, ForeignKey(
         "tipo_erogaciones.id"), nullable=True)
-
+    #vincular lote con insumo maestro
 
 class Movimiento_detalle_modelo(Base):
     __tablename__ = "movimiento_detalle"
