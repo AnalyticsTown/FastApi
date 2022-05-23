@@ -18,6 +18,7 @@ from mangum import Mangum
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+handler = Mangum(app=app)
 app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],
                    allow_credentials=True,
@@ -34,4 +35,4 @@ app.include_router(insumo)
 app.include_router(lote)
 
 
-handler = Mangum(app=app)
+
