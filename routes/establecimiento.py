@@ -18,15 +18,15 @@ async def read_establecimientos(empresa_id: int, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder(establecimientos))
 
 
-@establecimiento.post("/{empresa_id}/create_establecimientos/", response_model=Establecimiento, status_code=status.HTTP_201_CREATED, tags=['ESTABLECIMIENTO'])
+@establecimiento.post("/{empresa_id}/create_establecimientos/",  status_code=status.HTTP_201_CREATED, tags=['ESTABLECIMIENTO'])
 def crear_establecimiento(empresa_id: int, establecimiento: EstablecimientoBase, db: Session = Depends(get_db)):
     db_establecimiento = get_establecimiento(
         db, localidad=establecimiento.localidad, nombre=establecimiento.nombre)
     if db_establecimiento:
         raise HTTPException(
             status_code=400, detail="El establecimiento ya existe!")
-    return create_establecimiento(db=db, establecimiento=establecimiento, empresa_id=empresa_id)
-
+    create_establecimiento(db=db, establecimiento=establecimiento, empresa_id=empresa_id)
+    return JSONResponse("Establecimiento creado exitosamente", status_code=200)
 
 @establecimiento.delete("/delete_establecimientos/", tags=['ESTABLECIMIENTO'])
 def delete_establecimientos(db: Session = Depends(get_db)):

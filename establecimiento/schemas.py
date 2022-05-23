@@ -28,12 +28,12 @@ class EstablecimientoBase(BaseModel):
     contacto: Optional[str]
     zona_id: Optional[int] = Field(default=None, foreign_key="zonas.id")
     establecimiento_tipo_id: Optional[int] = Field(default=None, foreign_key="tipo_establecimientos.id")
-
+    almacen_id: Optional[int]
 class Establecimiento(EstablecimientoBase):
     id: int
     activo: bool
     empresa_id: Optional[int] = Field(default=None, foreign_key="empresas.id")
-    almacen_id: Optional[int] = Field(default=None, foreign_key="establecimiento_almacenes.almacen_id")
+    #almacen_id: Optional[int]#= Field(default=None, foreign_key="establecimiento_almacenes.almacen_id")
 
     class Config:
         orm_mode = True

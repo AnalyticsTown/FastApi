@@ -15,7 +15,7 @@ class AlmacenBase(BaseModel):
     geoposicion: Optional[str]
     observaciones: Optional[str]
     almacenes_tipo_id: Optional[int] = Field(default=None, foreign_key="tipo_almacenes.id")
-    #establecimiento_id: Optional[int] #= Field(default=None, foreign_key="establecimiento_almacenes.establecimiento_id")
+    establecimiento_id: Optional[int] #= Field(default=None, foreign_key="establecimiento_almacenes.establecimiento_id")
     
     class Config:
         orm_mode = True
