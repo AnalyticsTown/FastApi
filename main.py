@@ -14,7 +14,7 @@ from routes.insumo import insumo
 from routes.lote import lote
 
 from mangum import Mangum
-handler = Mangum(app=app)
+self.handler = Mangum(app=app)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
