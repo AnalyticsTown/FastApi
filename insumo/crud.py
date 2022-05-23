@@ -40,7 +40,7 @@ def get_movimiento_insumos(db: Session):  # Se agregó
 
 def get_insumos(db: Session):
     statement = """select insumos.id, activo, nombre, abreviatura, codigo_externo, lote_control, vencimiento_control, reposicion_control, reposicion_cantidad, reposicion_alerta,
-                   reposicion_alerta_email, detalle_tarea, detalle_unidad, detalle_familia, detalle_subfamilia, detalle_rubro_insumo, nombre_tipo_erogacion, abreviatura_tipo_erogacion
+                   reposicion_alerta_email, detalle_tarea, abr, detalle_familia, detalle_subfamilia, detalle_rubro_insumo, nombre_tipo_erogacion, abreviatura_tipo_erogacion
                    from insumos
                    left join tareas on insumos.tarea_id = tareas.id
                    left join unidades on unidades.id = insumos.unidad_id

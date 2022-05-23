@@ -127,7 +127,7 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
                 movimiento_detalle.observaciones,
                 movimiento_detalle.nro_lote,
                 movimiento_detalle.precio_unitario,
-                detalle_unidad as unidad,
+                abr as unidad,
                 i.nombre as insumo
                 from movimiento_detalle
                 left join unidades as u on u.id = movimiento_detalle.unidad_id
@@ -228,7 +228,7 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                     insumos.reposicion_cantidad,
                     stock_almacen_insumos.precio_unitario,
                     almacenes.nombre as almacen,
-                    unidades.detalle_unidad as unidad,
+                    unidades.abr as unidad,
                     stock_almacen_insumos.detalle as detalle,
                     stock_almacen_insumos.cantidad as cantidad
                     from stock_almacen_insumos
@@ -251,7 +251,7 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                     insumos.reposicion_cantidad,
                     stock_almacen_insumos.precio_unitario,
                     almacenes.nombre as almacen,
-                    unidades.detalle_unidad as unidad,
+                    unidades.abr as unidad,
                     stock_almacen_insumos.detalle as detalle,
                     stock_almacen_insumos.cantidad as cantidad
                     from stock_almacen_insumos

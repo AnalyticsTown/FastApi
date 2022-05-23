@@ -16,8 +16,10 @@ class Alta_unidad_modelo(Base):
     __tablename__ = "unidades"
 
     id = Column(Integer, primary_key=True, index=True)
-    detalle_unidad = Column(String, nullable=False)
-
+    abr = Column(String, nullable=False)
+    español = Column(String, nullable=False)
+    ingles = Column(String, nullable=False)
+    portugues = Column(String, nullable=False)
 
 class Alta_familia_modelo(Base):
     __tablename__ = "familias"

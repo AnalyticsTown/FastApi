@@ -14,7 +14,7 @@ class Tarea(BaseModel):
 
 class Unidad(BaseModel):
     id: int
-    detalle_unidad: str
+    abr: str
 
     class Config:
         orm_mode = True
