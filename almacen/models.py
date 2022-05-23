@@ -1,4 +1,3 @@
-from turtle import back
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from tablas_relacionales.models import *
 from sqlalchemy.orm import relationship
