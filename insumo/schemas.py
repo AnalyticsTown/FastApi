@@ -53,15 +53,15 @@ class TipoErogacion(BaseModel):
         orm_mode = True
 
 
-class LoteInsumo(BaseModel):
-    id: int
-    nro_lote: str
-    fecha_vencimiento: date
-    stock_id: Optional[int] = Field(
-        default=None, foreign_key="stock_almacen_insumos.id")
+# class LoteInsumo(BaseModel):
+#     id: int
+#     nro_lote: str
+#     fecha_vencimiento: date
+#     stock_id: Optional[int] = Field(
+#         default=None, foreign_key="stock_almacen_insumos.id")
 
-    class Config:
-        orm_mode = True
+#     class Config:
+#         orm_mode = True
 
 
 class TipoMovimientoInsumo(BaseModel):
@@ -89,10 +89,10 @@ class MovimientoDetalleBase(BaseModel):
 
     insumo_id: int
     cantidad: float
-    unidad_id: int
+    #unidad_id: Optional[int]
     nro_lote: Optional[str]
-    fecha_vencimiento: date
-    precio_unitario: float
+    fecha_vencimiento: Optional[date]
+    precio_unitario: Optional[float]
     observaciones: Optional[str]
     encabezado_movimiento_id: str
 
@@ -112,8 +112,11 @@ class StockAlmacenInsumoBase(BaseModel):
     cantidad: Optional[float]
     insumo_id: Optional[int] #= Field(default=None, foreign_key="insumos.id")
     almacen_id: Optional[int] #= Field(default=None, foreign_key="almacenes.id")
-
-
+    nro_lote: Optional[str]
+    fecha_vencimiento: Optional[str]
+    reposicion_cantidad: Optional[float]
+    reposicion_alerta: Optional[bool]
+    unidad_id: Optional[int]
 class StockAlmacenInsumo(StockAlmacenInsumoBase):
     id: int
 

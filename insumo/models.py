@@ -48,14 +48,14 @@ class Alta_erogacion_modelo(Base):
     abreviatura_tipo_erogacion = Column(String, nullable=False)
 
 
-class Lote_insumo_modelo(Base):
-    __tablename__ = "lote_insumos"
+# class Lote_insumo_modelo(Base):
+#     __tablename__ = "lote_insumos"
 
-    id = Column(Integer, primary_key=True, index=True)
-    nro_lote = Column(String, nullable=True, unique=True)
-    fecha_vencimiento = Column(Date, nullable=True)
-    stock_id = Column(Integer, ForeignKey(
-        "stock_almacen_insumos.id"), nullable=True)
+#     id = Column(Integer, primary_key=True, index=True)
+#     nro_lote = Column(String, nullable=True, unique=True)
+#     fecha_vencimiento = Column(Date, nullable=True)
+#     stock_id = Column(Integer, ForeignKey(
+#         "stock_almacen_insumos.id"), nullable=True)
 
 
 class Alta_tipo_movimiento_modelo(Base):
@@ -71,39 +71,21 @@ class Encabezado_insumos_modelo(Base):
     id = Column(UUID(as_uuid=True), primary_key=True,
                 index=True, unique=True, default=uuid.uuid4)
     tipo_movimiento_id = Column(Integer, ForeignKey(
-        Alta_tipo_movimiento_modelo.id), nullable=True
-    )
-
-    nro_movimiento = Column(String, nullable=False,unique=True)
+        Alta_tipo_movimiento_modelo.id), nullable=True)
+    nro_movimiento = Column(String, nullable=False, unique=True)
     fecha_movimiento = Column(Date)
     origen_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)
-    #Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     destino_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)
-    #Column(Integer, ForeignKey("stock_almacen_insumos.id"), nullable=True)
     orden_de_compra = Column(String(255), nullable=True)
-
-#MODIFICAR ESTA TABLA
-class Stock_almacen_insumo_modelo(Base):
-    __tablename__ = "stock_almacen_insumos"
-    # INSUMO_ALMACEN
-    id = Column(Integer, primary_key=True, index=True, unique=True)
-    detalle = Column(String, nullable=True)
-    cantidad = Column(Float, nullable=False)
-    insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=True)
-    almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
-    #nro_lote
-    #fecha_vencimiento
-    #reposicion cantidad fk insumos.reposicion_cantidad
-    
-    #Falta un campo reposicion control id y reposicion alerta id que sean FK a insumos (el maestro)
+   
 
 
 class Alta_insumo_modelo(Base):
     __tablename__ = "insumos"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, unique=True)
     activo = Column(Boolean, default=True)
     nombre = Column(String, nullable=False)
     abreviatura = Column(String, nullable=False)
@@ -125,7 +107,7 @@ class Alta_insumo_modelo(Base):
         "rubro_insumos.id"), nullable=True)
     tipo_erogacion_id = Column(Integer, ForeignKey(
         "tipo_erogaciones.id"), nullable=True)
-    #vincular lote con insumo maestro
+
 
 class Movimiento_detalle_modelo(Base):
     __tablename__ = "movimiento_detalle"
@@ -135,10 +117,24 @@ class Movimiento_detalle_modelo(Base):
     cantidad = Column(Float)
     unidad_id = Column(Integer, ForeignKey(
         Alta_unidad_modelo.id), nullable=True)
-    nro_lote = Column(Integer, ForeignKey(
-        Lote_insumo_modelo.id), nullable=True)
+    nro_lote = Column(String, nullable=True)
     fecha_vencimiento = Column(Date)
     precio_unitario = Column(String, nullable=True)
     observaciones = Column(String, nullable=True)
     encabezado_movimiento_id = Column(UUID, ForeignKey(
         Encabezado_insumos_modelo.id), nullable=False)
+
+
+class Stock_almacen_insumo_modelo(Base):
+    __tablename__ = "stock_almacen_insumos"
+    # INSUMO_ALMACEN
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    cantidad = Column(Float, nullable=False)
+    detalle = Column(String, nullable=True)
+    insumo_id = Column(Integer, ForeignKey(Alta_insumo_modelo.id))
+    almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True)
+    nro_lote = Column(String(255), nullable=True)
+    fecha_vencimiento = Column(String(255), nullable=True)
+    unidad_id = Column(Integer, ForeignKey(
+        Alta_unidad_modelo.id), nullable=False)
+    precio_unitario = Column(Float, nullable=True)

@@ -148,18 +148,28 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
 
 @insumo.post("/create_movimiento_detalle/",  status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
 def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
+    # busco el encabezado y lo encuentro
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
 
     encabezado2 = jsonable_encoder(encabezado)
-
+    insumo = db.query(Alta_insumo_modelo).filter_by(
+        id=movimiento.insumo_id).first()
+    insumo = jsonable_encoder(insumo)
+    
+    
     if encabezado2['tipo_movimiento_id'] == 1:
+        
         create_compra(
             db=db,
             cantidad=movimiento.cantidad,
             insumo_id=movimiento.insumo_id,
             id_almacen_origen=encabezado2['origen_almacen_id'],
-            observaciones=movimiento.observaciones
+            observaciones=movimiento.observaciones,
+            unidad_id=insumo["unidad_id"],
+            fecha_vencimiento=movimiento.fecha_vencimiento,
+            nro_lote=movimiento.nro_lote,
+            precio_unitario=movimiento.precio_unitario
         )
 
     if encabezado2['tipo_movimiento_id'] == 2:
@@ -173,10 +183,21 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             cantidad=movimiento.cantidad,
             insumo_id=movimiento.insumo_id,
             id_almacen_origen=encabezado2['origen_almacen_id'],
-            id_almacen_destino=encabezado2['destino_almacen_id'],
+            id_almacen_destino=encabezado2['destino_almacen_id'],            
         )
 
-    return create_movimiento_detalle(db=db, movimiento=movimiento)
+        
+        
+    return create_movimiento_detalle(db=db, movimiento={
+            "insumo_id": movimiento.insumo_id,
+            "cantidad": movimiento.cantidad,
+            "unidad_id": insumo['unidad_id'],
+            "nro_lote": movimiento.nro_lote,
+            "fecha_vencimiento": movimiento.fecha_vencimiento,
+            "precio_unitario": movimiento.precio_unitario,
+            "observaciones": movimiento.observaciones,
+            "encabezado_movimiento_id": movimiento.encabezado_movimiento_id
+        })
 
 
 @insumo.delete("/delete_movimiento_detalle/{id}", tags=['DETALLE-MOVIMIENTO'])
@@ -194,16 +215,49 @@ def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
 
 
 @insumo.get("/existencias/", tags=['EXISTENCIAS'])
-def get_movimiento_insumos(db: Session = Depends(get_db)):
-    statement = """select 
+def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
+
+    if id:
+
+        statement = """
+                    select 
                     stock_almacen_insumos.id,
                     insumos.nombre as insumo,
+                    insumos.reposicion_alerta,
+                    insumos.reposicion_control,
+                    insumos.reposicion_cantidad,
+                    stock_almacen_insumos.precio_unitario,
                     almacenes.nombre as almacen,
+                    unidades.detalle_unidad as unidad,
                     stock_almacen_insumos.detalle as detalle,
                     stock_almacen_insumos.cantidad as cantidad
                     from stock_almacen_insumos
                     left join insumos on insumos.id = stock_almacen_insumos.insumo_id
                     left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
+                    left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+                    where stock_almacen_insumos.almacen_id = {id}
+                    """.format(id=id)
+
+        return db.execute(statement).all()
+    else:
+        statement2 = """
+                    select 
+                    stock_almacen_insumos.id,
+                    stock_almacen_insumos.nro_lote,
+                    stock_almacen_insumos.fecha_vencimiento,
+                    insumos.nombre as insumo,
+                    insumos.reposicion_alerta,
+                    insumos.reposicion_control,
+                    insumos.reposicion_cantidad,
+                    stock_almacen_insumos.precio_unitario,
+                    almacenes.nombre as almacen,
+                    unidades.detalle_unidad as unidad,
+                    stock_almacen_insumos.detalle as detalle,
+                    stock_almacen_insumos.cantidad as cantidad
+                    from stock_almacen_insumos
+                    left join insumos on insumos.id = stock_almacen_insumos.insumo_id
+                    left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
+                    left join unidades on unidades.id = stock_almacen_insumos.unidad_id
                     """
-                    
-    return db.execute(statement).all()
+
+        return db.execute(statement2).all()

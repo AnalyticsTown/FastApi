@@ -1,3 +1,5 @@
+from fastapi.encoders import jsonable_encoder
+from typing import Optional
 from sqlalchemy.orm import Session
 from insumo import models, schemas
 from sqlalchemy import update
@@ -77,7 +79,7 @@ def create_encabezado_movimiento(db: Session, encabezado: schemas.EncabezadoInsu
 
 
 def create_movimiento_detalle(db: Session, movimiento: schemas.MovimientoDetalle):  # Se agregó
-    db_movimiento = models.Movimiento_detalle_modelo(**movimiento.dict())
+    db_movimiento = models.Movimiento_detalle_modelo(**movimiento)
     db.add(db_movimiento)
     db.commit()
     db.refresh(db_movimiento)
@@ -102,13 +104,26 @@ def get_stock_almacen(db: Session):
 
 
 # FUNCIONES QUE MODIFICAN LOS STOCKS (EXISTENCIAS)
-def create_compra(db: Session, cantidad: float, insumo_id: int, id_almacen_origen: int, observaciones: str):
+def create_compra(
+    db: Session,
+    cantidad: float,
+    insumo_id: int,
+    id_almacen_origen: int,
+    observaciones: str,
+    unidad_id: int,
+    fecha_vencimiento: Optional[str],
+    nro_lote: Optional[str],
+    precio_unitario: float
+):
+
+    # if reposicion_alerta:
+
     insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
         filter(
         models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
         models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
     ).first()
-    print(insumo_en_almacen)
+
     if insumo_en_almacen:
         db.query(models.Stock_almacen_insumo_modelo).filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
@@ -118,13 +133,16 @@ def create_compra(db: Session, cantidad: float, insumo_id: int, id_almacen_orige
                 models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
             })
     else:
-        # Añado el insumo en el almacen
 
         insumo_stock = {
             "detalle": observaciones,
             "cantidad": cantidad,
             "insumo_id": insumo_id,
-            "almacen_id": id_almacen_origen
+            "almacen_id": id_almacen_origen,
+            "unidad_id": unidad_id,
+            "fecha_vencimiento": fecha_vencimiento,
+            "nro_lote": nro_lote,
+            "precio_unitario": precio_unitario
         }
 
         create_stock_almacen_insumo(db=db, stock=insumo_stock)
@@ -137,11 +155,18 @@ def create_ajuste(db: Session, cantidad: float, id_almacen_origen: int, insumo_i
         models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
     ).\
         update({
-            models.Stock_almacen_insumo_modelo.cantidad: cantidad
+            models.Stock_almacen_insumo_modelo.cantidad:  models.Stock_almacen_insumo_modelo.cantidad + cantidad
         })
 
 
-def create_traslado(db: Session, cantidad: float, insumo_id: int, id_almacen_origen: int, id_almacen_destino: int, observaciones: str):
+def create_traslado(
+    db: Session,
+    cantidad: float,
+    insumo_id: int,
+    id_almacen_origen: int,
+    id_almacen_destino: int,
+    observaciones: str
+):
     # actualizamos las cantidades de insumos de los almacenes
 
     insumo_en_almacen_destino = db.query(models.Stock_almacen_insumo_modelo).\
@@ -183,13 +208,21 @@ def create_traslado(db: Session, cantidad: float, insumo_id: int, id_almacen_ori
                     models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
                 }
         )
-
+        almacen = db.query(models.Stock_almacen_insumo_modelo).filter_by(
+            id=id_almacen_origen)
+        almacen_dict = jsonable_encoder(almacen)
         # Añado el insumo en el almacen
+        print(almacen_dict)
+
         insumo_stock = {
             "detalle": observaciones,
             "cantidad": cantidad,
             "insumo_id": insumo_id,
-            "almacen_id": id_almacen_destino
+            "almacen_id": id_almacen_destino,
+            "unidad_id": almacen_dict["unidad_id"],
+            "fecha_vencimiento": almacen_dict["fecha_vencimiento"],
+            "nro_lote": almacen_dict["nro_lote"],
+            "precio_unitario": almacen_dict["precio_unitario"]
         }
 
         create_stock_almacen_insumo(db=db, stock=insumo_stock)
