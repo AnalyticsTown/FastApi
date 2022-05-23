@@ -18,7 +18,7 @@ from mangum import Mangum
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-handler = Mangum(app=app)
+handler = Mangum(app, lifespan="off")
 app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],
                    allow_credentials=True,
