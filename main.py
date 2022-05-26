@@ -13,12 +13,12 @@ from routes.facturacion import facturacion
 from routes.insumo import insumo
 from routes.lote import lote
 
-#from mangum import Mangum
+from mangum import Mangum
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-#handler = Mangum(app=app)
+handler = Mangum(app)
 app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],
                    allow_credentials=True,
