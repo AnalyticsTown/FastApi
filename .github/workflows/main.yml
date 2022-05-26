@@ -3,7 +3,7 @@ name: FastAPI CI/CD
 on:
   # Trigger the workflow on push
   push:
-     branches: [ test ]
+     branches: [ main ]
       # Push events on main branch
 
 # The Job defines a series of steps that execute on the same runner.
