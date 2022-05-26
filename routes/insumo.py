@@ -1,5 +1,5 @@
 import json
-
+from sqlalchemy import func
 from requests import session
 from insumo.schemas import *
 from insumo.models import *
@@ -14,8 +14,6 @@ from sqlalchemy.orm import Session
 from db.database import engine, get_db, Base  # , SessionLocal
 
 insumo = APIRouter()
-
-nro_movimiento = 00000000
 
 
 @insumo.get("/insumos/", tags=['INSUMO'])
@@ -80,30 +78,9 @@ def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
     # return get_movimiento_insumos(db)
     return db.query(Alta_tipo_movimiento_modelo).all()
 
-# STOCK ALMACEN/INSUMOS/MOVIMIENTOS
-# @insumo.get("/stock_almacen_insumos/",  tags=['STOCK'])
-# def stocks(db: Session = Depends(get_db)):
-#     return get_stock_almacen(db=db)
-
-
-# @insumo.post("/create_stock_almacen_insumos/", response_model=StockAlmacenInsumo, status_code=status.HTTP_201_CREATED, tags=['STOCK'])
-# def crear_stock_almacen_insumo(stock: StockAlmacenInsumoBase, db: Session = Depends(get_db)):
-#     return create_stock_almacen_insumo(db=db, stock=stock)
-
-
-# @insumo.delete("/stock_almacen_insumos/{id}",  tags=['STOCK'])
-# def delete_stock(id: str, db: Session = Depends(get_db)):
-#     try:
-#         db.query(Stock_almacen_insumo_modelo).filter(Stock_almacen_insumo_modelo.id == id).\
-#             delete(synchronize_session=False)
-#         db.commit()
-
-#         return JSONResponse("Stock eliminado", 200)
-#     except:
-#         return JSONResponse("Hubo un error", 500)
-
-
 # MOVIMIENTO Y ENCABEZADO
+
+
 @insumo.get("/encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
 def get_encabezado_movimiento(db: Session = Depends(get_db)):
     return get_movimiento_encabezado(db=db)
@@ -151,15 +128,14 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
     # busco el encabezado y lo encuentro
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
-
+    movimiento.nro_lote
     encabezado2 = jsonable_encoder(encabezado)
     insumo = db.query(Alta_insumo_modelo).filter_by(
         id=movimiento.insumo_id).first()
     insumo = jsonable_encoder(insumo)
-    
-    
+
     if encabezado2['tipo_movimiento_id'] == 1:
-        
+
         create_compra(
             db=db,
             cantidad=movimiento.cantidad,
@@ -173,8 +149,14 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
         )
 
     if encabezado2['tipo_movimiento_id'] == 2:
-        create_ajuste(db=db, cantidad=movimiento.cantidad,
-                      id_almacen_origen=encabezado2['origen_almacen_id'], insumo_id=movimiento.insumo_id)
+        create_ajuste(
+            db=db,
+            cantidad=movimiento.cantidad,
+            id_almacen_origen=encabezado2['origen_almacen_id'],
+            insumo_id=movimiento.insumo_id,
+            fecha_vencimiento=movimiento.fecha_vencimiento,
+            nro_lote=movimiento.nro_lote,
+        )
 
     if encabezado2['tipo_movimiento_id'] == 3:
         create_traslado(
@@ -183,21 +165,21 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             cantidad=movimiento.cantidad,
             insumo_id=movimiento.insumo_id,
             id_almacen_origen=encabezado2['origen_almacen_id'],
-            id_almacen_destino=encabezado2['destino_almacen_id'],            
+            id_almacen_destino=encabezado2['destino_almacen_id'],
+            fecha_vencimiento=movimiento.fecha_vencimiento,
+            nro_lote=movimiento.nro_lote,
         )
 
-        
-        
     return create_movimiento_detalle(db=db, movimiento={
-            "insumo_id": movimiento.insumo_id,
-            "cantidad": movimiento.cantidad,
-            "unidad_id": insumo['unidad_id'],
-            "nro_lote": movimiento.nro_lote,
-            "fecha_vencimiento": movimiento.fecha_vencimiento,
-            "precio_unitario": movimiento.precio_unitario,
-            "observaciones": movimiento.observaciones,
-            "encabezado_movimiento_id": movimiento.encabezado_movimiento_id
-        })
+        "insumo_id": movimiento.insumo_id,
+        "cantidad": movimiento.cantidad,
+        "unidad_id": insumo['unidad_id'],
+        "nro_lote": movimiento.nro_lote,
+        "fecha_vencimiento": movimiento.fecha_vencimiento,
+        "precio_unitario": movimiento.precio_unitario,
+        "observaciones": movimiento.observaciones,
+        "encabezado_movimiento_id": movimiento.encabezado_movimiento_id
+    })
 
 
 @insumo.delete("/delete_movimiento_detalle/{id}", tags=['DETALLE-MOVIMIENTO'])
@@ -222,11 +204,14 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
         statement = """
                     select 
                     stock_almacen_insumos.id,
+                    insumos.id,
                     insumos.nombre as insumo,
                     insumos.reposicion_alerta,
                     insumos.reposicion_control,
                     insumos.reposicion_cantidad,
                     stock_almacen_insumos.precio_unitario,
+                    stock_almacen_insumos.fecha_vencimiento,
+                    stock_almacen_insumos.nro_lote,
                     almacenes.nombre as almacen,
                     unidades.abr as unidad,
                     stock_almacen_insumos.detalle as detalle,
@@ -243,8 +228,7 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
         statement2 = """
                     select 
                     stock_almacen_insumos.id,
-                    stock_almacen_insumos.nro_lote,
-                    stock_almacen_insumos.fecha_vencimiento,
+                    insumos.id as insumo_id,
                     insumos.nombre as insumo,
                     insumos.reposicion_alerta,
                     insumos.reposicion_control,
@@ -258,6 +242,26 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                     left join insumos on insumos.id = stock_almacen_insumos.insumo_id
                     left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
                     left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+                    
                     """
 
         return db.execute(statement2).all()
+
+
+@insumo.get("/existencias/total/")
+def get_existencias_lotes(id: Optional[int] = None, db: Session = Depends(get_db)):
+# 
+    statement = """
+            select 
+            insumos.nombre as insumo,
+            insumos.reposicion_control,
+            insumos.reposicion_cantidad,
+            unidades.abr as unidad,
+            sum(stock_almacen_insumos.cantidad) total
+            from stock_almacen_insumos
+            left join insumos on insumos.id = stock_almacen_insumos.insumo_id
+            left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+            where stock_almacen_insumos.almacen_id = 1
+            group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad        
+    """.format(id=id)
+    return db.execute(statement).all()
