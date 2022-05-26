@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v2 
         id: cache-venv # name for referring later
         with:
-          path: venv # what we cache: the Virtual ENV
+          path: env # what we cache: the Virtual ENV
           # The cache key depends on requirements.txt
           key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: |
