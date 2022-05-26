@@ -25,14 +25,24 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
-app.include_router(usuario)
-app.include_router(almacen)
-app.include_router(empresa)
-app.include_router(establecimiento)
-app.include_router(facturacion)
-app.include_router(insumo)
-app.include_router(lote)
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: str = None):
+    return {"item_id": item_id, "q": q}
+
+handler = Mangum(app, lifespan="off")
+
+#app.include_router(usuario)
+#app.include_router(almacen)
+#app.include_router(empresa)
+#app.include_router(establecimiento)
+#app.include_router(facturacion)
+#app.include_router(insumo)
+#app.include_router(lote)
 
 
 
