@@ -92,7 +92,7 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
 
-# MOVIMIENTO DETALLE
+#MOVIMIENTO DETALLE
 @insumo.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
 def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
 
@@ -125,7 +125,7 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
 
 @insumo.post("/create_movimiento_detalle/",  status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
 def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
-    # busco el encabezado y lo encuentro
+    #busco el encabezado y lo encuentro
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
     movimiento.nro_lote
@@ -204,7 +204,6 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
         statement = """
                     select 
                     stock_almacen_insumos.id,
-                    insumos.id,
                     insumos.nombre as insumo,
                     insumos.reposicion_alerta,
                     insumos.reposicion_control,
@@ -228,7 +227,6 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
         statement2 = """
                     select 
                     stock_almacen_insumos.id,
-                    insumos.id as insumo_id,
                     insumos.nombre as insumo,
                     insumos.reposicion_alerta,
                     insumos.reposicion_control,
@@ -248,20 +246,36 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
         return db.execute(statement2).all()
 
 
-@insumo.get("/existencias/total/")
-def get_existencias_lotes(id: Optional[int] = None, db: Session = Depends(get_db)):
-# 
-    statement = """
-            select 
-            insumos.nombre as insumo,
-            insumos.reposicion_control,
-            insumos.reposicion_cantidad,
-            unidades.abr as unidad,
-            sum(stock_almacen_insumos.cantidad) total
-            from stock_almacen_insumos
-            left join insumos on insumos.id = stock_almacen_insumos.insumo_id
-            left join unidades on unidades.id = stock_almacen_insumos.unidad_id
-            where stock_almacen_insumos.almacen_id = 1
-            group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad        
-    """.format(id=id)
+@insumo.get("/existencias/total/", tags=['EXISTENCIAS'])
+def get_existencias_total(id: Optional[int] = None, db: Session = Depends(get_db)):
+    if id:
+        statement = """
+                select 
+                insumos.nombre as insumo,
+                insumos.reposicion_control,
+                insumos.reposicion_cantidad,
+                unidades.abr as unidad,
+                sum(stock_almacen_insumos.cantidad) total
+                from stock_almacen_insumos
+                left join insumos on insumos.id = stock_almacen_insumos.insumo_id
+                left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+                where stock_almacen_insumos.almacen_id = {id}
+                group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad        
+        """.format(id=id)
+    else:
+        statement = """
+                select 
+                insumos.nombre as insumo,
+                insumos.reposicion_control,
+                insumos.reposicion_cantidad,
+                unidades.abr as unidad,
+                sum(stock_almacen_insumos.cantidad) total
+                from stock_almacen_insumos
+                left join insumos on insumos.id = stock_almacen_insumos.insumo_id
+                left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+                group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad        
+        """
     return db.execute(statement).all()
+
+
+

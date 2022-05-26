@@ -116,54 +116,71 @@ def create_compra(
     precio_unitario: float
 ):
 
-    nro_lote_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
-        filter(
-        models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
-        models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
-    ).first()
-    insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
-        filter(
-        models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
-        models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
-    )
-    if nro_lote_en_almacen:
-
-        db.query(models.Stock_almacen_insumo_modelo).filter(
+    if fecha_vencimiento and nro_lote:
+        nro_lote_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
+            filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
             models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
-        ).\
-            update({
-                models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
-            })
-    elif insumo_en_almacen:
-        db.query(models.Stock_almacen_insumo_modelo).filter(
-            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
-            models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
-        ).\
-            update({
-                models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
+        ).first()
+        if nro_lote_en_almacen:
+            db.query(models.Stock_almacen_insumo_modelo).filter(
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+                models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
+            ).\
+                update({
+                    models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
+                })
+        else:
+            create_stock_almacen_insumo(db=db, stock={
+                "detalle": observaciones,
+                "cantidad": cantidad,
+                "insumo_id": insumo_id,
+                "almacen_id": id_almacen_origen,
+                "unidad_id": unidad_id,
+                "fecha_vencimiento": fecha_vencimiento,
+                "nro_lote": nro_lote,
+                "precio_unitario": precio_unitario
             })
     else:
-        insumo_stock = {
-            "detalle": observaciones,
-            "cantidad": cantidad,
-            "insumo_id": insumo_id,
-            "almacen_id": id_almacen_origen,
-            "unidad_id": unidad_id,
-            "fecha_vencimiento": fecha_vencimiento,
-            "nro_lote": nro_lote,
-            "precio_unitario": precio_unitario
-        }
+        insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
+            filter(
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
+        )
+        if insumo_en_almacen:
+            db.query(models.Stock_almacen_insumo_modelo).filter(
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+                models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
+            ).\
+                update({
+                    models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
+                })
+        else:
+            create_stock_almacen_insumo(db=db, stock={
+                "detalle": observaciones,
+                "cantidad": cantidad,
+                "insumo_id": insumo_id,
+                "almacen_id": id_almacen_origen,
+                "unidad_id": unidad_id,
+                "fecha_vencimiento": fecha_vencimiento,
+                "nro_lote": nro_lote,
+                "precio_unitario": precio_unitario
+            })
 
-    create_stock_almacen_insumo(db=db, stock=insumo_stock)
 
+def create_ajuste(
+    db: Session,
+    cantidad: float,
+    id_almacen_origen: int,
+    insumo_id: int,
+    nro_lote: Optional[str],
+    fecha_vencimiento: Optional[str]
+):
 
-def create_ajuste(db: Session, cantidad: float, id_almacen_origen: int, insumo_id: int, nro_lote: Optional[str], fecha_vencimiento: Optional[str]):
     if fecha_vencimiento and nro_lote:
         db.query(models.Stock_almacen_insumo_modelo).filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
             models.Stock_almacen_insumo_modelo.nro_lote == nro_lote,
-            models.Stock_almacen_insumo_modelo.fecha_vencimiento == fecha_vencimiento
         ).\
             update({
                 models.Stock_almacen_insumo_modelo.cantidad:  models.Stock_almacen_insumo_modelo.cantidad + cantidad
@@ -228,13 +245,15 @@ def create_traslado(
                         models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
                     }
             )
-            almacen = db.query(models.Stock_almacen_insumo_modelo).filter_by(
-                id=id_almacen_origen)
+            almacen = db.query(models.Stock_almacen_insumo_modelo).filter(
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+                models.Stock_almacen_insumo_modelo.nro_lote == nro_lote).first()
+
             almacen_dict = jsonable_encoder(almacen)
             # Añado el insumo en el almacen
             print(almacen_dict)
 
-            insumo_stock = {
+            create_stock_almacen_insumo(db=db, stock={
                 "detalle": observaciones,
                 "cantidad": cantidad,
                 "insumo_id": insumo_id,
@@ -243,9 +262,7 @@ def create_traslado(
                 "fecha_vencimiento": almacen_dict["fecha_vencimiento"],
                 "nro_lote": almacen_dict["nro_lote"],
                 "precio_unitario": almacen_dict["precio_unitario"]
-            }
-
-            create_stock_almacen_insumo(db=db, stock=insumo_stock)
+            })
     else:
 
         insumo_en_almacen_destino1 = db.query(models.Stock_almacen_insumo_modelo).\
@@ -284,12 +301,13 @@ def create_traslado(
                         models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad - cantidad
                     }
             )
-            almacen1 = db.query(models.Stock_almacen_insumo_modelo).filter_by(
-                id=id_almacen_origen)
+            almacen1 = db.query(models.Stock_almacen_insumo_modelo).filter(
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+                models.Stock_almacen_insumo_modelo.insumo_id == insumo_id)
             almacen_dict1 = jsonable_encoder(almacen1)
             # Añado el insumo en el almacen
 
-            insumo_stock = {
+            insumo_stock1 = {
                 "detalle": observaciones,
                 "cantidad": cantidad,
                 "insumo_id": insumo_id,
@@ -299,6 +317,7 @@ def create_traslado(
                 "nro_lote": almacen_dict1["nro_lote"],
                 "precio_unitario": almacen_dict1["precio_unitario"]
             }
+            create_stock_almacen_insumo(db=db, stock=insumo_stock1)
 
 
 def get_movimiento_encabezado(db: Session):
