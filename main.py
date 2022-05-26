@@ -18,7 +18,7 @@ from mangum import Mangum
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-handler = Mangum(app)
+#handler = Mangum(app)
 app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],
                    allow_credentials=True,
@@ -30,9 +30,6 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
 
 handler = Mangum(app, lifespan="off")
 
