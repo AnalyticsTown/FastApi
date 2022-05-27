@@ -11,5 +11,5 @@ app.include_router(api_router, prefix="/api/v1")
 @app.get("/",  tags=["Endpoint Test"])
 def main_endpoint_test():
     return {"message": "Welcome CI/CD Pipeline with GitHub Actions!"}
-
-handler = Mangum(app=app) # <----------- wrap the API with Mangum
+    
+handler = Mangum(app, spec_version=2)
