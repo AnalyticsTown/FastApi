@@ -3,9 +3,7 @@ name: FastAPI CI/CD
 on:
   # Trigger the workflow on push
   push:
-    branches: 
-      # Push events on main branch
-      - test 
+   branches: [ test ]
 
 # The Job defines a series of steps that execute on the same runner.
 jobs:
@@ -27,7 +25,7 @@ jobs:
 
       # Step-2 Install Python Virtual ENV
       - name: Install Python Virtual ENV
-        run: pip3 install virtualenv
+        run: pip install virtualenv
 
       # Step-3 Setup Virtual ENV
       # https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
@@ -42,7 +40,7 @@ jobs:
             ${{ runner.os }}-venv-
       # Step-4 Build a Virtual ENV, but only if it doesn't already exist
       - name: Activate Virtual ENV
-        run: python -m venv env && source ./venv/bin/activate && pip install -r requirements.txt
+        run: python -m venv env && source ./venv/bin/activate && pip install -r requirements.txt && uvicorn main:app
         if: steps.cache-venv.outputs.cache-hit != 'true'
 
       - name: Run Tests   
@@ -86,7 +84,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Deploy new Lambda
-        run: aws lambda update-function-code --function-name deploy-backend-desarrollo --s3-bucket desarrolloelagronomo --s3-key api.zip
+        run: aws lambda update-function-code --function-name deploydesarrollofastapi --s3-bucket desarrolloelagronomo --s3-key api.zip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
