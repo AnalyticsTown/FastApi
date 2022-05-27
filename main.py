@@ -34,5 +34,5 @@ app.include_router(facturacion)
 app.include_router(insumo)
 app.include_router(lote)
 
-handler = Mangum(app)
+handler = Mangum(app=app)
 
