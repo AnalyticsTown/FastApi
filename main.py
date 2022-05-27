@@ -31,7 +31,7 @@ def read_root():
 
 
 
-handler = Mangum(app=app)
+sarlanga = Mangum(app=app)
 
 #app.include_router(usuario)
 #app.include_router(almacen)
