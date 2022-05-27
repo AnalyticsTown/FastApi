@@ -15,5 +15,7 @@ def handler(event, context):
 @app.get("/",  tags=["Endpoint Test"])
 def main_endpoint_test():
     return {"message": "Welcome CI/CD Pipeline with GitHub Actions!"}
+ 
+ handler()
     
-handler = Mangum(app, spec_version=2)
+#handler = Mangum(app, spec_version=2)
