@@ -25,7 +25,7 @@ jobs:
 
       # Step-2 Install Python Virtual ENV
       - name: Install Python Virtual ENV
-        run: pip3 install virtualenv
+        run: pip install virtualenv
 
       # Step-3 Setup Virtual ENV
       # https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
