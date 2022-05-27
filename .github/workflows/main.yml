@@ -50,20 +50,20 @@ jobs:
       - name: Create archive of dependencies
         run: |
           cd ./venv/lib/python3.7/site-packages
-          zip -r9 ../../../../api.zip .
+          zip -r9 ../../../../test.zip .
       - name: Add API files to Zip file
         
-        run:   zip -g ../api.zip -r .
+        run:   zip -g ../test.zip -r .
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
           name: api
-          path: api.zip
+          path: test.zip
 
   CD:
     runs-on: ubuntu-latest
     needs: [CI]
-    if: github.ref == 'refs/heads/desarrollo' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/test' && github.event_name == 'push'
     steps:
       - name: Install AWS CLI
         uses: unfor19/install-aws-cli-action@v1
@@ -73,18 +73,18 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      - name: Download Lambda api.zip
+      - name: Download Lambda test.zip
         uses: actions/download-artifact@v2
         with:
           name: api
       - name: Upload to S3
-        run: aws s3 cp api.zip s3://desarrolloelagronomo/api.zip
+        run: aws s3 cp test.zip s3://desarrolloelagronomo/test.zip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Deploy new Lambda
-        run: aws lambda update-function-code --function-name deploydesarrollofastapi --s3-bucket desarrolloelagronomo --s3-key api.zip
+        run: aws lambda update-function-code --function-name deploydesarrollofastapi --s3-bucket desarrolloelagronomo --s3-key test.zip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
