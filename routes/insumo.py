@@ -109,11 +109,16 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
                 abr as unidad,
                 em.tipo_movimiento_id,
                 em.nro_movimiento,
+                em.fecha_valor,
+                a.nombre as almacen_origen,
+                almacenes.nombre as almacen_destino,
                 t.detalle_tipo_movimiento_insumo as movimiento,
                 i.nombre as insumo
                 from movimiento_detalle
                 left join encabezado_movimiento as em on em.id = movimiento_detalle.encabezado_movimiento_id
                 left join tipo_movimiento_insumos as t on t.id = em.tipo_movimiento_id
+                left join almacenes as a on a.id = em.destino_almacen_id
+                left join almacenes on almacenes.id = em.origen_almacen_id
                 left join unidades as u on u.id = movimiento_detalle.unidad_id
                 left join insumos as i on i.id = movimiento_detalle.insumo_id
                 """
