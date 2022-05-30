@@ -107,7 +107,6 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
                 movimiento_detalle.precio_unitario,
                 movimiento_detalle.precio_total,
                 abr as unidad,
-                em.tipo_movimiento_id,
                 em.nro_movimiento,
                 em.fecha_valor,
                 a.nombre as almacen_origen,
