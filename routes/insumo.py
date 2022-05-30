@@ -92,21 +92,28 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
 
-#MOVIMIENTO DETALLE
+# MOVIMIENTO DETALLE
 @insumo.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
 def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
 
     statement = """
                 select
+                movimiento_detalle.id,
                 movimiento_detalle.encabezado_movimiento_id,
                 movimiento_detalle.fecha_vencimiento,
                 movimiento_detalle.cantidad,
                 movimiento_detalle.observaciones,
                 movimiento_detalle.nro_lote,
                 movimiento_detalle.precio_unitario,
+                movimiento_detalle.precio_total,
                 abr as unidad,
+                em.tipo_movimiento_id,
+                em.nro_movimiento,
+                t.detalle_tipo_movimiento_insumo as movimiento,
                 i.nombre as insumo
                 from movimiento_detalle
+                left join encabezado_movimiento as em on em.id = movimiento_detalle.encabezado_movimiento_id
+                left join tipo_movimiento_insumos as t on t.id = em.tipo_movimiento_id
                 left join unidades as u on u.id = movimiento_detalle.unidad_id
                 left join insumos as i on i.id = movimiento_detalle.insumo_id
                 """
@@ -125,7 +132,7 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
 
 @insumo.post("/create_movimiento_detalle/",  status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
 def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
-    #busco el encabezado y lo encuentro
+    # busco el encabezado y lo encuentro
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
     movimiento.nro_lote
@@ -177,6 +184,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
         "nro_lote": movimiento.nro_lote,
         "fecha_vencimiento": movimiento.fecha_vencimiento,
         "precio_unitario": movimiento.precio_unitario,
+        "precio_total": movimiento.precio_total,
         "observaciones": movimiento.observaciones,
         "encabezado_movimiento_id": movimiento.encabezado_movimiento_id
     })
@@ -276,6 +284,3 @@ def get_existencias_total(id: Optional[int] = None, db: Session = Depends(get_db
                 group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad        
         """
     return db.execute(statement).all()
-
-
-

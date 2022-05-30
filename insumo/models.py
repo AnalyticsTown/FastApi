@@ -75,7 +75,8 @@ class Encabezado_insumos_modelo(Base):
     tipo_movimiento_id = Column(Integer, ForeignKey(
         Alta_tipo_movimiento_modelo.id), nullable=True)
     nro_movimiento = Column(String, nullable=False, unique=True)
-    fecha_movimiento = Column(Date)
+    fecha_real = Column(Date, nullable=False)
+    fecha_valor = Column(Date, nullable=False)
     origen_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)
     destino_almacen_id = Column(
@@ -86,7 +87,7 @@ class Encabezado_insumos_modelo(Base):
 
 class Alta_insumo_modelo(Base):
     __tablename__ = "insumos"
-
+    
     id = Column(Integer, primary_key=True, index=True, unique=True)
     activo = Column(Boolean, default=True)
     nombre = Column(String, nullable=False)
@@ -125,7 +126,7 @@ class Movimiento_detalle_modelo(Base):
     observaciones = Column(String, nullable=True)
     encabezado_movimiento_id = Column(UUID, ForeignKey(
         Encabezado_insumos_modelo.id), nullable=False)
-
+    precio_total = Column(Float, nullable=True)
 
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
@@ -140,3 +141,4 @@ class Stock_almacen_insumo_modelo(Base):
     unidad_id = Column(Integer, ForeignKey(
         Alta_unidad_modelo.id), nullable=False)
     precio_unitario = Column(Float, nullable=True)
+    

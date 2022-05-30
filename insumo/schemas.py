@@ -75,7 +75,8 @@ class TipoMovimientoInsumo(BaseModel):
 class EncabezadoInsumos(BaseModel):
     
     tipo_movimiento_id: int
-    fecha_movimiento: date
+    fecha_valor: date
+    fecha_real: date
     origen_almacen_id: int
     destino_almacen_id: Optional[int]
     orden_de_compra: Optional[str]
@@ -95,7 +96,7 @@ class MovimientoDetalleBase(BaseModel):
     precio_unitario: Optional[float]
     observaciones: Optional[str]
     encabezado_movimiento_id: str
-
+    precio_total: Optional[float]
     class Config:
         orm_mode = True
 

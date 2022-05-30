@@ -52,7 +52,9 @@ def create_establecimiento(db: Session, establecimiento: schemas.Establecimiento
         "establecimiento_tipo_id": establecimiento.establecimiento_tipo_id,
     }, empresa_id=empresa_id)
     db.add(db_establecimiento)
-    db_establecimiento.almacenes.append(almacen)
+    if establecimiento.almacen_id:
+        db_establecimiento.almacenes.append(almacen)
+    
     db.commit()
     db.refresh(db_establecimiento)
     return db_establecimiento
