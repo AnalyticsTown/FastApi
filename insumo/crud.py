@@ -326,7 +326,8 @@ def get_movimiento_encabezado(db: Session):
             select 
             encabezado_movimiento.id,
             detalle_tipo_movimiento_insumo,
-            fecha_movimiento,
+            fecha_real,
+            fecha_valor,
             nro_movimiento,
             origen_almacen_id,
             orden_de_compra,
