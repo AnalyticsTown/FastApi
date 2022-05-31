@@ -52,8 +52,10 @@ jobs:
           cd ./venv/lib/python3.7/site-packages
           zip -r9 ../../../../test.zip .
       - name: Add API files to Zip file
-        
-        run:   zip -g ../test.zip -r .
+        # Step 8
+      - name: Add App to Zip file
+        run: cd ./fastapi && zip -g ../test.zip -r .
+        #run:   zip -g ../test.zip -r .
       - name: Upload zip file artifact
         uses: actions/upload-artifact@v2
         with:
