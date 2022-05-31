@@ -77,7 +77,7 @@ class EncabezadoInsumos(BaseModel):
     tipo_movimiento_id: int
     fecha_valor: date
     fecha_real: date
-    origen_almacen_id: int
+    origen_almacen_id: Optional[int]
     destino_almacen_id: Optional[int]
     orden_de_compra: Optional[str]
     nro_movimiento: str

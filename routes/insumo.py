@@ -109,8 +109,8 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
                 abr as unidad,
                 em.nro_movimiento,
                 em.fecha_valor,
-                a.nombre as almacen_origen,
-                almacenes.nombre as almacen_destino,
+                almacenes.nombre as almacen_origen,
+                a.nombre as almacen_destino,
                 t.detalle_tipo_movimiento_insumo as movimiento,
                 i.nombre as insumo
                 from movimiento_detalle
@@ -151,7 +151,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             db=db,
             cantidad=movimiento.cantidad,
             insumo_id=movimiento.insumo_id,
-            id_almacen_origen=encabezado2['origen_almacen_id'],
+            id_almacen_destino=encabezado2['destino_almacen_id'],
             observaciones=movimiento.observaciones,
             unidad_id=insumo["unidad_id"],
             fecha_vencimiento=movimiento.fecha_vencimiento,
@@ -163,7 +163,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
         create_ajuste(
             db=db,
             cantidad=movimiento.cantidad,
-            id_almacen_origen=encabezado2['origen_almacen_id'],
+            id_almacen_destino=encabezado2['destino_almacen_id'],
             insumo_id=movimiento.insumo_id,
             fecha_vencimiento=movimiento.fecha_vencimiento,
             nro_lote=movimiento.nro_lote,

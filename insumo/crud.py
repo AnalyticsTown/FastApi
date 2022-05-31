@@ -108,7 +108,7 @@ def create_compra(
     db: Session,
     cantidad: float,
     insumo_id: int,
-    id_almacen_origen: int,
+    id_almacen_destino: int,
     observaciones: str,
     unidad_id: int,
     fecha_vencimiento: Optional[str],
@@ -119,12 +119,12 @@ def create_compra(
     if fecha_vencimiento and nro_lote:
         nro_lote_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
             filter(
-            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
             models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
         ).first()
         if nro_lote_en_almacen:
             db.query(models.Stock_almacen_insumo_modelo).filter(
-                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
                 models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
             ).\
                 update({
@@ -135,7 +135,7 @@ def create_compra(
                 "detalle": observaciones,
                 "cantidad": cantidad,
                 "insumo_id": insumo_id,
-                "almacen_id": id_almacen_origen,
+                "almacen_id": id_almacen_destino,
                 "unidad_id": unidad_id,
                 "fecha_vencimiento": fecha_vencimiento,
                 "nro_lote": nro_lote,
@@ -144,12 +144,12 @@ def create_compra(
     else:
         insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
             filter(
-            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
             models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
         )
         if insumo_en_almacen:
             db.query(models.Stock_almacen_insumo_modelo).filter(
-                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
                 models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
             ).\
                 update({
@@ -160,7 +160,7 @@ def create_compra(
                 "detalle": observaciones,
                 "cantidad": cantidad,
                 "insumo_id": insumo_id,
-                "almacen_id": id_almacen_origen,
+                "almacen_id": id_almacen_destino,
                 "unidad_id": unidad_id,
                 "fecha_vencimiento": fecha_vencimiento,
                 "nro_lote": nro_lote,
@@ -171,7 +171,7 @@ def create_compra(
 def create_ajuste(
     db: Session,
     cantidad: float,
-    id_almacen_origen: int,
+    id_almacen_destino: int,
     insumo_id: int,
     nro_lote: Optional[str],
     fecha_vencimiento: Optional[str]
@@ -179,7 +179,7 @@ def create_ajuste(
 
     if fecha_vencimiento and nro_lote:
         db.query(models.Stock_almacen_insumo_modelo).filter(
-            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
             models.Stock_almacen_insumo_modelo.nro_lote == nro_lote,
         ).\
             update({
@@ -187,7 +187,7 @@ def create_ajuste(
             })
     else:
         db.query(models.Stock_almacen_insumo_modelo).filter(
-            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
+            models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
             models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
         ).\
             update({
@@ -210,7 +210,7 @@ def create_traslado(
     if fecha_vencimiento and nro_lote:
         insumo_en_almacen_destino = db.query(models.Stock_almacen_insumo_modelo).\
             filter(
-                models.Stock_almacen_insumo_modelo.almacen_id == insumo_id,
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
                 models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
         ).first()
 
@@ -330,6 +330,7 @@ def get_movimiento_encabezado(db: Session):
             fecha_valor,
             nro_movimiento,
             origen_almacen_id,
+            destino_almacen_id,
             orden_de_compra,
             almacenes.nombre as nombre_almacen_origen,
             a.nombre as almacen_destino,
