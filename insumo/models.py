@@ -141,4 +141,4 @@ class Stock_almacen_insumo_modelo(Base):
     unidad_id = Column(Integer, ForeignKey(
         Alta_unidad_modelo.id), nullable=False)
     precio_unitario = Column(Float, nullable=True)
-    
+    precio_total = Column(Float, nullable=True)

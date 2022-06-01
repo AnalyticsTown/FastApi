@@ -113,7 +113,8 @@ def create_compra(
     unidad_id: int,
     fecha_vencimiento: Optional[str],
     nro_lote: Optional[str],
-    precio_unitario: float
+    precio_unitario: float,
+    precio_total: float,
 ):
 
     if fecha_vencimiento and nro_lote:
@@ -139,7 +140,8 @@ def create_compra(
                 "unidad_id": unidad_id,
                 "fecha_vencimiento": fecha_vencimiento,
                 "nro_lote": nro_lote,
-                "precio_unitario": precio_unitario
+                "precio_unitario": precio_unitario,
+                "precio_total": precio_total,
             })
     else:
         insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\

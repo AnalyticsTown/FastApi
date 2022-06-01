@@ -156,7 +156,8 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             unidad_id=insumo["unidad_id"],
             fecha_vencimiento=movimiento.fecha_vencimiento,
             nro_lote=movimiento.nro_lote,
-            precio_unitario=movimiento.precio_unitario
+            precio_unitario=movimiento.precio_unitario,
+            precio_total=movimiento.precio_total
         )
 
     if encabezado2['tipo_movimiento_id'] == 2:
@@ -244,6 +245,7 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                     insumos.reposicion_control,
                     insumos.reposicion_cantidad,
                     stock_almacen_insumos.precio_unitario,
+                    stock_almacen_insumos.fecha_vencimiento,
                     almacenes.nombre as almacen,
                     unidades.abr as unidad,
                     stock_almacen_insumos.detalle as detalle,
@@ -263,6 +265,8 @@ def get_existencias_total(id: Optional[int] = None, db: Session = Depends(get_db
     if id:
         statement = """
                 select 
+                stock_almacen_insumos.precio_total,
+                almacenes.nombre,
                 insumos.nombre as insumo,
                 insumos.reposicion_control,
                 insumos.reposicion_cantidad,
@@ -271,12 +275,14 @@ def get_existencias_total(id: Optional[int] = None, db: Session = Depends(get_db
                 from stock_almacen_insumos
                 left join insumos on insumos.id = stock_almacen_insumos.insumo_id
                 left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+                left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
                 where stock_almacen_insumos.almacen_id = {id}
-                group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad        
+                group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad, almacenes.nombre, stock_almacen_insumos.precio_total       
         """.format(id=id)
     else:
         statement = """
                 select 
+                almacenes.nombre,
                 insumos.nombre as insumo,
                 insumos.reposicion_control,
                 insumos.reposicion_cantidad,
@@ -285,6 +291,7 @@ def get_existencias_total(id: Optional[int] = None, db: Session = Depends(get_db
                 from stock_almacen_insumos
                 left join insumos on insumos.id = stock_almacen_insumos.insumo_id
                 left join unidades on unidades.id = stock_almacen_insumos.unidad_id
-                group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad        
+                left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
+                group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad, almacenes.nombre
         """
     return db.execute(statement).all()
