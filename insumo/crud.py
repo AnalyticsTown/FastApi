@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from insumo import models, schemas
 from sqlalchemy import update
-from valuaciones.crud import create_valorizacion_compra
+from valuaciones.crud import create_valorizacion
 from valuaciones.models import *
 import datetime
 import json
@@ -117,6 +117,8 @@ def create_compra(
     nro_lote: Optional[str],
     precio_unitario: float,
     precio_total: float,
+    nro_movimiento: str,
+    tipo_movimiento_id: int
 ):
 
     if fecha_vencimiento and nro_lote:
@@ -171,13 +173,15 @@ def create_compra(
                 "precio_unitario": precio_unitario,
                 "precio_total": precio_total
             })
-    # create_valorizacion_compra(
-    #     db=db,
-    #     cantidad=cantidad,
-    #     precio_unitario=precio_unitario,
-    #     movimiento_entrada=,
-    #     almacen_id=id_almacen_destino
-    # )
+    create_valorizacion(
+        db=db,
+        cantidad=cantidad,
+        precio_unitario=precio_unitario,
+        almacen_id=id_almacen_destino,
+        movimiento=nro_movimiento,
+        tipo_movimiento_id=tipo_movimiento_id,
+        insumo_id=insumo_id
+    )
 
 
 def create_ajuste(

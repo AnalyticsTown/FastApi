@@ -139,7 +139,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
     # busco el encabezado y lo encuentro
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
-    movimiento.nro_lote
+
     encabezado2 = jsonable_encoder(encabezado)
     insumo = db.query(Alta_insumo_modelo).filter_by(
         id=movimiento.insumo_id).first()
@@ -157,7 +157,9 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             fecha_vencimiento=movimiento.fecha_vencimiento,
             nro_lote=movimiento.nro_lote,
             precio_unitario=movimiento.precio_unitario,
-            precio_total=movimiento.precio_total
+            precio_total=movimiento.precio_total,
+            nro_movimiento=encabezado2["nro_movimiento"],
+            tipo_movimiento_id=encabezado2["tipo_movimiento_id"]
         )
 
     if encabezado2['tipo_movimiento_id'] == 2:
@@ -181,8 +183,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             fecha_vencimiento=movimiento.fecha_vencimiento,
             nro_lote=movimiento.nro_lote,
         )
-    
-    
+
     return create_movimiento_detalle(db=db, movimiento={
         "insumo_id": movimiento.insumo_id,
         "cantidad": movimiento.cantidad,
@@ -280,8 +281,8 @@ def get_existencias_total(id: Optional[int] = None, total: Optional[bool] = None
                 where stock_almacen_insumos.almacen_id = {id}
                 group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad, almacenes.nombre, stock_almacen_insumos.precio_total, stock_almacen_insumos.fecha_vencimiento       
         """.format(id=id)
-    elif total==True:
-        statement= """
+    elif total == True:
+        statement = """
                 select 
                 insumos.nombre as insumo,
                 insumos.reposicion_control,
@@ -308,5 +309,5 @@ def get_existencias_total(id: Optional[int] = None, total: Optional[bool] = None
                 left join unidades on unidades.id = stock_almacen_insumos.unidad_id
                 left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
                 group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad, almacenes.nombre
-        """
+            """
     return db.execute(statement).all()
