@@ -32,8 +32,18 @@ def administrar_metodo_peps(db: Session, cantidad: float):
     if cantidad_final < 0:
         #si la cantidad final es menor a cero debo agarrar otra columna y restarle la cantidad a esa
         #debo repetir este proceso hasta que la cantidad final sea 0
-        ""
-        
+        i = 1
+        while cantidad_final < 0:
+            
+            cantidad_final = valuaciones[i]['cantidad'] - (-cantidad_final)   
+            #actualizar los valores de las tablas con un update
+            i += 1
+    else:
+        #actualizar el valor de la resta
+        "" 
+            
+            
+            
 def administrar_metodo_ueps():
     statement = """SELECT * FROM insumos_valorizacion ORDER BY ID ASC LIMIT 1;"""
     return ""
