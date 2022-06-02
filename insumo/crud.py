@@ -3,6 +3,8 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from insumo import models, schemas
 from sqlalchemy import update
+from valuaciones.crud import create_valorizacion_compra
+from valuaciones.models import *
 import datetime
 import json
 
@@ -166,8 +168,16 @@ def create_compra(
                 "unidad_id": unidad_id,
                 "fecha_vencimiento": fecha_vencimiento,
                 "nro_lote": nro_lote,
-                "precio_unitario": precio_unitario
+                "precio_unitario": precio_unitario,
+                "precio_total": precio_total
             })
+    # create_valorizacion_compra(
+    #     db=db,
+    #     cantidad=cantidad,
+    #     precio_unitario=precio_unitario,
+    #     movimiento_entrada=,
+    #     almacen_id=id_almacen_destino
+    # )
 
 
 def create_ajuste(
