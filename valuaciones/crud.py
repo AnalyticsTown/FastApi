@@ -2,6 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from typing import Optional
 from sqlalchemy.orm import Session
 from insumo import models, schemas
+from valuaciones.schemas import *
 from sqlalchemy import update
 import datetime
 import json
@@ -148,3 +149,12 @@ def administrar_ppp(
         insumo_id=insumo_id
     )
 # seria lo mejor y lo mas eficiente que cuando un insumo se quede en 0 pasarlo a una tabla valorizacion historicos
+
+
+
+def elegir_tipo_valorizacion(db: Session, valuacion_empresa: Metodo_valorizacion_empresa):
+    db_valuacion_empresas = Tipo_Valorizacion_Empresas(**valuacion_empresa)
+    db.add(db_valuacion_empresas)
+    db.commit()
+    db.refresh(db_valuacion_empresas)
+    return db_valuacion_empresas

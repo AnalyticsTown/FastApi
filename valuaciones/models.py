@@ -1,3 +1,4 @@
+from ast import For
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.dialects.postgresql import UUID
 from db.database import Base
@@ -24,4 +25,8 @@ class Tipo_Metodo_Valorizacion(Base):
     abreviatura = Column(String, nullable=False)
     tipo = Column(String, nullable=False)
     
-    
+class  Tipo_Valorizacion_Empresas(Base):
+    __tablename__ = 'tipo_valorizacion_empresas'
+    id = Column(Integer, primary_key=True)
+    empresa_id = Column(Integer, ForeignKey("empresas.id"))
+    metodo_id = Column(Integer, ForeignKey(Tipo_Metodo_Valorizacion.id))

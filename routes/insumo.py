@@ -325,7 +325,16 @@ def get_metodos_valorizacion(db: Session = Depends(get_db)):
     return db.query(Tipo_Metodo_Valorizacion).all()
 
 
-@insumo.post('/elegir_metodo_valorizacion/', tags=["VALORIZACION"])
-def elegir_metodo_valorizacion(empresa_id: int, id: int, db: Session = Depends(get_db)):
-
-    return db.query(Alta_empresa_modelo).filter(Alta_empresa_modelo.id == empresa_id).update({Alta_empresa_modelo.tipo_metodo_valorizacion: id})
+@insumo.post('/elegir_metodo_valuacion/', tags=["VALORIZACION"])
+def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, db: Session = Depends(get_db)):
+    metodo_evaluacion = db.query(Tipo_Valorizacion_Empresas).filter(
+        Tipo_Valorizacion_Empresas.empresa_id == empresa_id).first()
+    if metodo_evaluacion:
+        statement = """
+            UPDATE tipo_valorizacion_empresas SET metodo_id = {metodo_id} WHERE id = {empresa_id};
+        """.format(metodo_id=metodo_id, empresa_id=empresa_id)
+        print(statement)
+        db.execute(statement)
+        return "Modificion exitosa"
+    else:
+        return elegir_tipo_valorizacion(db=db, valuacion_empresa={"empresa_id": empresa_id, "metodo_id": metodo_id})

@@ -31,8 +31,7 @@ def get_empresas(db: Session):
                             direccion_cod_postal, 
                             cuit, 
                             fecha_cierre, 
-                            detalle_cond_iva,
-                            tipo_metodo_valorizacion, 
+                            detalle_cond_iva, 
                             monedas.detalle_moneda as detalle_moneda_primaria, 
                             monedas1.detalle_moneda as detalle_moneda_secundaria, 
                             detalle_rubro_empresa
