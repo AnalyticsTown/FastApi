@@ -17,3 +17,11 @@ class Insumos_valorizacion(Base):
     movimiento = Column(String, nullable=True)
     tipo_movimiento_id = Column(Integer, ForeignKey("tipo_movimiento_insumos.id"))
     insumo_id = Column(Integer, ForeignKey("insumos.id"))
+    
+class Tipo_Metodo_Valorizacion(Base):
+    __tablename__ = 'tipo_metodo_valorizacion'
+    id = Column(Integer, primary_key=True, nullable=False)
+    abreviatura = Column(String, nullable=False)
+    tipo = Column(String, nullable=False)
+    
+    

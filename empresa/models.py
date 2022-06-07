@@ -41,6 +41,6 @@ class Alta_empresa_modelo(Base):
     moneda_secundaria_id = Column(Integer, ForeignKey("monedas.id"), nullable=True)
     rubro_empresa_id = Column(Integer, ForeignKey("rubro_empresas.id"), nullable=True)
     admin_id = Column(String, ForeignKey(Alta_admin_modelo.id_token), nullable=False)
-    
+    tipo_metodo_valorizacion = Column(Integer, ForeignKey("tipo_metodo_valorizacion.id"))
     
     

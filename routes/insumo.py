@@ -1,6 +1,7 @@
 import json
 from sqlalchemy import func
 from requests import session
+from empresa.models import Alta_empresa_modelo
 from insumo.schemas import *
 from insumo.models import *
 from insumo.crud import *
@@ -296,7 +297,9 @@ def get_existencias_total(id: Optional[int] = None, total: Optional[bool] = None
                 group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad
         """
     else:
+
         statement = """
+        
                 select 
                 almacenes.nombre,
                 insumos.nombre as insumo,
@@ -311,3 +314,18 @@ def get_existencias_total(id: Optional[int] = None, total: Optional[bool] = None
                 group by insumo, insumos.reposicion_control, insumos.reposicion_cantidad, unidad, almacenes.nombre
             """
     return db.execute(statement).all()
+
+
+"""VALORIZACIONES DE INSUMOS"""
+# valuaciones de insumos
+
+
+@insumo.get('/metodos_valorizacion/', tags=["VALORIZACION"])
+def get_metodos_valorizacion(db: Session = Depends(get_db)):
+    return db.query(Tipo_Metodo_Valorizacion).all()
+
+
+@insumo.post('/elegir_metodo_valorizacion/', tags=["VALORIZACION"])
+def elegir_metodo_valorizacion(empresa_id: int, id: int, db: Session = Depends(get_db)):
+
+    return db.query(Alta_empresa_modelo).filter(Alta_empresa_modelo.id == empresa_id).update({Alta_empresa_modelo.tipo_metodo_valorizacion: id})

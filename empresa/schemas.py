@@ -39,6 +39,7 @@ class EmpresaBase(BaseModel):
     moneda_secundaria_id: Optional[int] = Field(default=None, foreign_key="monedas.id")
     rubro_empresa_id: Optional[int] = Field(default=None, foreign_key="rubro_empresas.id")
     admin_id: str = Field(default=None, foreign_key="admins.id_token")
+    tipo_metodo_valorizacion: Optional[int] | None = None#
 class Empresa(EmpresaBase):
     id: int
     activo: bool
