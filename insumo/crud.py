@@ -192,7 +192,7 @@ def create_ajuste(
     nro_lote: Optional[str],
     fecha_vencimiento: Optional[str]
 ):
-
+    
     if fecha_vencimiento and nro_lote:
         db.query(models.Stock_almacen_insumo_modelo).filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
@@ -201,6 +201,9 @@ def create_ajuste(
             update({
                 models.Stock_almacen_insumo_modelo.cantidad:  models.Stock_almacen_insumo_modelo.cantidad + cantidad
             })
+       # if cantidad < 0:
+            
+            
     else:
         db.query(models.Stock_almacen_insumo_modelo).filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,

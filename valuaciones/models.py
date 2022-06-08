@@ -14,7 +14,7 @@ class Insumos_valorizacion(Base):
     cantidad = Column(Float, nullable=False)
     precio_unitario = Column(Float, nullable=False)
     precio_total = Column(Integer, nullable=False)
-    almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=False) 
+    almacen_id = Column(Integer, ForeignKey("almacenes.id"), nullable=True) 
     movimiento = Column(String, nullable=True)
     tipo_movimiento_id = Column(Integer, ForeignKey("tipo_movimiento_insumos.id"))
     insumo_id = Column(Integer, ForeignKey("insumos.id"))

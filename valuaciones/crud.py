@@ -44,7 +44,8 @@ def admininistrar_peps_ueps(
     almacen_id: int,
     movimiento: str,
     tipo_movimiento_id: int,
-    insumo_id: int
+    insumo_id: int,
+    nro_metodo: int
 ):
     """
     PRIMERO EN ENTRAR, PRIMERO EN SALIR
@@ -65,9 +66,9 @@ def admininistrar_peps_ueps(
     )
     statement = ""
 
-    if metodo == "UEPS":
+    if nro_metodo == 1:
         statement = "SELECT * FROM insumos_valorizacion ORDER BY DESC;"
-    if metodo == 'PEPS':
+    if nro_metodo == 2:
         statement = "SELECT * FROM insumos_valorizacion ORDER BY ASC;"
 
     valuaciones = db.execute(statement).all()
@@ -78,8 +79,9 @@ def admininistrar_peps_ueps(
     y reflejar ese valor en la tabla
     de donde saco esas unidades?
     """
-    if tipo_movimiento_id == 3:
-        
+
+    if tipo_movimiento_id == 2 and cantidad < 0:
+        cantidad = -cantidad
         cantidad_final = valuaciones[0]["cantidad"] - cantidad
 
         if cantidad_final < 0:
@@ -92,7 +94,8 @@ def admininistrar_peps_ueps(
 
             while cantidad_final < 0:
                 if valuaciones[0]['tipo_movimiento_id'] == 3:
-                    cantidad_final = valuaciones[i]['cantidad'] - (-cantidad_final)
+                    cantidad_final = valuaciones[i]['cantidad'] - \
+                        (-cantidad_final)
                     # actualizar los valores de las tablas con un update
                     if cantidad_final < 0:
                         db.query(Insumos_valorizacion).\
@@ -101,7 +104,8 @@ def admininistrar_peps_ueps(
                     else:
                         db.query(Insumos_valorizacion).\
                             filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
-                            update({Insumos_valorizacion.cantidad: cantidad_final})
+                            update(
+                                {Insumos_valorizacion.cantidad: cantidad_final})
                 i += 1
 
         else:
@@ -112,33 +116,33 @@ def admininistrar_peps_ueps(
 
 
 def administrar_ppp(
-    db: Session, 
+    db: Session,
     cantidad: float,
     precio_unitario: float,
     almacen_id: int,
     movimiento: str,
     tipo_movimiento_id: int,
     insumo_id: int
-    ):
+):
 
-    statement = "SELECT * FROM Insumos_valorizacion;"    
+    statement = "SELECT * FROM Insumos_valorizacion;"
     valuaciones = db.execute(statement).all()
     valuaciones = jsonable_encoder(valuaciones)
 
-    #si es un traslado tengo que retirarlo al precio promedio
-    #por lo tanto debo sumar  las cantidades anteriores y sacarle el promedio total (precio)
+    # si es un traslado tengo que retirarlo al precio promedio
+    # por lo tanto debo sumar  las cantidades anteriores y sacarle el promedio total (precio)
     cantidad_total = 0
     precio_total = 0
     for movimiento in valuaciones:
         if movimiento["tipo_movimiento_id"] == 1:
-           
-           cantidad_total += movimiento["cantidad"]
-           precio_total += movimiento["precio_unitario"]
-        
-    #precio unitario promedio   
+
+            cantidad_total += movimiento["cantidad"]
+            precio_total += movimiento["precio_unitario"]
+
+    # precio unitario promedio
     precio_unitario_promedio = precio_total / cantidad_total
-    
-    #por eso en este caso la la creacion de la valorizacion se realiza al final
+
+    # por eso en este caso la la creacion de la valorizacion se realiza al final
     create_valorizacion(
         db=db,
         cantidad=cantidad,
@@ -151,6 +155,27 @@ def administrar_ppp(
 # seria lo mejor y lo mas eficiente que cuando un insumo se quede en 0 pasarlo a una tabla valorizacion historicos
 
 
+def administrar_precio_segun_criterio(
+    db: Session,
+    cantidad: float,
+    precio_unitario: float,
+    almacen_id: int,
+    movimiento: str,
+    tipo_movimiento_id: int,
+    insumo_id: int
+):
+    #armar un movimiento que me permita  establecer un percio general por cada insumo
+    #en administrar criterio solo te va importar el dato que ingreses y nada mas 
+    create_valorizacion(
+        db=db,
+        cantidad=cantidad,
+        precio_unitario=precio_unitario,
+        almacen_id=almacen_id,
+        movimiento=movimiento,
+        tipo_movimiento_id=tipo_movimiento_id,
+        insumo_id=insumo_id
+    )
+
 
 def elegir_tipo_valorizacion(db: Session, valuacion_empresa: Metodo_valorizacion_empresa):
     db_valuacion_empresas = Tipo_Valorizacion_Empresas(**valuacion_empresa)
@@ -158,3 +183,55 @@ def elegir_tipo_valorizacion(db: Session, valuacion_empresa: Metodo_valorizacion
     db.commit()
     db.refresh(db_valuacion_empresas)
     return db_valuacion_empresas
+
+# armar un metodo para modificar empresa
+
+
+def ejecutar_metodo_valorizacion(
+    db: Session,
+    cantidad: float,
+    precio_unitario: float,
+    almacen_id: int,
+    movimiento: str,
+    tipo_movimiento_id: int,
+    insumo_id: int,
+    empresa_id: int
+):
+    ""
+    # si uno quiere estudiar medicina se tiene que romper el ogt
+    metodo_valorizacion = db.query(
+        Tipo_Valorizacion_Empresas).filter_by(id=empresa_id).fist()
+    metodo_valorizacion = jsonable_encoder(metodo_valorizacion)
+
+    nro_metodo = metodo_valorizacion["metodo_id"]
+    
+    if nro_metodo == 1 or nro_metodo == 2:
+            admininistrar_peps_ueps(
+                db=db,
+                cantidad=cantidad,
+                precio_unitario=precio_unitario,
+                almacen_id=almacen_id,
+                movimiento=movimiento,
+                tipo_movimiento_id=tipo_movimiento_id,
+                insumo_id=insumo_id,
+                nro_metodo=nro_metodo
+            )
+    elif nro_metodo == 3:
+        administrar_ppp(
+            db=db,
+            cantidad=cantidad,
+            precio_unitario=precio_unitario,
+            almacen_id=almacen_id,
+            movimiento=movimiento,
+            tipo_movimiento_id=tipo_movimiento_id,
+            insumo_id=insumo_id
+        )
+    elif nro_metodo == 4:
+        administrar_precio_segun_criterio(db=db,
+            cantidad=cantidad,
+            precio_unitario=precio_unitario,
+            almacen_id=almacen_id,
+            movimiento=movimiento,
+            tipo_movimiento_id=tipo_movimiento_id,
+            insumo_id=insumo_id
+            )
