@@ -93,7 +93,15 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
     return create_encabezado_movimiento(db=db, encabezado=encabezado)
 
 
+@insumo.delete('/encabezado_movimiento/', tags=['ENCABEZADO MOVIMIENTO'])
+def borrar_encabezados(db: Session = Depends(get_db)):
+    statement = "truncate table encabezado_movimiento cascade;";
+    db.execute(statement)
+    db.commit()
+    return "encabezados eliminados"
 # MOVIMIENTO DETALLE
+
+
 @insumo.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
 def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
 
@@ -200,13 +208,16 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
 
 
 @insumo.delete("/delete_movimiento_detalle/{id}", tags=['DETALLE-MOVIMIENTO'])
-def delete_movimiento_insumo(id: str, db: Session = Depends(get_db)):
+def delete_movimiento_insumo(id: Optional[str] = None, db: Session = Depends(get_db)):
 
     try:
+        if id:
+            db.query(Movimiento_detalle_modelo).filter(Movimiento_detalle_modelo.id == id).\
+                delete(synchronize_session=False)
+            db.commit()
+        else:
+            db.query(Movimiento_detalle_modelo).delete()
 
-        db.query(Movimiento_detalle_modelo).filter(Movimiento_detalle_modelo.id == id).\
-            delete(synchronize_session=False)
-        db.commit()
         return JSONResponse("Movimiento eliminado", 200)
     except:
         return JSONResponse("Hubo un error", 500)
@@ -317,6 +328,12 @@ def get_existencias_total(id: Optional[int] = None, total: Optional[bool] = None
     return db.execute(statement).all()
 
 
+@insumo.delete('/existencias/', tags=['EXISTENCIAS'])
+def borrar_existencias(db: Session = Depends(get_db)):
+    db.query(Stock_almacen_insumo_modelo).delete()
+    db.commit()
+    return "Existencia eliminadas"
+
 """VALORIZACIONES DE INSUMOS"""
 # valuaciones de insumos
 
@@ -341,6 +358,7 @@ def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, db: Session = Depen
     else:
         return elegir_tipo_valorizacion(db=db, valuacion_empresa={"empresa_id": empresa_id, "metodo_id": metodo_id})
 
+
 @insumo.get('/mostrar_valorizacion_entradas/', tags=['VALORIZACION'])
 def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
     statement = """
@@ -362,6 +380,7 @@ def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
             and insumos_valorizacion.cantidad > 0;
     """.format(insumo_id=insumo_id)
     return db.execute(statement).all()
+
 
 @insumo.get('/mostrar_valorizacion_salidas/', tags=['VALORIZACION'])
 def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
@@ -385,7 +404,8 @@ def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
             and insumos_valorizacion.tipo_movimiento_id = 2;
     """.format(insumo_id=insumo_id)
     return db.execute(statement).all()
-    
+
+
 @insumo.get('/mostrar_valorizacion_saldo/', tags=['VALORIZACION'])
 def mostrar_valorizacion_total(insumo_id: int, db: Session = Depends(get_db)):
     statement1 = """
@@ -400,5 +420,5 @@ def mostrar_valorizacion_total(insumo_id: int, db: Session = Depends(get_db)):
                 and tipo_movimiento_id = 1
                 group by insumo
     """.format(insumo_id=insumo_id)
-    #armar para ueps peps ppp precio_criterio diferentes consultas 
+    # armar para ueps peps ppp precio_criterio diferentes consultas
     return db.execute(statement1).all()
