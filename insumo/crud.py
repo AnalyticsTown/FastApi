@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from insumo import models, schemas
 from sqlalchemy import update
-from valuaciones.crud import create_valorizacion
+from valuaciones.crud import create_valorizacion, ejecutar_metodo_valorizacion
 from valuaciones.models import *
 import datetime
 import json
@@ -190,8 +190,11 @@ def create_ajuste(
     id_almacen_destino: int,
     insumo_id: int,
     nro_lote: Optional[str],
-    fecha_vencimiento: Optional[str]
+    fecha_vencimiento: Optional[str],
+    nro_movimiento: Optional[str]
 ):
+    print(nro_lote)
+    print(fecha_vencimiento)
     
     if fecha_vencimiento and nro_lote:
         db.query(models.Stock_almacen_insumo_modelo).filter(
@@ -201,10 +204,43 @@ def create_ajuste(
             update({
                 models.Stock_almacen_insumo_modelo.cantidad:  models.Stock_almacen_insumo_modelo.cantidad + cantidad
             })
-       # if cantidad < 0:
-            
-            
+        if cantidad < 0:
+            ajuste = db.query(models.Stock_almacen_insumo_modelo).filter(
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
+                models.Stock_almacen_insumo_modelo.nro_lote == nro_lote,
+            ).first()
+            ajuste = jsonable_encoder(ajuste)
+            print(ajuste)
+            ejecutar_metodo_valorizacion(
+                db=db,
+                cantidad=cantidad,
+                precio_unitario=ajuste['precio_unitario'],
+                almacen_id=ajuste['almacen_id'],
+                movimiento=nro_movimiento,
+                tipo_movimiento_id=2,
+                insumo_id=insumo_id,
+                empresa_id=1
+            )
+
     else:
+
+        if cantidad < 0:
+            ajuste = db.query(models.Stock_almacen_insumo_modelo).filter(
+                models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
+                models.Stock_almacen_insumo_modelo.insumo_id == insumo_id,
+            ).first()
+            ajuste = jsonable_encoder(ajuste)
+            print(ajuste)
+            ejecutar_metodo_valorizacion(
+                db=db,
+                cantidad=cantidad,
+                precio_unitario=ajuste['precio_unitario'],
+                almacen_id=ajuste['almacen_id'],
+                movimiento=nro_movimiento,
+                tipo_movimiento_id=2,
+                insumo_id=insumo_id,
+                empresa_id=1
+            )
         db.query(models.Stock_almacen_insumo_modelo).filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
             models.Stock_almacen_insumo_modelo.insumo_id == insumo_id

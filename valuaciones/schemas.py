@@ -5,11 +5,13 @@ from sqlalchemy import FetchedValue
 
 
 class InsumoValuacion(BaseModel):
+    
     cantidad: int
-    valor_unidad: float
-    valor_total: float
-    movimiento_entrada: Optional[str]
-    movimiento_salida: Optional[str]
+    precio_unitario: float
+    almacen_id: int
+    movimiento: str
+    tipo_movimiento_id: str
+    insumo_id: str
 
 
 class Metodo_valorizacion_empresa(BaseModel):

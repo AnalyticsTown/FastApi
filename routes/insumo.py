@@ -171,6 +171,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             insumo_id=movimiento.insumo_id,
             fecha_vencimiento=movimiento.fecha_vencimiento,
             nro_lote=movimiento.nro_lote,
+            nro_movimiento=encabezado2["nro_movimiento"],
         )
 
     if encabezado2['tipo_movimiento_id'] == 3:
@@ -335,6 +336,68 @@ def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, db: Session = Depen
         """.format(metodo_id=metodo_id, empresa_id=empresa_id)
         print(statement)
         db.execute(statement)
+        db.commit()
         return "Modificion exitosa"
     else:
         return elegir_tipo_valorizacion(db=db, valuacion_empresa={"empresa_id": empresa_id, "metodo_id": metodo_id})
+
+@insumo.get('/mostrar_valorizacion_entradas/', tags=['VALORIZACION'])
+def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
+    statement = """
+            select 
+            insumos_valorizacion.id,
+            insumos_valorizacion.cantidad,
+            insumos_valorizacion.precio_unitario,
+            insumos_valorizacion.precio_total,
+            almacenes.nombre as almacen,
+            insumos_valorizacion.movimiento,
+            tipo_movimiento_insumos.detalle_tipo_movimiento_insumo as tipo_movimiento,
+            insumos.nombre as insumo
+            from insumos_valorizacion 
+            left join almacenes on almacenes.id = insumos_valorizacion.almacen_id 
+            left join insumos on insumos.id = insumos_valorizacion.insumo_id
+            left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = insumos_valorizacion.tipo_movimiento_id
+            where insumos_valorizacion.tipo_movimiento_id = 1
+            and insumos_valorizacion.insumo_id = {insumo_id};
+    """.format(insumo_id=insumo_id)
+    return db.execute(statement).all()
+
+@insumo.get('/mostrar_valorizacion_salidas/', tags=['VALORIZACION'])
+def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
+
+    statement = """
+            select 
+            insumos_valorizacion.id,
+            insumos_valorizacion.cantidad,
+            insumos_valorizacion.precio_unitario,
+            insumos_valorizacion.precio_total,
+            almacenes.nombre as almacen,
+            insumos_valorizacion.movimiento,
+            tipo_movimiento_insumos.detalle_tipo_movimiento_insumo as tipo_movimiento,
+            insumos.nombre as insumo
+            from insumos_valorizacion 
+            left join almacenes on almacenes.id = insumos_valorizacion.almacen_id 
+            left join insumos on insumos.id = insumos_valorizacion.insumo_id
+            left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = insumos_valorizacion.tipo_movimiento_id
+            where 
+            insumos_valorizacion.insumo_id = {insumo_id}
+            and insumos_valorizacion.tipo_movimiento_id = 2;
+    """.format(insumo_id=insumo_id)
+    return db.execute(statement).all()
+    
+@insumo.get('/mostrar_valorizacion_saldo/', tags=['VALORIZACION'])
+def mostrar_valorizacion_total(insumo_id: int, db: Session = Depends(get_db)):
+    statement1 = """
+                select
+                i.nombre as insumo,
+                sum(insumos_valorizacion.precio_total) as precio_total,  
+                sum(insumos_valorizacion.cantidad) cantidad_total
+                from  insumos_valorizacion
+                left join insumos as i on i.id = insumos_valorizacion.insumo_id
+                where insumo_id = {insumo_id}
+                and cantidad < 0
+                and tipo_movimiento_id = 1
+                group by insumo
+    """.format(insumo_id=insumo_id)
+    #armar para ueps peps ppp precio_criterio diferentes consultas 
+    return db.execute(statement1).all()
