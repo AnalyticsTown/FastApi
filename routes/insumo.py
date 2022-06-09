@@ -358,7 +358,8 @@ def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
             left join insumos on insumos.id = insumos_valorizacion.insumo_id
             left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = insumos_valorizacion.tipo_movimiento_id
             where insumos_valorizacion.tipo_movimiento_id = 1
-            and insumos_valorizacion.insumo_id = {insumo_id};
+            and insumos_valorizacion.insumo_id = {insumo_id}
+            and insumos_valorizacion.cantidad > 0;
     """.format(insumo_id=insumo_id)
     return db.execute(statement).all()
 
@@ -395,7 +396,7 @@ def mostrar_valorizacion_total(insumo_id: int, db: Session = Depends(get_db)):
                 from  insumos_valorizacion
                 left join insumos as i on i.id = insumos_valorizacion.insumo_id
                 where insumo_id = {insumo_id}
-                and cantidad < 0
+                and cantidad > 0
                 and tipo_movimiento_id = 1
                 group by insumo
     """.format(insumo_id=insumo_id)
