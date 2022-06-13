@@ -342,6 +342,9 @@ def borrar_existencias(db: Session = Depends(get_db)):
 def get_metodos_valorizacion(db: Session = Depends(get_db)):
     return db.query(Tipo_Metodo_Valorizacion).all()
 
+@insumo.get('/ver_metodos_valorizacion_empresas/', tags=["VALORIZACION"])
+def get_ver_metodos_valorizacion(db: Session = Depends(get_db)):
+    return db.query(Tipo_Valorizacion_Empresas).all()
 
 @insumo.post('/elegir_metodo_valuacion/', tags=["VALORIZACION"])
 def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, config: Optional[bool] = None, db: Session = Depends(get_db)):
