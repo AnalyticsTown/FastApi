@@ -200,31 +200,44 @@ def administrar_precio_segun_criterio(
     almacen_id: int,
     movimiento: str,
     tipo_movimiento_id: int,
-    insumo_id: int,
-    precio_ingresado: Optional[float]
+    insumo_id: int
 ):
     # armar un movimiento que me permita  establecer un percio general por cada insumo
     # en administrar criterio solo te va importar el dato que ingreses y nada mas
     # si no creaste ninguna cotizacion se usa como general el ultimo ingreso
-    statement = "SELECT * FROM Insumos_valorizacion order by id desc;"
+    statement = "SELECT * FROM insumos_valorizacion order by id desc;"
     valuaciones = db.execute(statement).all()
     valuaciones = jsonable_encoder(valuaciones)
-    if precio_ingresado:
-        precio_ultimo_ingreso = precio_ingresado
+    configuraciones = db.query(Tipo_Valorizacion_Empresas).\
+        filter(Tipo_Valorizacion_Empresas.id == 4).first()
+
+    # logaritmo armado en caso de necesitar mas de una configuracion
+    # configuraciones = jsonable_encoder(configuraciones)
+    # configuraciones = configuraciones['configuraciones']
+    # configuraciones = json.loads(configuraciones)
+    # print(configuraciones)
+
+    # en caso de necesitar una:
+
+    if configuraciones['config'] == True:
+        precio_ultimo_ingreso = precio_unitario
+        # Establecer un precio general por cada insumo
+
     else:
+
         precio_ultimo_ingreso = valuaciones[0]['precio_unitario']
 
-    for movimiento in valuaciones:
+    for valuacion in valuaciones:
         # filtro tipo de movimiento_id
-        if movimiento["tipo_movimiento_id"] == 1 and movimiento['cantidad'] > 0:
+        if valuacion["tipo_movimiento_id"] == 1 and valuacion['cantidad'] > 0:
             db.query(Insumos_valorizacion).\
-                filter(Insumos_valorizacion.id == movimiento["id"]).\
+                filter(Insumos_valorizacion.id == valuacion["id"]).\
                 update({Insumos_valorizacion.precio_unitario: precio_ultimo_ingreso})
 
     create_valorizacion(
         db=db,
         cantidad=cantidad,
-        precio_unitario=precio_unitario,
+        precio_unitario=precio_ultimo_ingreso,
         almacen_id=almacen_id,
         movimiento=movimiento,
         tipo_movimiento_id=tipo_movimiento_id,
@@ -254,11 +267,13 @@ def ejecutar_metodo_valorizacion(
 ):
 
     metodo_valorizacion = db.query(
-        Tipo_Valorizacion_Empresas).filter_by(id=empresa_id).first()
+        Tipo_Valorizacion_Empresas
+    ).filter_by(id=empresa_id).first()
+
     metodo_valorizacion = jsonable_encoder(metodo_valorizacion)
 
     nro_metodo = metodo_valorizacion["metodo_id"]
-    print(nro_metodo)
+
     if nro_metodo == 1 or nro_metodo == 2:
         admininistrar_peps_ueps(
             db=db,
@@ -270,6 +285,7 @@ def ejecutar_metodo_valorizacion(
             insumo_id=insumo_id,
             nro_metodo=nro_metodo
         )
+
     elif nro_metodo == 3:
 
         administrar_ppp(
@@ -280,12 +296,23 @@ def ejecutar_metodo_valorizacion(
             insumo_id=insumo_id,
             movimiento=movimiento,
         )
-    # elif nro_metodo == 4:
-    #     administrar_precio_segun_criterio(db=db,
-    #                                       cantidad=cantidad,
-    #                                       precio_unitario=precio_unitario,
-    #                                       almacen_id=almacen_id,
-    #                                       movimiento=movimiento,
-    #                                       tipo_movimiento_id=tipo_movimiento_id,
-    #                                       insumo_id=insumo_id
-    #                                       )
+
+    elif nro_metodo == 4:
+
+        administrar_precio_segun_criterio(
+            db=db,
+            cantidad=cantidad,
+            precio_unitario=precio_unitario,
+            almacen_id=almacen_id,
+            movimiento=movimiento,
+            tipo_movimiento_id=tipo_movimiento_id,
+            insumo_id=insumo_id
+        )
+
+
+def create_cotizacion(db: Session, cotizacion: Cotizacion):
+    db_cotizacion = Historicos_Precio_Segun_Criterio(**cotizacion.dict())
+    db.add(db_cotizacion)
+    db.commit()
+    db.refresh(db_cotizacion)
+    return db_cotizacion

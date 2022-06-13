@@ -17,3 +17,12 @@ class InsumoValuacion(BaseModel):
 class Metodo_valorizacion_empresa(BaseModel):
     empresa_id: int
     metodo_id: int
+    
+
+class Cotizacion(BaseModel):
+    fecha: date
+    precio: float
+    insumo_id: int
+    
+
+    

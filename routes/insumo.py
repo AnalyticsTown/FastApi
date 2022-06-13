@@ -422,3 +422,12 @@ def mostrar_valorizacion_total(insumo_id: int, db: Session = Depends(get_db)):
     """.format(insumo_id=insumo_id)
     # armar para ueps peps ppp precio_criterio diferentes consultas
     return db.execute(statement1).all()
+
+@insumo.post('/ingresar_cotizacion/', tags=['PRECIO SEGUN CRITERIO'])
+def insumo_cotizacion(cotizacion: Cotizacion, db: Session = Depends(get_db)):
+    
+    return create_cotizacion(db=db, cotizacion=cotizacion)
+    
+@insumo.get('/cotizacion/', tags=['PRECIO SEGUN CRITERIO'])
+def get_cotizacion(db: Session = Depends(get_db)):
+    return db.query(Historicos_Precio_Segun_Criterio).all()
