@@ -344,10 +344,23 @@ def get_metodos_valorizacion(db: Session = Depends(get_db)):
 
 
 @insumo.post('/elegir_metodo_valuacion/', tags=["VALORIZACION"])
-def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, db: Session = Depends(get_db)):
-    metodo_evaluacion = db.query(Tipo_Valorizacion_Empresas).filter(
+def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, config: Optional[bool] = None, db: Session = Depends(get_db)):
+    metodo_valuacion = db.query(Tipo_Valorizacion_Empresas).filter(
         Tipo_Valorizacion_Empresas.empresa_id == empresa_id).first()
-    if metodo_evaluacion:
+    metodo_valuacion = jsonable_encoder(metodo_valuacion)
+    print(metodo_valuacion)
+    if metodo_valuacion['metodo_id'] == 4:
+        statement = """
+            UPDATE tipo_valorizacion_empresas SET 
+            metodo_id = {metodo_id},
+            config = {config}
+            WHERE id = {empresa_id};
+        """.format(metodo_id=metodo_id, empresa_id=empresa_id, config=config)
+        
+        db.execute(statement)
+        db.commit()
+        return "Modificion exitosa"
+    if metodo_valuacion:
         statement = """
             UPDATE tipo_valorizacion_empresas SET metodo_id = {metodo_id} WHERE id = {empresa_id};
         """.format(metodo_id=metodo_id, empresa_id=empresa_id)

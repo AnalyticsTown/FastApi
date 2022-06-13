@@ -18,7 +18,6 @@ def create_valorizacion(
     tipo_movimiento_id: int,
     insumo_id: int
 ):
-
     # necesito indicar el metodo
     cantidad = abs(cantidad)
     precio_total = cantidad * precio_unitario
@@ -73,66 +72,72 @@ def admininistrar_peps_ueps(
                        and insumos_valorizacion.tipo_movimiento_id = 1
                        ORDER BY id ASC;""".format(
             insumo_id=insumo_id, tipo_movimiento_id=tipo_movimiento_id)
+
     if cantidad < 0:
-        cantidad = -cantidad
+        # momentaneamente por ajuste la cantidad a restar debe ser negativa
+        # por eso se crea este if
+        cantidad = abs(cantidad)
 
-    valuaciones = db.execute(statement).all()
-    valuaciones = jsonable_encoder(valuaciones)
+        valuaciones = db.execute(statement).all()
+        valuaciones = jsonable_encoder(valuaciones)
 
-    """
-    de este primer insumo necesito saber cuantas unidades salen
-    y reflejar ese valor en la tabla
-    de donde saco esas unidades?
-    """
+        """
+        de este primer insumo necesito saber cuantas unidades salen
+        y reflejar ese valor en la tabla
+        de donde saco esas unidades?
+        """
 
-    cantidad_final = valuaciones[0]["cantidad"] - cantidad
-    print("cantidad movimiento")
-    print(valuaciones[0]["cantidad"])
-    print("cantidad final:")
-    print(cantidad_final)
+        cantidad_final = valuaciones[0]["cantidad"] - cantidad
+        print("cantidad movimiento")
+        print(valuaciones[0]["cantidad"])
+        print("cantidad final:")
+        print(cantidad_final)
 
-    if cantidad_final < 0:
-        # si la cantidad final es menor a cero debo agarrar otra columna y restarle la cantidad a esa
-        # debo repetir este proceso hasta que la cantidad final sea 0
-        i = 1
-        db.query(Insumos_valorizacion).\
-            filter(Insumos_valorizacion.id == valuaciones[0]['id']).\
-            update({Insumos_valorizacion.cantidad: 0})
+        if cantidad_final < 0:
+            # si la cantidad final es menor a cero debo agarrar otra columna y restarle la cantidad a esa
+            # debo repetir este proceso hasta que la cantidad final sea 0
+            i = 1
+            db.query(Insumos_valorizacion).\
+                filter(Insumos_valorizacion.id == valuaciones[0]['id']).\
+                update({Insumos_valorizacion.cantidad: 0})
 
-        while cantidad_final < 0:
+            while cantidad_final < 0:
 
-            cantidad_final = valuaciones[i]['cantidad'] - abs(cantidad_final)
-            # actualizar los valores de las tablas con un update
-            if cantidad_final < 0:
-                db.query(Insumos_valorizacion).\
-                    filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
-                    update({Insumos_valorizacion.cantidad: 0})
+                cantidad_final = valuaciones[i]['cantidad'] - \
+                    abs(cantidad_final)
+                # actualizar los valores de las tablas con un update
+                if cantidad_final < 0:
+                    db.query(Insumos_valorizacion).\
+                        filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
+                        update({Insumos_valorizacion.cantidad: 0})
 
-            else:
-                db.query(Insumos_valorizacion).\
-                    filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
-                    update(
-                        {Insumos_valorizacion.cantidad: cantidad_final})
+                else:
+                    db.query(Insumos_valorizacion).\
+                        filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
+                        update(
+                            {Insumos_valorizacion.cantidad: cantidad_final})
 
+                db.commit()
+                i += 1
+
+        else:
+            # actualizar el valor de la resta
+            db.query(Insumos_valorizacion).\
+                filter(Insumos_valorizacion.id == valuaciones[0]['id']).\
+                update({Insumos_valorizacion.cantidad: cantidad_final})
             db.commit()
-            i += 1
 
+        create_valorizacion(
+            db=db,
+            cantidad=cantidad,
+            precio_unitario=precio_unitario,
+            almacen_id=almacen_id,
+            movimiento=movimiento,
+            tipo_movimiento_id=tipo_movimiento_id,
+            insumo_id=insumo_id
+        )
     else:
-        # actualizar el valor de la resta
-        db.query(Insumos_valorizacion).\
-            filter(Insumos_valorizacion.id == valuaciones[0]['id']).\
-            update({Insumos_valorizacion.cantidad: cantidad_final})
-        db.commit()
-
-    create_valorizacion(
-        db=db,
-        cantidad=cantidad,
-        precio_unitario=precio_unitario,
-        almacen_id=almacen_id,
-        movimiento=movimiento,
-        tipo_movimiento_id=tipo_movimiento_id,
-        insumo_id=insumo_id
-    )
+        return "Por el momento no se admiten otras operaciones"
 
 
 def administrar_ppp(
@@ -167,16 +172,6 @@ def administrar_ppp(
     # precio unitario promedio
     precio_unitario_promedio = precio_total / cantidad_total
 
-    # por eso en este caso la la creacion de la valorizacion se realiza al final
-    # create_valorizacion(
-    #     db=db,
-    #     cantidad=cantidad,
-    #     precio_unitario=precio_unitario_promedio,
-    #     almacen_id=almacen_id,
-    #     movimiento=movimiento,
-    #     tipo_movimiento_id=2,
-    #     insumo_id=insumo_id
-    # )
     precio_total = precio_unitario_promedio * cantidad
     db_insumo_valorizacion = Insumos_valorizacion(**{
         "cantidad": cantidad,
@@ -208,8 +203,6 @@ def administrar_precio_segun_criterio(
     statement = "SELECT * FROM insumos_valorizacion order by id desc;"
     valuaciones = db.execute(statement).all()
     valuaciones = jsonable_encoder(valuaciones)
-    configuraciones = db.query(Tipo_Valorizacion_Empresas).\
-        filter(Tipo_Valorizacion_Empresas.id == 4).first()
 
     # logaritmo armado en caso de necesitar mas de una configuracion
     # configuraciones = jsonable_encoder(configuraciones)
@@ -217,15 +210,24 @@ def administrar_precio_segun_criterio(
     # configuraciones = json.loads(configuraciones)
     # print(configuraciones)
 
-    # en caso de necesitar una:
+    # en caso de necesitar una configuracion:
+    config = db.query(Tipo_Valorizacion_Empresas).\
+        filter(Tipo_Valorizacion_Empresas.empresa_id == 1,
+               Tipo_Valorizacion_Empresas.metodo_id == 4
+               ).first()
+    config = jsonable_encoder(config)
 
-    if configuraciones['config'] == True:
+    if config['config'] == True:
+
         precio_ultimo_ingreso = precio_unitario
         # Establecer un precio general por cada insumo
-
     else:
-
-        precio_ultimo_ingreso = valuaciones[0]['precio_unitario']
+        # busco en la tabla de cotizaciones y selecciono la ultima cotizacion ingresada
+        historicos = db.query(Historicos_Precio_Segun_Criterio).filter(
+            Historicos_Precio_Segun_Criterio.insumo_id == insumo_id
+        )
+        historicos = jsonable_encoder(historicos)
+        precio_ultimo_ingreso = historicos[len(historicos) - 1]['precio']
 
     for valuacion in valuaciones:
         # filtro tipo de movimiento_id

@@ -24,9 +24,7 @@ class Tipo_Metodo_Valorizacion(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     abreviatura = Column(String, nullable=False)
     tipo = Column(String, nullable=False)
-    # en caso de multiples configuraciones
-    #configuraciones = Column(String, nullable=True)
-    config = Column(Boolean, nullable=True)
+    
 
 
 class Tipo_Valorizacion_Empresas(Base):
@@ -34,7 +32,9 @@ class Tipo_Valorizacion_Empresas(Base):
     id = Column(Integer, primary_key=True)
     empresa_id = Column(Integer, ForeignKey("empresas.id"))
     metodo_id = Column(Integer, ForeignKey(Tipo_Metodo_Valorizacion.id))
-
+    # en caso de multiples configuraciones
+    #configuraciones = Column(String, nullable=True)
+    config = Column(Boolean, nullable=True)
 
 class Historicos_Precio_Segun_Criterio(Base):
     __tablename__ = 'historicos_precio_segun_criterio'
