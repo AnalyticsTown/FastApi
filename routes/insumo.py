@@ -229,32 +229,32 @@ def delete_movimiento_insumo(id: Optional[str] = None, db: Session = Depends(get
 @insumo.get("/existencias/", tags=['EXISTENCIAS'])
 def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
 
-    # if id:
+    if id:
 
-    #     statement = """
-    #                 select
-    #                 stock_almacen_insumos.id,
-    #                 insumos.nombre as insumo,
-    #                 insumos.reposicion_alerta,
-    #                 insumos.reposicion_control,
-    #                 insumos.reposicion_cantidad,
-    #                 stock_almacen_insumos.precio_unitario,
-    #                 stock_almacen_insumos.fecha_vencimiento,
-    #                 stock_almacen_insumos.nro_lote,
-    #                 almacenes.nombre as almacen,
-    #                 unidades.abr as unidad,
-    #                 stock_almacen_insumos.detalle as detalle,
-    #                 stock_almacen_insumos.cantidad as cantidad
-    #                 from stock_almacen_insumos
-    #                 left join insumos on insumos.id = stock_almacen_insumos.insumo_id
-    #                 left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
-    #                 left join unidades on unidades.id = stock_almacen_insumos.unidad_id
-    #                 where stock_almacen_insumos.almacen_id = {id};
-    #                 """.format(id=id)
+        statement = """
+                    select 
+                    stock_almacen_insumos.id,
+                    insumos.nombre as insumo,
+                    insumos.reposicion_alerta,
+                    insumos.reposicion_control,
+                    insumos.reposicion_cantidad,
+                    stock_almacen_insumos.precio_unitario,
+                    stock_almacen_insumos.fecha_vencimiento,
+                    stock_almacen_insumos.nro_lote,
+                    almacenes.nombre as almacen,
+                    unidades.abr as unidad,
+                    stock_almacen_insumos.detalle as detalle,
+                    stock_almacen_insumos.cantidad as cantidad
+                    from stock_almacen_insumos
+                    left join insumos on insumos.id = stock_almacen_insumos.insumo_id
+                    left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
+                    left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+                    where stock_almacen_insumos.almacen_id = {id};
+                    """.format(id=id)
 
-    #     return db.execute(statement).all()
-    # else:
-    statement2 = """
+        return db.execute(statement).all()
+    else:
+        statement2 = """
                     select 
                     stock_almacen_insumos.id,
                     insumos.nombre as insumo,
@@ -273,7 +273,7 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                     left join unidades on unidades.id = stock_almacen_insumos.unidad_id;
                     """
 
-    return db.execute(statement2).all()
+        return db.execute(statement2).all()
 
 
 @insumo.get("/existencias/total/", tags=['EXISTENCIAS'])
