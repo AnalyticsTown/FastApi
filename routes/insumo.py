@@ -1,4 +1,6 @@
 import json
+import random
+import datetime
 from sqlalchemy import func
 from requests import session
 from empresa.models import Alta_empresa_modelo
@@ -95,7 +97,7 @@ def create_encabezado(encabezado: EncabezadoInsumos, db: Session = Depends(get_d
 
 @insumo.delete('/encabezado_movimiento/', tags=['ENCABEZADO MOVIMIENTO'])
 def borrar_encabezados(db: Session = Depends(get_db)):
-    statement = "truncate table encabezado_movimiento cascade;";
+    statement = "truncate table encabezado_movimiento cascade;"
     db.execute(statement)
     db.commit()
     return "encabezados eliminados"
@@ -334,6 +336,7 @@ def borrar_existencias(db: Session = Depends(get_db)):
     db.commit()
     return "Existencia eliminadas"
 
+
 """VALORIZACIONES DE INSUMOS"""
 # valuaciones de insumos
 
@@ -342,16 +345,20 @@ def borrar_existencias(db: Session = Depends(get_db)):
 def get_metodos_valorizacion(db: Session = Depends(get_db)):
     return db.query(Tipo_Metodo_Valorizacion).all()
 
+
 @insumo.get('/ver_metodos_valorizacion_empresas/', tags=["VALORIZACION"])
 def get_ver_metodos_valorizacion(db: Session = Depends(get_db)):
     return db.query(Tipo_Valorizacion_Empresas).all()
+
 
 @insumo.post('/elegir_metodo_valuacion/', tags=["VALORIZACION"])
 def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, config: Optional[bool] = None, db: Session = Depends(get_db)):
     metodo_valuacion = db.query(Tipo_Valorizacion_Empresas).filter(
         Tipo_Valorizacion_Empresas.empresa_id == empresa_id).first()
     metodo_valuacion = jsonable_encoder(metodo_valuacion)
+    
     print(metodo_valuacion)
+    
     if metodo_valuacion['metodo_id'] == 4:
         statement = """
             UPDATE tipo_valorizacion_empresas SET 
@@ -359,7 +366,7 @@ def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, config: Optional[bo
             config = {config}
             WHERE id = {empresa_id};
         """.format(metodo_id=metodo_id, empresa_id=empresa_id, config=config)
-        
+
         db.execute(statement)
         db.commit()
         return "Modificion exitosa"
@@ -439,11 +446,50 @@ def mostrar_valorizacion_total(insumo_id: int, db: Session = Depends(get_db)):
     # armar para ueps peps ppp precio_criterio diferentes consultas
     return db.execute(statement1).all()
 
+
 @insumo.post('/ingresar_cotizacion/', tags=['PRECIO SEGUN CRITERIO'])
 def insumo_cotizacion(cotizacion: Cotizacion, db: Session = Depends(get_db)):
-    
+
     return create_cotizacion(db=db, cotizacion=cotizacion)
-    
+
+
 @insumo.get('/cotizacion/', tags=['PRECIO SEGUN CRITERIO'])
 def get_cotizacion(db: Session = Depends(get_db)):
-    return db.query(Historicos_Precio_Segun_Criterio).all()
+    #armar el statement para retornar con el nombre
+    statement = """
+        select 
+        historicos_precio_segun_criterio.fecha, 
+        historicos_precio_segun_criterio.precio,
+        insumos.nombre as insumo 
+        from 
+        historicos_precio_segun_criterio
+        left join insumos on insumos.id = historicos_precio_segun_criterio.insumo_id
+    """
+    return db.execute(statement).all()
+
+@insumo.post('/prueba_estres/', tags=['TESTEO BACKEND'])
+def ejecutar_prueba_estres(nro_pruebas: int, db: Session = Depends(get_db)):
+    #try:
+        fecha = datetime.datetime.now()
+        insumos_id = [1,2,3]
+        for n in range(nro_pruebas):
+            precio_unitario = random.random() * 100
+            cantidad = int(random.random() * 1000)
+            db_prueba = models.Stock_almacen_insumo_modelo(**{
+                'cantidad': cantidad,
+                'detalle': "string",
+                'insumo_id': random.choice(insumos_id),
+                'almacen_id': 2,
+                'nro_lote': 'randomnrolote',
+                'fecha_vencimiento': "{dia}/{mes}/{año}".format(dia=fecha.day, mes=fecha.month, año=fecha.year),
+                'unidad_id': 1,
+                'precio_unitario': precio_unitario,
+                'precio_total': precio_unitario * cantidad
+            })
+            db.add(db_prueba)
+    
+        db.commit()
+        db.refresh(db_prueba)
+        #return JSONResponse("Fake data creada exitosamente")
+    #except:
+      #  return JSONResponse("Hubo un error", 500)
