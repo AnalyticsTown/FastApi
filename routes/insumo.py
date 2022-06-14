@@ -229,9 +229,32 @@ def delete_movimiento_insumo(id: Optional[str] = None, db: Session = Depends(get
 @insumo.get("/existencias/", tags=['EXISTENCIAS'])
 def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
 
-    if id:
+    # if id:
 
-        statement = """
+    #     statement = """
+    #                 select
+    #                 stock_almacen_insumos.id,
+    #                 insumos.nombre as insumo,
+    #                 insumos.reposicion_alerta,
+    #                 insumos.reposicion_control,
+    #                 insumos.reposicion_cantidad,
+    #                 stock_almacen_insumos.precio_unitario,
+    #                 stock_almacen_insumos.fecha_vencimiento,
+    #                 stock_almacen_insumos.nro_lote,
+    #                 almacenes.nombre as almacen,
+    #                 unidades.abr as unidad,
+    #                 stock_almacen_insumos.detalle as detalle,
+    #                 stock_almacen_insumos.cantidad as cantidad
+    #                 from stock_almacen_insumos
+    #                 left join insumos on insumos.id = stock_almacen_insumos.insumo_id
+    #                 left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
+    #                 left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+    #                 where stock_almacen_insumos.almacen_id = {id};
+    #                 """.format(id=id)
+
+    #     return db.execute(statement).all()
+    # else:
+    statement2 = """
                     select 
                     stock_almacen_insumos.id,
                     insumos.nombre as insumo,
@@ -240,7 +263,6 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                     insumos.reposicion_cantidad,
                     stock_almacen_insumos.precio_unitario,
                     stock_almacen_insumos.fecha_vencimiento,
-                    stock_almacen_insumos.nro_lote,
                     almacenes.nombre as almacen,
                     unidades.abr as unidad,
                     stock_almacen_insumos.detalle as detalle,
@@ -248,32 +270,10 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                     from stock_almacen_insumos
                     left join insumos on insumos.id = stock_almacen_insumos.insumo_id
                     left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
-                    left join unidades on unidades.id = stock_almacen_insumos.unidad_id
-                    where stock_almacen_insumos.almacen_id = {id}
-                    """.format(id=id)
-
-        return db.execute(statement).all()
-    else:
-        statement2 = """
-                    select 
-                    stock_almacen_insumos.id,
-                    insumos.nombre as insumo,
-                    insumos.reposicion_alerta,
-                    insumos.reposicion_control,
-                    insumos.reposicion_cantidad,
-                    stock_almacen_insumos.precio_unitario,
-                    stock_almacen_insumos.fecha_vencimiento,
-                    almacenes.nombre as almacen,
-                    unidades.abr as unidad,
-                    stock_almacen_insumos.detalle as detalle,
-                    stock_almacen_insumos.cantidad as cantidad
-                    from stock_almacen_insumos
-                    left join insumos on insumos.id = stock_almacen_insumos.insumo_id
-                    left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
-                    left join unidades on unidades.id = stock_almacen_insumos.unidad_id
+                    left join unidades on unidades.id = stock_almacen_insumos.unidad_id;
                     """
 
-        return db.execute(statement2).all()
+    return db.execute(statement2).all()
 
 
 @insumo.get("/existencias/total/", tags=['EXISTENCIAS'])
@@ -356,9 +356,9 @@ def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, config: Optional[bo
     metodo_valuacion = db.query(Tipo_Valorizacion_Empresas).filter(
         Tipo_Valorizacion_Empresas.empresa_id == empresa_id).first()
     metodo_valuacion = jsonable_encoder(metodo_valuacion)
-    
+
     print(metodo_valuacion)
-    
+
     if metodo_valuacion['metodo_id'] == 4:
         statement = """
             UPDATE tipo_valorizacion_empresas SET 
@@ -455,7 +455,7 @@ def insumo_cotizacion(cotizacion: Cotizacion, db: Session = Depends(get_db)):
 
 @insumo.get('/cotizacion/', tags=['PRECIO SEGUN CRITERIO'])
 def get_cotizacion(db: Session = Depends(get_db)):
-    #armar el statement para retornar con el nombre
+    # armar el statement para retornar con el nombre
     statement = """
         select 
         historicos_precio_segun_criterio.fecha, 
@@ -467,29 +467,30 @@ def get_cotizacion(db: Session = Depends(get_db)):
     """
     return db.execute(statement).all()
 
+
 @insumo.post('/prueba_estres/', tags=['TESTEO BACKEND'])
 def ejecutar_prueba_estres(nro_pruebas: int, db: Session = Depends(get_db)):
-    #try:
-        fecha = datetime.datetime.now()
-        insumos_id = [1,2,3]
-        for n in range(nro_pruebas):
-            precio_unitario = random.random() * 100
-            cantidad = int(random.random() * 1000)
-            db_prueba = models.Stock_almacen_insumo_modelo(**{
-                'cantidad': cantidad,
-                'detalle': "string",
-                'insumo_id': random.choice(insumos_id),
-                'almacen_id': 2,
-                'nro_lote': 'randomnrolote',
-                'fecha_vencimiento': "{dia}/{mes}/{año}".format(dia=fecha.day, mes=fecha.month, año=fecha.year),
-                'unidad_id': 1,
-                'precio_unitario': precio_unitario,
-                'precio_total': precio_unitario * cantidad
-            })
-            db.add(db_prueba)
-    
-        db.commit()
-        db.refresh(db_prueba)
-        #return JSONResponse("Fake data creada exitosamente")
-    #except:
-      #  return JSONResponse("Hubo un error", 500)
+    # try:
+    fecha = datetime.datetime.now()
+    insumos_id = [1, 2, 3]
+    for n in range(nro_pruebas):
+        precio_unitario = random.random() * 100
+        cantidad = int(random.random() * 1000)
+        db_prueba = models.Stock_almacen_insumo_modelo(**{
+            'cantidad': cantidad,
+            'detalle': "string",
+            'insumo_id': random.choice(insumos_id),
+            'almacen_id': 2,
+            'nro_lote': 'randomnrolote',
+            'fecha_vencimiento': "{dia}/{mes}/{año}".format(dia=fecha.day, mes=fecha.month, año=fecha.year),
+            'unidad_id': 1,
+            'precio_unitario': precio_unitario,
+            'precio_total': precio_unitario * cantidad
+        })
+        db.add(db_prueba)
+
+    db.commit()
+    db.refresh(db_prueba)
+    # return JSONResponse("Fake data creada exitosamente")
+    # except:
+  #  return JSONResponse("Hubo un error", 500)
