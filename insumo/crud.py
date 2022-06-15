@@ -175,30 +175,31 @@ def create_compra(
             })
     # busco si el metodo es el de precio segun criterio
     # de esta manera voy a poder hacer la valuacion segun ese metodo
-    # precio_segun_criterio = db.query(Tipo_Valorizacion_Empresas).\
-    #     filter(Tipo_Valorizacion_Empresas.empresa_id == 1,
-    #            Tipo_Valorizacion_Empresas.metodo_id == 4).first()
-    # precio_segun_criterio = jsonable_encoder(precio_segun_criterio)
-    # if precio_segun_criterio['config']:
-    #     administrar_precio_segun_criterio(
-    #         db=db,
-    #         cantidad=cantidad,
-    #         precio_unitario=precio_unitario,
-    #         almacen_id=id_almacen_destino,
-    #         movimiento=nro_movimiento,
-    #         tipo_movimiento_id=tipo_movimiento_id,
-    #         insumo_id=insumo_id
-    #     )
-    # else:
-    create_valorizacion(
-        db=db,
-        cantidad=cantidad,
-        precio_unitario=precio_unitario,
-        almacen_id=id_almacen_destino,
-        movimiento=nro_movimiento,
-        tipo_movimiento_id=tipo_movimiento_id,
-        insumo_id=insumo_id
-    )
+    precio_segun_criterio = db.query(Tipo_Valorizacion_Empresas).\
+        filter(Tipo_Valorizacion_Empresas.empresa_id == 1,
+               Tipo_Valorizacion_Empresas.metodo_id == 4).first()
+    precio_segun_criterio = jsonable_encoder(precio_segun_criterio)
+    print(precio_segun_criterio)
+    if precio_segun_criterio and precio_segun_criterio['config']:
+            administrar_precio_segun_criterio(
+                db=db,
+                cantidad=cantidad,
+                precio_unitario=precio_unitario,
+                almacen_id=id_almacen_destino,
+                movimiento=nro_movimiento,
+                tipo_movimiento_id=tipo_movimiento_id,
+                insumo_id=insumo_id
+                )
+    else:
+            create_valorizacion(
+                db=db,
+                cantidad=cantidad,
+                precio_unitario=precio_unitario,
+                almacen_id=id_almacen_destino,
+                movimiento=nro_movimiento,
+                tipo_movimiento_id=tipo_movimiento_id,
+                insumo_id=insumo_id
+                )
 
 
 def create_ajuste(

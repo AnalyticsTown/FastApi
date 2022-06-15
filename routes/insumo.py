@@ -255,6 +255,7 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
         return db.execute(statement).all()
     else:
         statement2 = """
+                    
                     select 
                     stock_almacen_insumos.id,
                     insumos.nombre as insumo,

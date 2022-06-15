@@ -1,3 +1,4 @@
+from ast import In
 from fastapi.encoders import jsonable_encoder
 from typing import Optional
 from sqlalchemy.orm import Session
@@ -92,14 +93,17 @@ def admininistrar_peps_ueps(
         print(valuaciones[0]["cantidad"])
         print("cantidad final:")
         print(cantidad_final)
-
+        #creo una variable que almacena el precio_unitario final
+        precio_unitario_final = 0
+        
         if cantidad_final < 0:
             # si la cantidad final es menor a cero debo agarrar otra columna y restarle la cantidad a esa
             # debo repetir este proceso hasta que la cantidad final sea 0
             i = 1
             db.query(Insumos_valorizacion).\
                 filter(Insumos_valorizacion.id == valuaciones[0]['id']).\
-                update({Insumos_valorizacion.cantidad: 0})
+                update({Insumos_valorizacion.cantidad: 0,
+                        Insumos_valorizacion.precio_total: 0})
 
             while cantidad_final < 0:
 
@@ -109,16 +113,21 @@ def admininistrar_peps_ueps(
                 if cantidad_final < 0:
                     db.query(Insumos_valorizacion).\
                         filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
-                        update({Insumos_valorizacion.cantidad: 0})
+                        update({Insumos_valorizacion.cantidad: 0,
+                                Insumos_valorizacion.precio_total: 0})
 
                 else:
+                    
                     db.query(Insumos_valorizacion).\
                         filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
                         update(
-                            {Insumos_valorizacion.cantidad: cantidad_final})
+                            {Insumos_valorizacion.cantidad: cantidad_final,
+                             Insumos_valorizacion.precio_total: cantidad_final * Insumos_valorizacion.precio_unitario})
 
                 db.commit()
+                precio_unitario_final = valuaciones[i]['precio_unitario']
                 i += 1
+                
 
         else:
             # actualizar el valor de la resta
@@ -130,7 +139,7 @@ def admininistrar_peps_ueps(
         create_valorizacion(
             db=db,
             cantidad=cantidad,
-            precio_unitario=precio_unitario,
+            precio_unitario=precio_unitario_final,
             almacen_id=almacen_id,
             movimiento=movimiento,
             tipo_movimiento_id=tipo_movimiento_id,
@@ -200,7 +209,12 @@ def administrar_precio_segun_criterio(
     # armar un movimiento que me permita  establecer un percio general por cada insumo
     # en administrar criterio solo te va importar el dato que ingreses y nada mas
     # si no creaste ninguna cotizacion se usa como general el ultimo ingreso
-    statement = "SELECT * FROM insumos_valorizacion order by id desc;"
+    statement = """
+        SELECT * FROM 
+        insumos_valorizacion 
+        where insumo_id = {insumo_id} 
+        order by id desc;""".format(insumo_id=insumo_id)
+
     valuaciones = db.execute(statement).all()
     valuaciones = jsonable_encoder(valuaciones)
 
