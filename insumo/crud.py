@@ -190,15 +190,15 @@ def create_compra(
     #         insumo_id=insumo_id
     #     )
     # else:
-        create_valorizacion(
-            db=db,
-            cantidad=cantidad,
-            precio_unitario=precio_unitario,
-            almacen_id=id_almacen_destino,
-            movimiento=nro_movimiento,
-            tipo_movimiento_id=tipo_movimiento_id,
-            insumo_id=insumo_id
-        )
+    create_valorizacion(
+        db=db,
+        cantidad=cantidad,
+        precio_unitario=precio_unitario,
+        almacen_id=id_almacen_destino,
+        movimiento=nro_movimiento,
+        tipo_movimiento_id=tipo_movimiento_id,
+        insumo_id=insumo_id
+    )
 
 
 def create_ajuste(
