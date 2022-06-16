@@ -255,7 +255,6 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
         return db.execute(statement).all()
     else:
         statement2 = """
-                    
                     select 
                     stock_almacen_insumos.id,
                     insumos.nombre as insumo,
@@ -492,6 +491,6 @@ def ejecutar_prueba_estres(nro_pruebas: int, db: Session = Depends(get_db)):
 
     db.commit()
     db.refresh(db_prueba)
-    # return JSONResponse("Fake data creada exitosamente")
+    return JSONResponse("Fake data creada exitosamente", 200)
     # except:
   #  return JSONResponse("Hubo un error", 500)

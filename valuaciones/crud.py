@@ -164,7 +164,8 @@ def administrar_ppp(
     where insumos_valorizacion.insumo_id = {insumo_id} 
     and insumos_valorizacion.tipo_movimiento_id = 1;
     """.format(
-        insumo_id=insumo_id)
+        insumo_id=insumo_id
+        )
     valuaciones = db.execute(statement).all()
     valuaciones = jsonable_encoder(valuaciones)
     if cantidad < 0:
