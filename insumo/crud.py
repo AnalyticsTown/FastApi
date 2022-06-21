@@ -199,7 +199,7 @@ def create_compra(
                 movimiento=nro_movimiento,
                 tipo_movimiento_id=tipo_movimiento_id,
                 insumo_id=insumo_id
-                )
+            )
 
 
 def create_ajuste(

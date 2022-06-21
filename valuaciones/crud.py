@@ -89,17 +89,21 @@ def admininistrar_peps_ueps(
         """
 
         cantidad_final = valuaciones[0]["cantidad"] - cantidad
-        print("cantidad movimiento")
-        print(valuaciones[0]["cantidad"])
-        print("cantidad final:")
-        print(cantidad_final)
-        #creo una variable que almacena el precio_unitario final
+        #print("cantidad movimiento")
+        # print(valuaciones[0]["cantidad"])
+        #print("cantidad final:")
+        # print(cantidad_final)
+        # creo una variable que almacena el precio_unitario final
         precio_unitario_final = 0
-        
+        # creo una variable que almacena el precio total final
+        precio_total_final = 0
+
         if cantidad_final < 0:
             # si la cantidad final es menor a cero debo agarrar otra columna y restarle la cantidad a esa
             # debo repetir este proceso hasta que la cantidad final sea 0
             i = 1
+            precio_total_final += valuaciones[0]['precio_total']
+
             db.query(Insumos_valorizacion).\
                 filter(Insumos_valorizacion.id == valuaciones[0]['id']).\
                 update({Insumos_valorizacion.cantidad: 0,
@@ -111,23 +115,29 @@ def admininistrar_peps_ueps(
                     abs(cantidad_final)
                 # actualizar los valores de las tablas con un update
                 if cantidad_final < 0:
+                    precio_total_final += valuaciones[i]['precio_total']
+
                     db.query(Insumos_valorizacion).\
                         filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
                         update({Insumos_valorizacion.cantidad: 0,
                                 Insumos_valorizacion.precio_total: 0})
 
                 else:
-                    
+                    precio_total_restado = (
+                        valuaciones[i]['cantidad'] - cantidad_final) * valuaciones[i]['precio_unitario']
+                    print(precio_total_restado)
+                    precio_total_final += precio_total_restado
+                    print(precio_total_restado)
                     db.query(Insumos_valorizacion).\
                         filter(Insumos_valorizacion.id == valuaciones[i]['id']).\
                         update(
                             {Insumos_valorizacion.cantidad: cantidad_final,
-                             Insumos_valorizacion.precio_total: cantidad_final * Insumos_valorizacion.precio_unitario})
+                             Insumos_valorizacion.precio_total: cantidad_final * Insumos_valorizacion.precio_unitario}
+                    )
 
                 db.commit()
                 precio_unitario_final = valuaciones[i]['precio_unitario']
                 i += 1
-                
 
         else:
             # actualizar el valor de la resta
@@ -136,15 +146,18 @@ def admininistrar_peps_ueps(
                 update({Insumos_valorizacion.cantidad: cantidad_final})
             db.commit()
 
-        create_valorizacion(
-            db=db,
-            cantidad=cantidad,
-            precio_unitario=precio_unitario_final,
-            almacen_id=almacen_id,
-            movimiento=movimiento,
-            tipo_movimiento_id=tipo_movimiento_id,
-            insumo_id=insumo_id
-        )
+        db_insumo_valorizacion = Insumos_valorizacion(**{
+            "cantidad": cantidad,
+            "precio_unitario": precio_unitario_final,
+            "precio_total": precio_total_final,
+            "almacen_id": almacen_id,
+            "movimiento": movimiento,
+            "tipo_movimiento_id": tipo_movimiento_id,
+            "insumo_id": insumo_id
+        })
+        db.add(db_insumo_valorizacion)
+        db.commit()
+        db.refresh(db_insumo_valorizacion)
     else:
         return "Por el momento no se admiten otras operaciones"
 
@@ -165,7 +178,7 @@ def administrar_ppp(
     and insumos_valorizacion.tipo_movimiento_id = 1;
     """.format(
         insumo_id=insumo_id
-        )
+    )
     valuaciones = db.execute(statement).all()
     valuaciones = jsonable_encoder(valuaciones)
     if cantidad < 0:

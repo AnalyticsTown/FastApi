@@ -90,13 +90,12 @@ class MovimientoDetalleBase(BaseModel):
 
     insumo_id: int
     cantidad: float
-    #unidad_id: Optional[int]
-    nro_lote: Optional[str]
-    fecha_vencimiento: Optional[date]
-    precio_unitario: Optional[float]
-    observaciones: Optional[str]
+    nro_lote: Optional[str] = None 
+    fecha_vencimiento: Optional[date] = None
+    precio_unitario: Optional[float] = None
+    observaciones: Optional[str] = None
     encabezado_movimiento_id: str
-    precio_total: Optional[float]
+    precio_total: Optional[float] = None
     class Config:
         orm_mode = True
 

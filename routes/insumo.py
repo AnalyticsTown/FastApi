@@ -35,7 +35,9 @@ def crear_insumo(insumo: InsumoBase, db: Session = Depends(get_db)):
 
 @insumo.delete("/delete_insumos/", tags=['INSUMO'])
 def delete_insumos(db: Session = Depends(get_db)):
-    drop_insumos(db)
+    #drop_insumos(db)
+    statement = """truncate table insumos cascade;"""
+    db.execute(statement)
     return "Los insumos fueron borrados"
 
 
@@ -359,7 +361,7 @@ def elegir_metodo_valuacion(empresa_id: int, metodo_id: int, config: Optional[bo
 
     print(metodo_valuacion)
 
-    if metodo_valuacion['metodo_id'] == 4:
+    if metodo_valuacion and metodo_valuacion['metodo_id'] == 4:
         statement = """
             UPDATE tipo_valorizacion_empresas SET 
             metodo_id = {metodo_id},
