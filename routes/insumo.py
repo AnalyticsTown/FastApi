@@ -218,7 +218,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
     insumo = jsonable_encoder(insumo)
 
     if encabezado2['tipo_movimiento_id'] == 1:
-        
+        #si el encabezado es una compra
         create_compra(
             db=db,
             cantidad=movimiento.cantidad,
@@ -235,6 +235,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
         )
 
     if encabezado2['tipo_movimiento_id'] == 2:
+        #si el encabezado es un ajuste
         create_ajuste(
             db=db,
             cantidad=movimiento.cantidad,
