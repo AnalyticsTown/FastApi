@@ -36,20 +36,36 @@ def get_tipo_erogaciones(db: Session):
 def get_movimiento_insumos(db: Session):  # Se agregó
     return db.query(models.Alta_tipo_movimiento_modelo).all()
 
-# def get_insumos(db: Session):
-#     return db.query(models.Alta_insumo_modelo).all()
-
-
 def get_insumos(db: Session):
-    statement = """select insumos.id, activo, nombre, abreviatura, codigo_externo, lote_control, vencimiento_control, reposicion_control, reposicion_cantidad, reposicion_alerta,
-                   reposicion_alerta_email, detalle_tarea, abr, detalle_familia, detalle_subfamilia, detalle_rubro_insumo, nombre_tipo_erogacion, abreviatura_tipo_erogacion
-                   from insumos
-                   left join tareas on insumos.tarea_id = tareas.id
-                   left join unidades on unidades.id = insumos.unidad_id
-                   left join familias on familias.id = insumos.familia_id
-                   left join subfamilias on subfamilias.id = insumos.subfamilia_id
-                   left join rubro_insumos on rubro_insumos.id = insumos.rubro_insumo_id
-                   left join tipo_erogaciones on tipo_erogaciones.id = insumos.tipo_erogacion_id"""
+    statement = """
+                   --sql
+                   SELECT 
+                   insumos.id, 
+                   activo, 
+                   nombre, 
+                   abreviatura, 
+                   codigo_externo, 
+                   lote_control, 
+                   vencimiento_control, 
+                   reposicion_control, 
+                   reposicion_cantidad, 
+                   reposicion_alerta,
+                   reposicion_alerta_email, 
+                   detalle_tarea, 
+                   abr, 
+                   detalle_familia, 
+                   detalle_subfamilia, 
+                   detalle_rubro_insumo, 
+                   nombre_tipo_erogacion, 
+                   abreviatura_tipo_erogacion
+                   FROM insumos
+                   LEFT JOIN tareas ON insumos.tarea_id = tareas.id
+                   LEFT JOIN unidades ON unidades.id = insumos.unidad_id
+                   LEFT JOIN familias ON familias.id = insumos.familia_id
+                   LEFT JOIN subfamilias ON subfamilias.id = insumos.subfamilia_id
+                   LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
+                   LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id;
+                """
 
     return db.execute(statement).all()
 
@@ -98,9 +114,10 @@ def create_stock_almacen_insumo(db: Session, stock: schemas.StockAlmacenInsumoBa
 
 def get_stock_almacen(db: Session):
     statement = """
-                select * from stock_almacen_insumos
-                left join insumos on insumos.id = stock_almacen_insumos.insumo_id
-                left join almacenes on almacenes.id = stock_almacen_insumos.almacen_id
+                --sql
+                SELECT * FROM stock_almacen_insumos
+                LEFT JOIN insumos ON insumos.id = stock_almacen_insumos.insumo_id
+                LEFT JOIN almacenes ON almacenes.id = stock_almacen_insumos.almacen_id;
                 """
     return db.execute(statement).all()
 
@@ -120,14 +137,23 @@ def create_compra(
     nro_movimiento: str,
     tipo_movimiento_id: int
 ):
-
-    if fecha_vencimiento and nro_lote:
+    #compruebo si hay stock del insumo con nro_lote y fecha de vencimiento
+    if fecha_vencimiento is not None and nro_lote is not None:
+        #busco si ese insumo esta presente en la tabla de existencias
         nro_lote_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
             filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
             models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
         ).first()
-        if nro_lote_en_almacen:
+        #lo transformo a un json
+        nro_lote_en_almacen = jsonable_encoder(nro_lote_en_almacen)
+        
+        print("nro lote en almacen es:")
+        print(nro_lote_en_almacen)
+        
+        # si existe ese insumo actualizo su stock
+        if nro_lote_en_almacen and nro_lote_en_almacen['nro_lote'] is not None:
+            
             db.query(models.Stock_almacen_insumo_modelo).filter(
                 models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
                 models.Stock_almacen_insumo_modelo.nro_lote == nro_lote
@@ -135,7 +161,9 @@ def create_compra(
                 update({
                     models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
                 })
+                
         else:
+            #sino creo un nuevo stock referido a ese insumo con su respectivo nro_lote y fecha de vencimiento
             create_stock_almacen_insumo(db=db, stock={
                 "detalle": observaciones,
                 "cantidad": cantidad,
@@ -147,13 +175,20 @@ def create_compra(
                 "precio_unitario": precio_unitario,
                 "precio_total": precio_total,
             })
+            
+    #en este else cae en caso de no tener control por nro de lote o fecha_de_vencimiento
     else:
         insumo_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
             filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
             models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
         )
-        if insumo_en_almacen:
+        insumo_en_almacen = jsonable_encoder(insumo_en_almacen)
+        print("insumo_en_almacen")
+        print(insumo_en_almacen)
+        
+        #si ya esta el insumo en existencias lo busco y lo actualizo
+        if  insumo_en_almacen and insumo_en_almacen['insumo_id'] is not None:
             db.query(models.Stock_almacen_insumo_modelo).filter(
                 models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
                 models.Stock_almacen_insumo_modelo.insumo_id == insumo_id
@@ -162,6 +197,7 @@ def create_compra(
                     models.Stock_almacen_insumo_modelo.cantidad: models.Stock_almacen_insumo_modelo.cantidad + cantidad
                 })
         else:
+            #sino lo creo
             create_stock_almacen_insumo(db=db, stock={
                 "detalle": observaciones,
                 "cantidad": cantidad,
@@ -173,13 +209,19 @@ def create_compra(
                 "precio_unitario": precio_unitario,
                 "precio_total": precio_total
             })
+    
+    #######################SECCION DE VALUACIONES##############################
+    
     # busco si el metodo es el de precio segun criterio
     # de esta manera voy a poder hacer la valuacion segun ese metodo
+    
     precio_segun_criterio = db.query(Tipo_Valorizacion_Empresas).\
         filter(Tipo_Valorizacion_Empresas.empresa_id == 1,
                Tipo_Valorizacion_Empresas.metodo_id == 4).first()
     precio_segun_criterio = jsonable_encoder(precio_segun_criterio)
+    
     print(precio_segun_criterio)
+    
     if precio_segun_criterio and precio_segun_criterio['config']:
             administrar_precio_segun_criterio(
                 db=db,
@@ -396,7 +438,8 @@ def create_traslado(
 def get_movimiento_encabezado(db: Session):
 
     statement = """
-            select 
+            --sql
+            SELECT 
             encabezado_movimiento.id,
             detalle_tipo_movimiento_insumo,
             fecha_real,
@@ -405,12 +448,12 @@ def get_movimiento_encabezado(db: Session):
             origen_almacen_id,
             destino_almacen_id,
             orden_de_compra,
-            almacenes.nombre as nombre_almacen_origen,
-            a.nombre as almacen_destino,
+            almacenes.nombre AS nombre_almacen_origen,
+            a.nombre AS almacen_destino,
             detalle_tipo_movimiento_insumo
-            from encabezado_movimiento
-            left join almacenes on almacenes.id = encabezado_movimiento.origen_almacen_id 
-            left join almacenes as a  on a.id = encabezado_movimiento.destino_almacen_id
-            left join tipo_movimiento_insumos on tipo_movimiento_insumos.id = encabezado_movimiento.tipo_movimiento_id        
+            FROM encabezado_movimiento
+            LEFT JOIN almacenes ON almacenes.id = encabezado_movimiento.origen_almacen_id 
+            LEFT JOIN almacenes AS a  ON a.id = encabezado_movimiento.destino_almacen_id
+            LEFT JOIN tipo_movimiento_insumos ON tipo_movimiento_insumos.id = encabezado_movimiento.tipo_movimiento_id;        
             """
     return db.execute(statement).all()

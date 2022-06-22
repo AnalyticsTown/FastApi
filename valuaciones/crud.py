@@ -59,20 +59,28 @@ def admininistrar_peps_ueps(
     statement = ""
 
     if nro_metodo == 1:
-        statement = """SELECT * FROM
+        statement = """
+                       --sql
+                       SELECT * FROM
                        insumos_valorizacion
-                       where insumos_valorizacion.insumo_id = {insumo_id}
-                       and insumos_valorizacion.tipo_movimiento_id = 1
+                       WHERE insumos_valorizacion.insumo_id = {insumo_id}
+                       AND insumos_valorizacion.tipo_movimiento_id = 1
                        ORDER BY id DESC;""".format(
-            insumo_id=insumo_id, tipo_movimiento_id=tipo_movimiento_id)
+            insumo_id=insumo_id,
+            tipo_movimiento_id=tipo_movimiento_id
+        )
 
     if nro_metodo == 2:
-        statement = """SELECT * FROM
+        statement = """
+                       --sql
+                       SELECT * FROM
                        insumos_valorizacion
-                       where insumos_valorizacion.insumo_id = {insumo_id}
-                       and insumos_valorizacion.tipo_movimiento_id = 1
+                       WHERE insumos_valorizacion.insumo_id = {insumo_id}
+                       AND insumos_valorizacion.tipo_movimiento_id = 1
                        ORDER BY id ASC;""".format(
-            insumo_id=insumo_id, tipo_movimiento_id=tipo_movimiento_id)
+            insumo_id=insumo_id,
+            tipo_movimiento_id=tipo_movimiento_id
+        )
 
     if cantidad < 0:
         # momentaneamente por ajuste la cantidad a restar debe ser negativa
@@ -172,10 +180,11 @@ def administrar_ppp(
 ):
 
     statement = """
+    --sql
     SELECT * FROM 
     insumos_valorizacion 
-    where insumos_valorizacion.insumo_id = {insumo_id} 
-    and insumos_valorizacion.tipo_movimiento_id = 1;
+    WHERE insumos_valorizacion.insumo_id = {insumo_id} 
+    AND insumos_valorizacion.tipo_movimiento_id = 1;
     """.format(
         insumo_id=insumo_id
     )
@@ -224,10 +233,11 @@ def administrar_precio_segun_criterio(
     # en administrar criterio solo te va importar el dato que ingreses y nada mas
     # si no creaste ninguna cotizacion se usa como general el ultimo ingreso
     statement = """
+        --sql
         SELECT * FROM 
         insumos_valorizacion 
-        where insumo_id = {insumo_id} 
-        order by id desc;""".format(insumo_id=insumo_id)
+        WHERE insumo_id = {insumo_id} 
+        ORDER BY id DESC;""".format(insumo_id=insumo_id)
 
     valuaciones = db.execute(statement).all()
     valuaciones = jsonable_encoder(valuaciones)

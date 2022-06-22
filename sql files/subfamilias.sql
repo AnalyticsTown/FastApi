@@ -1,5 +1,5 @@
-insert into subfamilias (id, detalle_subfamilia)
-values  (1, 'CURASEMILLAS'),
+INSERT INTO subfamilias (id, detalle_subfamilia)
+VALUES  (1, 'CURASEMILLAS'),
         (2, 'FUNGICIDAS'),
         (3, 'HERBICIDAS'),
         (4, 'INOCULANTES'),

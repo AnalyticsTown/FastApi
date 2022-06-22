@@ -8,7 +8,9 @@ def get_tipo_almacenes(db: Session):
 
 
 def get_almacenes(db: Session):
-    statement = """select almacenes.id, 
+    statement = """
+                   --sql
+                   SELECT almacenes.id, 
                    activo, 
                    nombre, 
                    abreviatura, 
@@ -16,8 +18,9 @@ def get_almacenes(db: Session):
                    geoposicion, 
                    observaciones, 
                    detalle_tipo_almacen
-                   from almacenes
-                   inner join tipo_almacenes on tipo_almacenes.id = almacenes.almacenes_tipo_id"""
+                   FROM almacenes
+                   INNER JOIN tipo_almacenes 
+                   ON tipo_almacenes.id = almacenes.almacenes_tipo_id;"""
 
     return db.execute(statement).all()
 

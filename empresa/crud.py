@@ -20,7 +20,9 @@ def get_cond_ivas(db: Session):
 
 def get_empresas(db: Session):
     statement = """
-                            select empresas.id, 
+                             --sql
+                            SELECT 
+                            empresas.id, 
                             activo, 
                             razon_social, 
                             direccion_calle, 
@@ -32,15 +34,15 @@ def get_empresas(db: Session):
                             cuit, 
                             fecha_cierre, 
                             detalle_cond_iva, 
-                            monedas.detalle_moneda as detalle_moneda_primaria, 
-                            monedas1.detalle_moneda as detalle_moneda_secundaria, 
+                            monedas.detalle_moneda AS detalle_moneda_primaria, 
+                            monedas1.detalle_moneda AS detalle_moneda_secundaria, 
                             detalle_rubro_empresa
-                            from empresas
-                            left join cond_ivas on cond_ivas.id = empresas.cond_iva_id
-                            left join monedas on monedas.id = empresas.moneda_primaria_id
-                            left join monedas as monedas1 on monedas1.id = empresas.moneda_secundaria_id
-                            left join rubro_empresas on rubro_empresas.id = empresas.rubro_empresa_id
-    """
+                            FROM empresas
+                            LEFT JOIN cond_ivas ON cond_ivas.id = empresas.cond_iva_id
+                            LEFT JOIN monedas ON monedas.id = empresas.moneda_primaria_id
+                            LEFT JOIN monedas AS monedas1 ON monedas1.id = empresas.moneda_secundaria_id
+                            LEFT JOIN rubro_empresas ON rubro_empresas.id = empresas.rubro_empresa_id;
+                        """
 
     return db.execute(statement).all()
 
@@ -62,5 +64,3 @@ def create_empresa(db: Session, empresa: schemas.EmpresaBase):
     return db_empresa
 
 
-def elegir_metodo_valuacion():
-    ""

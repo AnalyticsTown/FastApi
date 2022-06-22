@@ -1,5 +1,5 @@
-insert into unidades (id, abr, español, ingles, portugues)
-values  (1, 'Kg','KILOGRAMO', 'KILOGRAM', 'QUILOGRAMA'),
+INSERT INTO unidades (id, abr, español, ingles, portugues)
+VALUES  (1, 'Kg','KILOGRAMO', 'KILOGRAM', 'QUILOGRAMA'),
         (2, 'm3','METRO CUBICO', 'CUBIC METER', 'METRO CUBICO'),
         (3, 'Gal','GALON', 'GALLON', 'GALÃO'),
         (4, 'Oz','ONZA', 'OUNCE', 'ONZA'),

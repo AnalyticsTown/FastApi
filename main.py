@@ -12,18 +12,20 @@ from routes.establecimiento import establecimiento
 from routes.facturacion import facturacion
 from routes.insumo import insumo
 from routes.lote import lote
-
+from routes.tests import test
 from mangum import Mangum
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.add_middleware(CORSMiddleware,
+app.add_middleware(
+                   CORSMiddleware,
                    allow_origins=['*'],
                    allow_credentials=True,
                    allow_methods=["*"],
-                   allow_headers=["*"])
+                   allow_headers=["*"]
+                   )
 
 
 app.include_router(usuario)
@@ -33,6 +35,7 @@ app.include_router(establecimiento)
 app.include_router(facturacion)
 app.include_router(insumo)
 app.include_router(lote)
+app.include_router(test)
 
 handler = Mangum(app=app)
 

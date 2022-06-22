@@ -1,5 +1,5 @@
-insert into tareas (id, detalle_tarea)
-values  (1, 'SIEMBRA'),
+INSERT INTO tareas (id, detalle_tarea)
+VALUES  (1, 'SIEMBRA'),
         (2, 'COSECHA'),
         (3, 'PREPARACION'),
         (4, 'CONSERVACION'),

@@ -16,12 +16,29 @@ def get_tipo_establecimientos(db: Session):
 
 
 def get_establecimientos(db: Session, empresa: int):
-    statement = """select establecimientos.id, activo, nombre, abreviatura, direccion, localidad, provincia, pais, 
-                   geoposicion, observaciones, contacto, detalle_zona, detalle_tipo_establecimiento, empresa_id
-                   from establecimientos
-                   left join zonas on establecimientos.zona_id = zonas.id
-                   left join tipo_establecimientos on tipo_establecimientos.id = establecimientos.establecimiento_tipo_id
-                   where empresa_id = {empresa}""".format(empresa=empresa)
+    statement = """
+                   --sql
+                   SELECT 
+                   establecimientos.id, 
+                   activo, 
+                   nombre, 
+                   abreviatura, 
+                   direccion, 
+                   localidad, 
+                   provincia, 
+                   pais, 
+                   geoposicion, 
+                   observaciones, 
+                   contacto, 
+                   detalle_zona, 
+                   detalle_tipo_establecimiento, 
+                   empresa_id
+                   FROM establecimientos
+                   LEFT JOIN zonas ON establecimientos.zona_id = zonas.id
+                   LEFT JOIN 
+                   tipo_establecimientos ON 
+                   tipo_establecimientos.id = establecimientos.establecimiento_tipo_id
+                   WHERE empresa_id = {empresa};""".format(empresa=empresa)
 
     return db.execute(statement).all()
 
@@ -54,7 +71,7 @@ def create_establecimiento(db: Session, establecimiento: schemas.Establecimiento
     db.add(db_establecimiento)
     if establecimiento.almacen_id:
         db_establecimiento.almacenes.append(almacen)
-    
+
     db.commit()
     db.refresh(db_establecimiento)
     return db_establecimiento
