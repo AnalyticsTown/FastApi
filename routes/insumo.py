@@ -30,38 +30,42 @@ def read_insumos(db: Session = Depends(get_db)):
 
 
 @insumo.post("/create_insumos/", response_model=Insumo, status_code=status.HTTP_201_CREATED, tags=['INSUMO'])
-def post_insumo(insumo: InsumoBase, db: Session = Depends(get_db)):
+def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Session = Depends(get_db)):
     db_insumo = get_insumo(db, nombre=insumo.nombre)
     if db_insumo:
         raise HTTPException(status_code=400, detail="El insumo ya existe!")
-    return create_insumo(db=db, insumo=insumo)
-
+    
+    response_sql = create_insumo(db=db, insumo=insumo)
+    response_sql = jsonable_encoder(response_sql)
+    response = {'id_sql_lite': id_sql_lite, 'id_database': response_sql['id']}
+    return JSONResponse(jsonable_encoder(response))
 
 @insumo.put("/update_insumo", tags=['INSUMO'])
 def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
-    try:
-        db.query(Alta_insumo_modelo).\
-            filter({Alta_insumo_modelo.id == id}).\
-            update({Alta_insumo_modelo.nombre: insumo.nombre,
-                    Alta_insumo_modelo.abreviatura: insumo.abreviatura,
-                    Alta_insumo_modelo.codigo_externo: insumo.codigo_externo,
-                    Alta_insumo_modelo.lote_control: insumo.lote_control,
-                    Alta_insumo_modelo.vencimiento_control: insumo.vencimiento_control,
-                    Alta_insumo_modelo.reposicion_control: insumo.reposicion_control,
-                    Alta_insumo_modelo.reposicion_cantidad: insumo.reposicion_cantidad,
-                    Alta_insumo_modelo.reposicion_alerta: insumo.reposicion_alerta_email,
-                    Alta_insumo_modelo.tarea_id: insumo.tarea_id,
-                    Alta_insumo_modelo.unidad_id: insumo.unidad_id,
-                    Alta_insumo_modelo.familia_id: insumo.familia_id,
-                    Alta_insumo_modelo.subfamilia_id: insumo.subfamilia_id,
-                    Alta_insumo_modelo.rubro_insumo_id: insumo.rubro_insumo_id,
-                    Alta_insumo_modelo.tipo_erogacion_id: insumo.tipo_erogacion_id
-                    })
-        db.commit()
-        db.refresh()
-        return JSONResponse("Insumo Actualizado exitosamente", 200)
-    except:
-        return JSONResponse("Ocurrió un error", 500)
+    # try:
+    db.query(Alta_insumo_modelo).\
+        filter(Alta_insumo_modelo.id == id).\
+        update({Alta_insumo_modelo.nombre: insumo.nombre,
+                Alta_insumo_modelo.abreviatura: insumo.abreviatura,
+                Alta_insumo_modelo.codigo_externo: insumo.codigo_externo,
+                Alta_insumo_modelo.lote_control: insumo.lote_control,
+                Alta_insumo_modelo.vencimiento_control: insumo.vencimiento_control,
+                Alta_insumo_modelo.reposicion_control: insumo.reposicion_control,
+                Alta_insumo_modelo.reposicion_cantidad: insumo.reposicion_cantidad,
+                Alta_insumo_modelo.reposicion_alerta_email: insumo.reposicion_alerta_email,
+                Alta_insumo_modelo.reposicion_alerta: insumo.reposicion_alerta,
+                Alta_insumo_modelo.tarea_id: insumo.tarea_id,
+                Alta_insumo_modelo.unidad_id: insumo.unidad_id,
+                Alta_insumo_modelo.familia_id: insumo.familia_id,
+                Alta_insumo_modelo.subfamilia_id: insumo.subfamilia_id,
+                Alta_insumo_modelo.rubro_insumo_id: insumo.rubro_insumo_id,
+                Alta_insumo_modelo.tipo_erogacion_id: insumo.tipo_erogacion_id
+                })
+    db.commit()
+    # db.refresh(Alta_insumo_modelo)
+    return JSONResponse("Insumo Actualizado exitosamente", 200)
+    # except:
+    #   return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.delete("/delete_insumos/", tags=['INSUMO'])
@@ -121,7 +125,6 @@ def read_rubro_insumos(db: Session = Depends(get_db)):
 def read_tipo_erogaciones(db: Session = Depends(get_db)):
     tipo_erogaciones = get_tipo_erogaciones(db)
     return tipo_erogaciones
-
 
 
 @insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['INSUMO'])
@@ -210,15 +213,15 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
     # busco el encabezado y lo encuentro
     encabezado = db.query(Encabezado_insumos_modelo).filter_by(
         id=movimiento.encabezado_movimiento_id).first()
-    #transformo la respuesta en un json
+    # transformo la respuesta en un json
     encabezado2 = jsonable_encoder(encabezado)
-    #busco el insumo asociado al detalle
+    # busco el insumo asociado al detalle
     insumo = db.query(Alta_insumo_modelo).filter_by(
         id=movimiento.insumo_id).first()
     insumo = jsonable_encoder(insumo)
 
     if encabezado2['tipo_movimiento_id'] == 1:
-        #si el encabezado es una compra
+        # si el encabezado es una compra
         create_compra(
             db=db,
             cantidad=movimiento.cantidad,
@@ -235,7 +238,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
         )
 
     if encabezado2['tipo_movimiento_id'] == 2:
-        #si el encabezado es un ajuste
+        # si el encabezado es un ajuste
         create_ajuste(
             db=db,
             cantidad=movimiento.cantidad,
@@ -504,7 +507,7 @@ def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
 
 
 @insumo.get('/mostrar_valorizacion_salidas/', tags=["VALUACIÓN"])
-def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
+def mostrar_valorizacion(insumo_id: int, db: Session = Depends(get_db)):
 
     statement = """
             --sql

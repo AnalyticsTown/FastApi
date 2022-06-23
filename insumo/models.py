@@ -1,6 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date, Float
+from sqlalchemy import TIMESTAMP, Boolean, Column, DateTime, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.dialects.postgresql import UUID
 from db.database import Base
+from sqlalchemy.sql import func
 import datetime
 import uuid
 
@@ -20,6 +21,7 @@ class Alta_unidad_modelo(Base):
     español = Column(String, nullable=False)
     ingles = Column(String, nullable=False)
     portugues = Column(String, nullable=False)
+
 
 class Alta_familia_modelo(Base):
     __tablename__ = "familias"
@@ -82,12 +84,11 @@ class Encabezado_insumos_modelo(Base):
     destino_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)
     orden_de_compra = Column(String(255), nullable=True)
-   
 
 
 class Alta_insumo_modelo(Base):
     __tablename__ = "insumos"
-    
+
     id = Column(Integer, primary_key=True, index=True, unique=True)
     activo = Column(Boolean, default=True)
     nombre = Column(String, nullable=False)
@@ -109,7 +110,11 @@ class Alta_insumo_modelo(Base):
     rubro_insumo_id = Column(Integer, ForeignKey(
         "rubro_insumos.id"), nullable=True)
     tipo_erogacion_id = Column(Integer, ForeignKey(
-        "tipo_erogaciones.id"), nullable=True)
+        "tipo_erogaciones.id"), nullable=True)    
+    # # Se agrego este campo timestamps
+    # created_at = Column(DateTime(timezone=True), default=func.now())
+    # update_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # delete_at = Column(DateTime, nullable=True)
 
 
 class Movimiento_detalle_modelo(Base):
@@ -128,6 +133,7 @@ class Movimiento_detalle_modelo(Base):
         Encabezado_insumos_modelo.id), nullable=False)
     precio_total = Column(Float, nullable=True)
 
+
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
     # INSUMO_ALMACEN
@@ -142,3 +148,7 @@ class Stock_almacen_insumo_modelo(Base):
         Alta_unidad_modelo.id), nullable=False)
     precio_unitario = Column(Float, nullable=True)
     precio_total = Column(Float, nullable=True)
+    # Se agrego este campo timestamps    
+    # created_at = Column(DateTime(timezone=True), default=func.now())
+    # update_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # delete_at = Column(DateTime, nullable=True)
