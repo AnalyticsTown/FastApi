@@ -51,7 +51,6 @@ class Alta_erogacion_modelo(Base):
     nombre_tipo_erogacion = Column(String, nullable=False)
     abreviatura_tipo_erogacion = Column(String, nullable=False)
 
-
 # class Lote_insumo_modelo(Base):
 #     __tablename__ = "lote_insumos"
 
