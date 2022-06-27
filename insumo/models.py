@@ -111,9 +111,9 @@ class Alta_insumo_modelo(Base):
     tipo_erogacion_id = Column(Integer, ForeignKey(
         "tipo_erogaciones.id"), nullable=True)    
     # # Se agrego este campo timestamps
-    # created_at = Column(DateTime(timezone=True), default=func.now())
-    # update_at = Column(DateTime(timezone=True), onupdate=func.now())
-    # delete_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.datetime.now(), nullable=True)
+    update_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    delete_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class Movimiento_detalle_modelo(Base):

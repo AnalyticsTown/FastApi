@@ -120,7 +120,7 @@ def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
         return JSONResponse("Ocurrió un error", 500)
 
 
-@insumo.delete("/delete_insumos/", tags=['INSUMO'])
+@insumo.delete("/delete_insumos_desarrollo/", tags=['INSUMO'])
 def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
     if id:
         statement = """
@@ -136,4 +136,15 @@ def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
     db.execute(statement)
     return "Los insumos fueron borrados"
 
+@insumo.delete("/delete_insumos/", tags=['INSUMO'])
+def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
+    try:
+        db.query(Alta_insumo_modelo).filter_by(id=id).\
+            update({Alta_insumo_modelo.delete_at: datetime.datetime.now()})
+        db.commit()
+        return JSONResponse({"response": "Insumo eliminado"}, status_code=200)
+    except Exception as e:
+        print(e) 
+        return JSONResponse({"response": "Ocurrió un error"}, status_code=500)
+        
 #################################################((***))######################################################

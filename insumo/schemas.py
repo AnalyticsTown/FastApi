@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import FetchedValue
@@ -145,14 +145,14 @@ class InsumoBase(BaseModel):
         default=None, foreign_key="rubro_insumos.id")
     tipo_erogacion_id: Optional[int] = Field(
         default=None, foreign_key="tipo_erogaciones.id")
-
+    created_at: Optional[datetime] = None
+    update_at: Optional[datetime] = None
+    delete_at: Optional[datetime] = None
+    
 
 class Insumo(InsumoBase):
     id: int
     activo: bool
-    created_at: datetime
-    update_at: datetime
-    delete_at: datetime
     
     class Config:
         orm_mode = True

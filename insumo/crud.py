@@ -65,7 +65,8 @@ def get_insumos(db: Session):
                    LEFT JOIN familias ON familias.id = insumos.familia_id
                    LEFT JOIN subfamilias ON subfamilias.id = insumos.subfamilia_id
                    LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
-                   LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id;
+                   LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id
+                   WHERE insumos.delete_at IS NULL;
                 """
 
     return db.execute(statement).all()
