@@ -1,3 +1,4 @@
+from ctypes.wintypes import tagSIZE
 from empresa.schemas import *
 from empresa.models import *
 from empresa.crud import *
@@ -11,11 +12,16 @@ from sqlalchemy.orm import Session
 from db.database import engine, get_db, Base, SessionLocal
 
 empresa = APIRouter()
+##############################################################################################################
+################################################ CRUD EMPRESA ################################################
+##############################################################################################################
+
 
 @empresa.get("/empresas/", tags=['EMPRESA'])
 def read_empresas(db: Session = Depends(get_db)):
     empresas = get_empresas(db)
     return JSONResponse(jsonable_encoder(empresas))
+
 
 @empresa.post("/create_empresas/", response_model=Empresa, status_code=status.HTTP_201_CREATED, tags=['EMPRESA'])
 def crear_empresa(empresa: EmpresaBase, db: Session = Depends(get_db)):
@@ -30,6 +36,31 @@ def crear_empresa(empresa: EmpresaBase, db: Session = Depends(get_db)):
             raise HTTPException(
                 status_code=400, detail="Completar condición ante el IVA ")
     return create_empresa(db=db, empresa=empresa)
+
+
+@empresa.put("/update_empresa/", tags=['EMPRESA'])
+def update_empresa(id: int, empresa: EmpresaBase, db: Session = Depends(get_db)):
+    try:
+        db.query(Alta_empresa_modelo).filter_by(id=id).\
+            update({
+                Alta_empresa_modelo.razon_social: empresa.razon_social,
+                Alta_empresa_modelo.direccion_calle: empresa.direccion_calle,
+                Alta_empresa_modelo.direccion_nro: empresa.direccion_nro,
+                Alta_empresa_modelo.direccion_localidad: empresa.direccion_localidad,
+                Alta_empresa_modelo.direccion_pais: empresa.direccion_pais,
+                Alta_empresa_modelo.direccion_cod_postal: empresa.direccion_cod_postal,
+                Alta_empresa_modelo.cuit: empresa.cuit,
+                Alta_empresa_modelo.fecha_cierre: empresa.fecha_cierre,
+                Alta_empresa_modelo.cond_iva_id: empresa.cond_iva_id,
+                Alta_empresa_modelo.moneda_primaria_id: empresa.moneda_primaria_id,
+                Alta_empresa_modelo.moneda_secundaria_id: empresa.moneda_secundaria_id,
+                Alta_empresa_modelo.rubro_empresa_id: empresa.rubro_empresa_id
+            })
+        db.commit()
+        return JSONResponse({"response": "Empresa actualizada exitosamente"}, status_code=200)
+    except Exception as e:
+        print(e)
+        return JSONResponse({"response": "Ocurrió un error"}, status_code=500)
 
 
 @empresa.delete("/delete_empresas/", tags=['EMPRESA'])
@@ -54,3 +85,5 @@ def read_rubro_empresas(db: Session = Depends(get_db)):
 def read_monedas(db: Session = Depends(get_db)):
     monedas = get_monedas(db)
     return monedas
+
+#################################################((***))######################################################

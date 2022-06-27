@@ -46,9 +46,9 @@ class Alta_empresa_modelo(Base):
 
     
     # Se agrego este campo timestamps    
-    created_at = Column(DateTime(timezone=True), default=func.now())
-    update_at = Column(DateTime(timezone=True), onupdate=func.now())
-    delete_at = Column(DateTime, nullable=True)
+    # created_at = Column(DateTime(timezone=True), default=func.now())
+    # update_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # delete_at = Column(DateTime, nullable=True)
 
     
     

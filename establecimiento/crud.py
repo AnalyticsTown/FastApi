@@ -11,9 +11,6 @@ def get_zonas(db: Session):
 def get_tipo_establecimientos(db: Session):
     return db.query(models.Tipo_establecimiento_modelo).all()
 
-# def get_establecimientos(db: Session):
-#     return db.query(models.Alta_establecimiento_modelo).all()
-
 
 def get_establecimientos(db: Session, empresa: int):
     statement = """
@@ -68,8 +65,12 @@ def create_establecimiento(db: Session, establecimiento: schemas.Establecimiento
         "zona_id": establecimiento.zona_id,
         "establecimiento_tipo_id": establecimiento.establecimiento_tipo_id,
     }, empresa_id=empresa_id)
+
     db.add(db_establecimiento)
+    
+    # creo la conexion de establecimiento_almacen de muchos a muchos
     if establecimiento.almacen_id:
+
         db_establecimiento.almacenes.append(almacen)
 
     db.commit()
