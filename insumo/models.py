@@ -148,6 +148,6 @@ class Stock_almacen_insumo_modelo(Base):
     precio_unitario = Column(Float, nullable=True)
     precio_total = Column(Float, nullable=True)
     # Se agrego este campo timestamps    
-    # created_at = Column(DateTime(timezone=True), default=func.now())
-    # update_at = Column(DateTime(timezone=True), onupdate=func.now())
-    # delete_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.datetime.now(), nullable=True)
+    update_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    delete_at = Column(DateTime(timezone=True), nullable=True)

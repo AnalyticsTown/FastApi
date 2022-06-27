@@ -81,6 +81,8 @@ def drop_insumos(db: Session):
 
 
 def create_insumo(db: Session, insumo: schemas.InsumoBase):
+    #insumo = insumo.dict()
+    #insumo.update({"created_at": datetime.datetime.now()})
     db_insumo = models.Alta_insumo_modelo(**insumo.dict())
     db.add(db_insumo)
     db.commit()

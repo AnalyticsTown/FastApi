@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import FetchedValue
@@ -150,6 +150,9 @@ class InsumoBase(BaseModel):
 class Insumo(InsumoBase):
     id: int
     activo: bool
-
+    created_at: datetime
+    update_at: datetime
+    delete_at: datetime
+    
     class Config:
         orm_mode = True

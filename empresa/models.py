@@ -4,7 +4,7 @@ from admin.models import Alta_admin_modelo
 from db.database import Base
 from valuaciones.models import *
 from sqlalchemy.sql import func
-
+import datetime
 class Alta_cond_IVA_modelo(Base):
     __tablename__ = "cond_ivas"
 
@@ -43,12 +43,10 @@ class Alta_empresa_modelo(Base):
     moneda_secundaria_id = Column(Integer, ForeignKey("monedas.id"), nullable=True)
     rubro_empresa_id = Column(Integer, ForeignKey("rubro_empresas.id"), nullable=True)
     admin_id = Column(String, ForeignKey(Alta_admin_modelo.id_token), nullable=False)
-
-    
     # Se agrego este campo timestamps    
-    # created_at = Column(DateTime(timezone=True), default=func.now())
-    # update_at = Column(DateTime(timezone=True), onupdate=func.now())
-    # delete_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.datetime.now(), nullable=True)
+    update_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    delete_at = Column(DateTime(timezone=True), nullable=True)
 
     
     
