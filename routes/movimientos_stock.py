@@ -1,7 +1,3 @@
-import json
-import random
-import datetime
-from re import A
 from sqlalchemy import func
 from requests import session
 from empresa.models import Alta_empresa_modelo
@@ -81,14 +77,45 @@ def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
                 """
 
     if id:
-        def filtrar(detalle):
-            return detalle['encabezado_movimiento_id'] == id
+        # def filtrar(detalle):
+        #     return detalle['encabezado_movimiento_id'] == id
 
-        detalles = jsonable_encoder(db.execute(statement).all())
-        filtrado = [d for d in detalles if filtrar(d)]
+        # detalles = jsonable_encoder(db.execute(statement).all())
+        # filtrado = [d for d in detalles if filtrar(d)]
 
-        return filtrado
+        # return filtrado
+        statement = """
+                --sql
+                SELECT
+                movimiento_detalle.id,
+                movimiento_detalle.encabezado_movimiento_id,
+                movimiento_detalle.fecha_vencimiento,
+                movimiento_detalle.cantidad,
+                movimiento_detalle.observaciones,
+                movimiento_detalle.nro_lote,
+                movimiento_detalle.precio_unitario,
+                movimiento_detalle.precio_total,
+                abr AS unidad,
+                em.nro_movimiento,
+                em.fecha_valor,
+                almacenes.nombre AS almacen_origen,
+                a.nombre AS almacen_destino,
+                t.detalle_tipo_movimiento_insumo AS movimiento,
+                i.nombre AS insumo
+                FROM movimiento_detalle
+                LEFT JOIN encabezado_movimiento AS em ON em.id = movimiento_detalle.encabezado_movimiento_id
+                LEFT JOIN tipo_movimiento_insumos AS t ON t.id = em.tipo_movimiento_id
+                LEFT JOIN almacenes AS a ON a.id = em.destino_almacen_id
+                LEFT JOIN almacenes ON almacenes.id = em.origen_almacen_id
+                LEFT JOIN unidades AS u ON u.id = movimiento_detalle.unidad_id
+                LEFT JOIN insumos AS i ON i.id = movimiento_detalle.insumo_id
+                WHERE movimiento_detalle.encabezado_movimiento_id = {id};
+        """.format(id=id)
+        
+        return db.execute(statement).all()
+    
     else:
+        
         return db.execute(statement).all()
 
 
@@ -144,7 +171,7 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
             fecha_vencimiento=movimiento.fecha_vencimiento,
             nro_lote=movimiento.nro_lote,
         )
-
+    # Despues de enviar los datos necesarios para actualizar stock creo el detalle
     return create_movimiento_detalle(db=db, movimiento={
         "insumo_id": movimiento.insumo_id,
         "cantidad": movimiento.cantidad,
@@ -160,7 +187,6 @@ def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Dep
 
 @movimiento.delete("/delete_movimiento_detalle/{id}", tags=['DETALLE-MOVIMIENTO'])
 def delete_movimiento_insumo(id: Optional[str] = None, db: Session = Depends(get_db)):
-
     try:
         if id:
             db.query(Movimiento_detalle_modelo).filter(Movimiento_detalle_modelo.id == id).\

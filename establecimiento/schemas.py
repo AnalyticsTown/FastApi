@@ -28,7 +28,7 @@ class EstablecimientoBase(BaseModel):
     contacto: Optional[str]
     zona_id: Optional[int] = Field(default=None, foreign_key="zonas.id")
     establecimiento_tipo_id: Optional[int] = Field(default=None, foreign_key="tipo_establecimientos.id")
-    almacen_id: Optional[int]
+    almacen_id: Optional[int] = None
 class Establecimiento(EstablecimientoBase):
     id: int
     activo: bool

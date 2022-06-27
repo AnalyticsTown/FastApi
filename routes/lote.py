@@ -12,6 +12,10 @@ from db.database import engine, get_db, Base  # , SessionLocal
 
 lote = APIRouter()
 
+##############################################################################################################
+################################        CRUD LOTE       ###################################################
+##############################################################################################################
+
 
 @lote.get("/lotes/", response_model=list[Lote], tags=['LOTE'])
 def read_lotes(db: Session = Depends(get_db)):
@@ -31,3 +35,4 @@ def crear_lote(lote: LoteBase, db: Session = Depends(get_db)):
 def delete_lotes(db: Session = Depends(get_db)):
     drop_lotes(db)
     return "Los lotes fueron borrados"
+#############################################(***)#############################################################
