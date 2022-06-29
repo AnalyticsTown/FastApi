@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from db.database import engine, get_db, Base  # , SessionLocal
 from valuaciones.crud import *
 insumo = APIRouter()
@@ -86,7 +87,7 @@ def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Sessi
         raise HTTPException(status_code=400, detail="El insumo ya existe!")
 
     response_sql = create_insumo(db=db, insumo=insumo)
-    #transformo a json
+    # transformo a json
     response_sql = jsonable_encoder(response_sql)
     response = {'id_sql_lite': id_sql_lite, 'id_database': response_sql['id']}
     return JSONResponse(jsonable_encoder(response))
@@ -95,6 +96,14 @@ def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Sessi
 @insumo.put("/update_insumo", tags=['INSUMO'])
 def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
     try:
+        
+        # db_insumo = get_insumo(db, nombre=insumo.nombre)
+        # if db_insumo:
+        #     raise HTTPException(status_code=400, detail="El insumo ya existe!")
+        # # if insumo.updated_at is None:
+        #     #Si no mandan por defecto el update_at se debe crear
+        #     updated_at = datetime.datetime.now()
+            
         db.query(Alta_insumo_modelo).\
             filter(Alta_insumo_modelo.id == id).\
             update({Alta_insumo_modelo.nombre: insumo.nombre,
@@ -111,12 +120,14 @@ def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
                     Alta_insumo_modelo.familia_id: insumo.familia_id,
                     Alta_insumo_modelo.subfamilia_id: insumo.subfamilia_id,
                     Alta_insumo_modelo.rubro_insumo_id: insumo.rubro_insumo_id,
-                    Alta_insumo_modelo.tipo_erogacion_id: insumo.tipo_erogacion_id
+                    Alta_insumo_modelo.tipo_erogacion_id: insumo.tipo_erogacion_id,
+                    Alta_insumo_modelo.updated_at: insumo.updated_at
                     })
         db.commit()
 
         return JSONResponse("Insumo Actualizado exitosamente", 200)
-    except:
+    except Exception as e:
+        print(e)
         return JSONResponse("Ocurrió un error", 500)
 
 
@@ -136,6 +147,7 @@ def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
     db.execute(statement)
     return "Los insumos fueron borrados"
 
+
 @insumo.delete("/delete_insumos/", tags=['INSUMO'])
 def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
     try:
@@ -144,7 +156,7 @@ def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
         db.commit()
         return JSONResponse({"response": "Insumo eliminado"}, status_code=200)
     except Exception as e:
-        print(e) 
+        print(e)
         return JSONResponse({"response": "Ocurrió un error"}, status_code=500)
-        
+
 #################################################((***))######################################################

@@ -146,8 +146,8 @@ class InsumoBase(BaseModel):
     tipo_erogacion_id: Optional[int] = Field(
         default=None, foreign_key="tipo_erogaciones.id")
     created_at: Optional[datetime] = None
-    update_at: Optional[datetime] = None
-    delete_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    deleted_at: Optional[datetime] = None
     
 
 class Insumo(InsumoBase):

@@ -112,8 +112,8 @@ class Alta_insumo_modelo(Base):
         "tipo_erogaciones.id"), nullable=True)    
     # # Se agrego este campo timestamps
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.now(), nullable=True)
-    update_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
-    delete_at = Column(DateTime(timezone=True), nullable=True)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class Movimiento_detalle_modelo(Base):
