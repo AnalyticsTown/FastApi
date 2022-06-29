@@ -152,7 +152,7 @@ def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
 def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
     try:
         db.query(Alta_insumo_modelo).filter_by(id=id).\
-            update({Alta_insumo_modelo.delete_at: datetime.datetime.now()})
+            update({Alta_insumo_modelo.deleted_at: datetime.datetime.now()})
         db.commit()
         return JSONResponse({"response": "Insumo eliminado"}, status_code=200)
     except Exception as e:
