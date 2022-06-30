@@ -18,6 +18,8 @@ from routes.stocks import stock
 from routes.valuacion import valuacion
 from mangum import Mangum
 
+
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -45,3 +47,32 @@ app.include_router(valuacion)
 
 handler = Mangum(app=app)
 
+
+
+ 
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#

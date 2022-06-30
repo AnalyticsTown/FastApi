@@ -1,6 +1,8 @@
 import json
 import random
 import datetime
+from this import s
+from helpers.pagination import paginate
 from sqlalchemy import func
 from requests import session
 from empresa.models import Alta_empresa_modelo
@@ -18,6 +20,7 @@ from sqlalchemy.sql import func
 from db.database import engine, get_db, Base  # , SessionLocal
 from valuaciones.crud import *
 insumo = APIRouter()
+
 
 ##############################################################################################################
 ################################  DATOS DE INSUMOS DE SÓLO LECTURA   #########################################
@@ -75,10 +78,11 @@ def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
 
 
 @insumo.get("/insumos/", tags=['INSUMO'])
-def read_insumos(db: Session = Depends(get_db)):
-    insumos = get_insumos(db)
-    return JSONResponse(jsonable_encoder(insumos))
-
+def read_insumos(page_num: int = 1, page_size: int = 10, db: Session = Depends(get_db)):
+    insumos = get_insumos(db=db, page_size=page_size, page_num=page_num)
+    response = paginate(db=db, data=insumos, tabla="insumos", page_size=page_size)
+    return JSONResponse(response, status_code=200) 
+   
 
 @insumo.post("/create_insumos/", response_model=Insumo, status_code=status.HTTP_201_CREATED, tags=['INSUMO'])
 def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Session = Depends(get_db)):
@@ -96,14 +100,14 @@ def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Sessi
 @insumo.put("/update_insumo", tags=['INSUMO'])
 def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
     try:
-        
+
         # db_insumo = get_insumo(db, nombre=insumo.nombre)
         # if db_insumo:
         #     raise HTTPException(status_code=400, detail="El insumo ya existe!")
         # # if insumo.updated_at is None:
         #     #Si no mandan por defecto el update_at se debe crear
         #     updated_at = datetime.datetime.now()
-            
+
         db.query(Alta_insumo_modelo).\
             filter(Alta_insumo_modelo.id == id).\
             update({Alta_insumo_modelo.nombre: insumo.nombre,

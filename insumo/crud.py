@@ -1,3 +1,4 @@
+from pydoc import pager
 from fastapi.encoders import jsonable_encoder
 from typing import Optional
 from sqlalchemy.orm import Session
@@ -37,7 +38,7 @@ def get_movimiento_insumos(db: Session):  # Se agregó
     return db.query(models.Alta_tipo_movimiento_modelo).all()
 
 
-def get_insumos(db: Session):
+def get_insumos(page_size: int, page_num: int, db: Session):
     statement = """
                    --sql
                    SELECT 
@@ -67,10 +68,13 @@ def get_insumos(db: Session):
                    LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
                    LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id
                    WHERE insumos.deleted_at IS NULL
-                   ORDER BY insumos.created_at;
-                """
+                   ORDER BY insumos.created_at
+                   LIMIT {page_size}
+                   OFFSET ({page_num} - 1) * {page_size};
+                """.format(page_size=page_size, page_num=page_num)
 
-    return db.execute(statement).all()
+    response = db.execute(statement).all()
+    return jsonable_encoder(response)
 
 
 def get_insumo(db: Session, nombre: str):
@@ -269,7 +273,7 @@ def create_ajuste(
                 models.Stock_almacen_insumo_modelo.cantidad:
                     models.Stock_almacen_insumo_modelo.cantidad + cantidad
             })
-        #si la cantidad del ajuste es negativa se va a restar
+        # si la cantidad del ajuste es negativa se va a restar
         if cantidad < 0:
             ajuste = db.query(models.Stock_almacen_insumo_modelo).filter(
                 models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
@@ -349,7 +353,7 @@ def create_traslado(
                         models.Stock_almacen_insumo_modelo.cantidad:
                             models.Stock_almacen_insumo_modelo.cantidad - cantidad
                     }
-                )
+            )
 
             # ALMACEN DESTINO
             db.query(models.Stock_almacen_insumo_modelo).filter(
@@ -372,7 +376,7 @@ def create_traslado(
                         models.Stock_almacen_insumo_modelo.cantidad:
                             models.Stock_almacen_insumo_modelo.cantidad - cantidad
                     }
-                )
+            )
             almacen = db.query(models.Stock_almacen_insumo_modelo).filter(
                 models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_origen,
                 models.Stock_almacen_insumo_modelo.nro_lote == nro_lote).first()
