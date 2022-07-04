@@ -78,11 +78,17 @@ def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
 
 
 @insumo.get("/insumos/", tags=['INSUMO'])
-def read_insumos(page_num: int = 1, page_size: int = 10, db: Session = Depends(get_db)):
+def read_insumos(
+    page_num: Optional[int] = None,
+    page_size: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
     insumos = get_insumos(db=db, page_size=page_size, page_num=page_num)
-    response = paginate(db=db, data=insumos, tabla="insumos", page_size=page_size)
-    return JSONResponse(response, status_code=200) 
-   
+    
+    response = paginate(db=db, data=insumos,
+                        tabla="insumos", page_size=page_size)
+    return JSONResponse(response, status_code=200)
+
 
 @insumo.post("/create_insumos/", response_model=Insumo, status_code=status.HTTP_201_CREATED, tags=['INSUMO'])
 def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Session = Depends(get_db)):

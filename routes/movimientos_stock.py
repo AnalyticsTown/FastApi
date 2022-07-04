@@ -1,22 +1,19 @@
-from sqlalchemy import func
-from requests import session
-from empresa.models import Alta_empresa_modelo
 from helpers.pagination import paginate
 from insumo.schemas import *
 from insumo.models import *
 from insumo.crud import *
 from fastapi import APIRouter
-from typing import Union
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import  Depends, status
 from sqlalchemy.orm import Session
-from db.database import engine, get_db, Base  # , SessionLocal
+from db.database import  get_db
 from valuaciones.crud import *
 from  stocks.crud import *
 from stocks.crud_movimientos_stock import *
+
 movimiento = APIRouter()
+
 ##############################################################################################################
 ################################  MOVIMIENTOS ENCABEZADO Y DETALLE   #########################################
 ##############################################################################################################

@@ -10,6 +10,8 @@ from valuaciones.models import *
 ####################################################################################################
 ################################ DATOS DE INSUMOS DE SOLO LECTURA ##################################
 ####################################################################################################
+
+
 def get_tareas(db: Session):
     return db.query(models.Alta_tarea_modelo).all()
 
@@ -41,40 +43,73 @@ def get_movimiento_insumos(db: Session):  # Se agregó
 ################################ CRUD INSUMOS   ####################################################
 ####################################################################################################
 
+
 def get_insumos(page_size: int, page_num: int, db: Session):
-    statement = """
-                   --sql
-                   SELECT 
-                   insumos.id, 
-                   activo, 
-                   nombre, 
-                   abreviatura, 
-                   codigo_externo, 
-                   lote_control, 
-                   vencimiento_control, 
-                   reposicion_control, 
-                   reposicion_cantidad, 
-                   reposicion_alerta,
-                   reposicion_alerta_email, 
-                   detalle_tarea, 
-                   abr, 
-                   detalle_familia, 
-                   detalle_subfamilia, 
-                   detalle_rubro_insumo, 
-                   nombre_tipo_erogacion, 
-                   abreviatura_tipo_erogacion
-                   FROM insumos
-                   LEFT JOIN tareas ON insumos.tarea_id = tareas.id
-                   LEFT JOIN unidades ON unidades.id = insumos.unidad_id
-                   LEFT JOIN familias ON familias.id = insumos.familia_id
-                   LEFT JOIN subfamilias ON subfamilias.id = insumos.subfamilia_id
-                   LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
-                   LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id
-                   WHERE insumos.deleted_at IS NULL
-                   ORDER BY insumos.created_at
-                   LIMIT {page_size}
-                   OFFSET ({page_num} - 1) * {page_size};
-                """.format(page_size=page_size, page_num=page_num)
+    if page_size and page_num:
+        statement = """
+                    --sql
+                    SELECT 
+                    insumos.id, 
+                    activo, 
+                    nombre, 
+                    abreviatura, 
+                    codigo_externo, 
+                    lote_control, 
+                    vencimiento_control, 
+                    reposicion_control, 
+                    reposicion_cantidad, 
+                    reposicion_alerta,
+                    reposicion_alerta_email, 
+                    detalle_tarea, 
+                    abr, 
+                    detalle_familia, 
+                    detalle_subfamilia, 
+                    detalle_rubro_insumo, 
+                    nombre_tipo_erogacion, 
+                    abreviatura_tipo_erogacion
+                    FROM insumos
+                    LEFT JOIN tareas ON insumos.tarea_id = tareas.id
+                    LEFT JOIN unidades ON unidades.id = insumos.unidad_id
+                    LEFT JOIN familias ON familias.id = insumos.familia_id
+                    LEFT JOIN subfamilias ON subfamilias.id = insumos.subfamilia_id
+                    LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
+                    LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id
+                    WHERE insumos.deleted_at IS NULL
+                    ORDER BY insumos.created_at
+                    LIMIT {page_size}
+                    OFFSET ({page_num} - 1) * {page_size};
+                    """.format(page_size=page_size, page_num=page_num)
+    else:
+        statement = """
+                    --sql
+                    SELECT 
+                    insumos.id, 
+                    activo, 
+                    nombre, 
+                    abreviatura, 
+                    codigo_externo, 
+                    lote_control, 
+                    vencimiento_control, 
+                    reposicion_control, 
+                    reposicion_cantidad, 
+                    reposicion_alerta,
+                    reposicion_alerta_email, 
+                    detalle_tarea, 
+                    abr, 
+                    detalle_familia, 
+                    detalle_subfamilia, 
+                    detalle_rubro_insumo, 
+                    nombre_tipo_erogacion, 
+                    abreviatura_tipo_erogacion
+                    FROM insumos
+                    LEFT JOIN tareas ON insumos.tarea_id = tareas.id
+                    LEFT JOIN unidades ON unidades.id = insumos.unidad_id
+                    LEFT JOIN familias ON familias.id = insumos.familia_id
+                    LEFT JOIN subfamilias ON subfamilias.id = insumos.subfamilia_id
+                    LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
+                    LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id
+                    WHERE insumos.deleted_at IS NULL
+                    ORDER BY insumos.created_at;"""
 
     response = db.execute(statement).all()
     return jsonable_encoder(response)
@@ -95,11 +130,3 @@ def create_insumo(db: Session, insumo: schemas.InsumoBase):
     db.commit()
     db.refresh(db_insumo)
     return db_insumo
-
-
-
-
-
-
-
-
