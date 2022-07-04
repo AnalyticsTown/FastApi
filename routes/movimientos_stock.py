@@ -1,6 +1,7 @@
 from sqlalchemy import func
 from requests import session
 from empresa.models import Alta_empresa_modelo
+from helpers.pagination import paginate
 from insumo.schemas import *
 from insumo.models import *
 from insumo.crud import *
@@ -13,7 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from db.database import engine, get_db, Base  # , SessionLocal
 from valuaciones.crud import *
-
+from  stocks.crud import *
+from stocks.crud_movimientos_stock import *
 movimiento = APIRouter()
 ##############################################################################################################
 ################################  MOVIMIENTOS ENCABEZADO Y DETALLE   #########################################
@@ -23,8 +25,10 @@ movimiento = APIRouter()
 ###################################    ENCABEZADO CRUD    ####################################################
 
 @movimiento.get("/encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
-def get_encabezado_movimiento(db: Session = Depends(get_db)):
-    return get_movimiento_encabezado(db=db)
+def get_encabezado_movimiento(page_size: int = 10, page_num: int = 1, db: Session = Depends(get_db)):
+    movimiento = get_movimiento_encabezado(
+        db=db, page_size=page_size, page_num=page_num)
+    return paginate(data=movimiento, tabla="encabezado_movimiento", page_size=page_size, db=db)
 
 
 @movimiento.post("/create_encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
@@ -47,77 +51,9 @@ def borrar_encabezados(db: Session = Depends(get_db)):
 ###################################    DETALLE  CRUD    ####################################################
 
 @movimiento.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
-def movimiento_detalle(id: Optional[str] = None, db: Session = Depends(get_db)):
-
-    statement = """
-                --sql
-                SELECT
-                movimiento_detalle.id,
-                movimiento_detalle.encabezado_movimiento_id,
-                movimiento_detalle.fecha_vencimiento,
-                movimiento_detalle.cantidad,
-                movimiento_detalle.observaciones,
-                movimiento_detalle.nro_lote,
-                movimiento_detalle.precio_unitario,
-                movimiento_detalle.precio_total,
-                abr AS unidad,
-                em.nro_movimiento,
-                em.fecha_valor,
-                almacenes.nombre AS almacen_origen,
-                a.nombre AS almacen_destino,
-                t.detalle_tipo_movimiento_insumo AS movimiento,
-                i.nombre AS insumo
-                FROM movimiento_detalle
-                LEFT JOIN encabezado_movimiento AS em ON em.id = movimiento_detalle.encabezado_movimiento_id
-                LEFT JOIN tipo_movimiento_insumos AS t ON t.id = em.tipo_movimiento_id
-                LEFT JOIN almacenes AS a ON a.id = em.destino_almacen_id
-                LEFT JOIN almacenes ON almacenes.id = em.origen_almacen_id
-                LEFT JOIN unidades AS u ON u.id = movimiento_detalle.unidad_id
-                LEFT JOIN insumos AS i ON i.id = movimiento_detalle.insumo_id;
-                """
-
-    if id:
-        # def filtrar(detalle):
-        #     return detalle['encabezado_movimiento_id'] == id
-
-        # detalles = jsonable_encoder(db.execute(statement).all())
-        # filtrado = [d for d in detalles if filtrar(d)]
-
-        # return filtrado
-        statement = """
-                --sql
-                SELECT
-                movimiento_detalle.id,
-                movimiento_detalle.encabezado_movimiento_id,
-                movimiento_detalle.fecha_vencimiento,
-                movimiento_detalle.cantidad,
-                movimiento_detalle.observaciones,
-                movimiento_detalle.nro_lote,
-                movimiento_detalle.precio_unitario,
-                movimiento_detalle.precio_total,
-                abr AS unidad,
-                em.nro_movimiento,
-                em.fecha_valor,
-                almacenes.nombre AS almacen_origen,
-                a.nombre AS almacen_destino,
-                t.detalle_tipo_movimiento_insumo AS movimiento,
-                i.nombre AS insumo
-                FROM movimiento_detalle
-                LEFT JOIN encabezado_movimiento AS em ON em.id = movimiento_detalle.encabezado_movimiento_id
-                LEFT JOIN tipo_movimiento_insumos AS t ON t.id = em.tipo_movimiento_id
-                LEFT JOIN almacenes AS a ON a.id = em.destino_almacen_id
-                LEFT JOIN almacenes ON almacenes.id = em.origen_almacen_id
-                LEFT JOIN unidades AS u ON u.id = movimiento_detalle.unidad_id
-                LEFT JOIN insumos AS i ON i.id = movimiento_detalle.insumo_id
-                WHERE movimiento_detalle.encabezado_movimiento_id = {id};
-        """.format(id=id)
-        
-        return db.execute(statement).all()
+def movimiento_detalle(page_num: Optional[int] = None, page_size: Optional[int] = None, id: Optional[str] = None, db: Session = Depends(get_db)):
+    return get_movimiento_detalle(db=db, page_num=page_num, page_size=page_size, id=id)
     
-    else:
-        
-        return db.execute(statement).all()
-
 
 @movimiento.post("/create_movimiento_detalle/",  status_code=status.HTTP_201_CREATED, tags=['DETALLE-MOVIMIENTO'])
 def crear_movimiento_insumo(movimiento: MovimientoDetalleBase, db: Session = Depends(get_db)):
