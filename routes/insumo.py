@@ -1,29 +1,16 @@
-import json
-import random
-import datetime
-import re
-from this import s
-from tkinter import E
-
-from django.http import JsonResponse
 from helpers.pagination import paginate
-from sqlalchemy import JSON, func
-from requests import session
-from empresa.models import Alta_empresa_modelo
 from insumo.schemas import *
 from insumo.models import *
 from insumo.crud import *
 from fastapi import APIRouter
-from typing import Union
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import  Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
-from db.database import engine, get_db, Base  # , SessionLocal
+from db.database import  get_db
 from valuaciones.crud import *
-
+from responses.errors import *
+from responses.success import * 
 insumo = APIRouter()
 
 
@@ -42,7 +29,7 @@ def read_tareas(db: Session = Depends(get_db)):
     except Exception as e:
 
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.get("/insumo/unidades/", response_model=list[Unidad], tags=['INSUMO'])
@@ -53,7 +40,7 @@ def read_unidades(db: Session = Depends(get_db)):
 
     except Exception as e:
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.get("/insumo/familias/", response_model=list[Familia], tags=['INSUMO'])
@@ -65,7 +52,7 @@ def read_familias(db: Session = Depends(get_db)):
     except Exception as e:
 
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.get("/insumo/subfamilias/", response_model=list[Subfamilia], tags=['INSUMO'])
@@ -73,45 +60,54 @@ def read_subfamilias(db: Session = Depends(get_db)):
     try:
         subfamilias = get_subfamilias(db)
         return JSONResponse(subfamilias, 200)
+    
     except Exception as e:
+        
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.get("/insumo/rubro_insumos/", response_model=list[RubroInsumo], tags=['INSUMO'])
 def read_rubro_insumos(db: Session = Depends(get_db)):
     try:
+        
         rubro_insumos = get_rubro_insumos(db)
         return JSONResponse(rubro_insumos, 200)
 
     except Exception as e:
 
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.get("/insumo/tipo_erogaciones/", response_model=list[TipoErogacion], tags=['INSUMO'])
 def read_tipo_erogaciones(db: Session = Depends(get_db)):
 
     try:
+        
         tipo_erogaciones = get_tipo_erogaciones(db)
-        return tipo_erogaciones
+        return JSONResponse(tipo_erogaciones, 200)
+    
     except Exception as e:
+        
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['INSUMO'])
 def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
-    # return get_movimiento_insumos(db)
+    
     try:
+        
         response = db.query(Alta_tipo_movimiento_modelo).all()
         return JSONResponse(response, 200)
 
     except Exception as e:
+        
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
-#################################################((***))######################################################
+        return JSONResponse(error_1, 500)
+
+
 
 
 ##############################################################################################################
@@ -140,7 +136,7 @@ def read_insumos(
     except Exception as e:
 
         print(e)
-        return JSONResponse("Ocurrió un error", 200)
+        return JSONResponse(error_1, 200)
 
 
 @insumo.post("/create_insumos/", response_model=Insumo, status_code=status.HTTP_201_CREATED, tags=['INSUMO'])
@@ -148,19 +144,22 @@ def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Sessi
     try:
         db_insumo = get_insumo(db, nombre=insumo.nombre)
         if db_insumo:
-            raise HTTPException(status_code=400, detail="El insumo ya existe!")
+            raise HTTPException(status_code=400, detail=error_3)
 
         response_sql = create_insumo(db=db, insumo=insumo)
+        
         # transformo a json
         response_sql = jsonable_encoder(response_sql)
-        response = {'id_sql_lite': id_sql_lite,
-                    'id_database': response_sql['id']}
+        response = {
+            'id_sql_lite': id_sql_lite,
+            'id_database': response_sql['id']
+            }
         return JSONResponse(jsonable_encoder(response))
 
     except Exception as e:
 
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.put("/update_insumo", tags=['INSUMO'])
@@ -171,7 +170,7 @@ def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
 
         if db_insumo:
             raise HTTPException(
-                status_code=400, detail="Existe un insumo con el mismo nombre")
+                status_code=400, detail=error_3)
 
         db.query(Alta_insumo_modelo).\
             filter(Alta_insumo_modelo.id == id).\
@@ -194,12 +193,12 @@ def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
                     })
         db.commit()
 
-        return JSONResponse("Insumo Actualizado exitosamente", 200)
+        return JSONResponse(success_1, 200)
 
     except Exception as e:
 
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.delete("/delete_insumos_desarrollo/", tags=['INSUMO'])
@@ -218,11 +217,11 @@ def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
                     """
 
         db.execute(statement)
-        return JSONResponse("Registro eliminado", 200)
+        return JSONResponse(success_3, 200)
 
     except Exception as e:
         print(e)
-        return JSONResponse("Ocurrió un error", 500)
+        return JSONResponse(error_1, 500)
 
 
 @insumo.delete("/delete_insumos/", tags=['INSUMO'])
@@ -232,11 +231,11 @@ def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
             update({Alta_insumo_modelo.deleted_at: datetime.datetime.now()})
         db.commit()
 
-        return JSONResponse({"response": "Insumo eliminado"}, status_code=200)
+        return JSONResponse(success_3, status_code=200)
 
     except Exception as e:
 
         print(e)
-        return JSONResponse({"response": "Ocurrió un error"}, status_code=500)
+        return JSONResponse(error_1, status_code=500)
 
 #################################################((***))######################################################

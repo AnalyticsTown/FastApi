@@ -1,7 +1,8 @@
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-import math
 from typing import Optional
+import math
+
 
 
 def paginate(db: Session, data: list, tabla: str, page_size: Optional[int] = None):
