@@ -1,9 +1,13 @@
 import json
 import random
 import datetime
+import re
 from this import s
+from tkinter import E
+
+from django.http import JsonResponse
 from helpers.pagination import paginate
-from sqlalchemy import func
+from sqlalchemy import JSON, func
 from requests import session
 from empresa.models import Alta_empresa_modelo
 from insumo.schemas import *
@@ -19,6 +23,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 from db.database import engine, get_db, Base  # , SessionLocal
 from valuaciones.crud import *
+
 insumo = APIRouter()
 
 
@@ -29,46 +34,83 @@ insumo = APIRouter()
 
 @insumo.get("/insumo/tareas/", response_model=list[Tarea], tags=['INSUMO'])
 def read_tareas(db: Session = Depends(get_db)):
-    tareas = get_tareas(db)
-    return tareas
+    try:
+
+        tareas = get_tareas(db)
+        return JSONResponse(tareas, 200)
+
+    except Exception as e:
+
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.get("/insumo/unidades/", response_model=list[Unidad], tags=['INSUMO'])
 def read_unidades(db: Session = Depends(get_db)):
-    unidades = get_unidades(db)
-    return unidades
+    try:
+        unidades = get_unidades(db)
+        return JSONResponse(unidades, 200)
+
+    except Exception as e:
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.get("/insumo/familias/", response_model=list[Familia], tags=['INSUMO'])
 def read_familias(db: Session = Depends(get_db)):
-    familias = get_familias(db)
-    return familias
+    try:
+        familias = get_familias(db)
+        return JSONResponse(familias, 200)
+
+    except Exception as e:
+
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.get("/insumo/subfamilias/", response_model=list[Subfamilia], tags=['INSUMO'])
 def read_subfamilias(db: Session = Depends(get_db)):
-    subfamilias = get_subfamilias(db)
-    return subfamilias
+    try:
+        subfamilias = get_subfamilias(db)
+        return JSONResponse(subfamilias, 200)
+    except Exception as e:
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.get("/insumo/rubro_insumos/", response_model=list[RubroInsumo], tags=['INSUMO'])
 def read_rubro_insumos(db: Session = Depends(get_db)):
-    rubro_insumos = get_rubro_insumos(db)
-    return rubro_insumos
+    try:
+        rubro_insumos = get_rubro_insumos(db)
+        return JSONResponse(rubro_insumos, 200)
+
+    except Exception as e:
+
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.get("/insumo/tipo_erogaciones/", response_model=list[TipoErogacion], tags=['INSUMO'])
 def read_tipo_erogaciones(db: Session = Depends(get_db)):
-    tipo_erogaciones = get_tipo_erogaciones(db)
-    return tipo_erogaciones
+
+    try:
+        tipo_erogaciones = get_tipo_erogaciones(db)
+        return tipo_erogaciones
+    except Exception as e:
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['INSUMO'])
 def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
     # return get_movimiento_insumos(db)
-    return db.query(Alta_tipo_movimiento_modelo).all()
+    try:
+        response = db.query(Alta_tipo_movimiento_modelo).all()
+        return JSONResponse(response, 200)
 
-
+    except Exception as e:
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 #################################################((***))######################################################
 
 
@@ -83,36 +125,53 @@ def read_insumos(
     page_size: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
-    insumos = get_insumos(db=db, page_size=page_size, page_num=page_num)
-    
-    response = paginate(db=db, data=insumos,
-                        tabla="insumos", page_size=page_size)
-    return JSONResponse(response, status_code=200)
+
+    try:
+
+        insumos = get_insumos(db=db, page_size=page_size, page_num=page_num)
+
+        response = paginate(db=db,
+                            data=insumos,
+                            tabla="insumos",
+                            page_size=page_size
+                            )
+        return JSONResponse(response, status_code=200)
+
+    except Exception as e:
+
+        print(e)
+        return JSONResponse("Ocurrió un error", 200)
 
 
 @insumo.post("/create_insumos/", response_model=Insumo, status_code=status.HTTP_201_CREATED, tags=['INSUMO'])
 def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Session = Depends(get_db)):
-    db_insumo = get_insumo(db, nombre=insumo.nombre)
-    if db_insumo:
-        raise HTTPException(status_code=400, detail="El insumo ya existe!")
+    try:
+        db_insumo = get_insumo(db, nombre=insumo.nombre)
+        if db_insumo:
+            raise HTTPException(status_code=400, detail="El insumo ya existe!")
 
-    response_sql = create_insumo(db=db, insumo=insumo)
-    # transformo a json
-    response_sql = jsonable_encoder(response_sql)
-    response = {'id_sql_lite': id_sql_lite, 'id_database': response_sql['id']}
-    return JSONResponse(jsonable_encoder(response))
+        response_sql = create_insumo(db=db, insumo=insumo)
+        # transformo a json
+        response_sql = jsonable_encoder(response_sql)
+        response = {'id_sql_lite': id_sql_lite,
+                    'id_database': response_sql['id']}
+        return JSONResponse(jsonable_encoder(response))
+
+    except Exception as e:
+
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.put("/update_insumo", tags=['INSUMO'])
 def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
     try:
 
-        # db_insumo = get_insumo(db, nombre=insumo.nombre)
-        # if db_insumo:
-        #     raise HTTPException(status_code=400, detail="El insumo ya existe!")
-        # # if insumo.updated_at is None:
-        #     #Si no mandan por defecto el update_at se debe crear
-        #     updated_at = datetime.datetime.now()
+        db_insumo = get_insumo(db, nombre=insumo.nombre)
+
+        if db_insumo:
+            raise HTTPException(
+                status_code=400, detail="Existe un insumo con el mismo nombre")
 
         db.query(Alta_insumo_modelo).\
             filter(Alta_insumo_modelo.id == id).\
@@ -136,26 +195,34 @@ def update_insumo(insumo: InsumoBase, id: int, db: Session = Depends(get_db)):
         db.commit()
 
         return JSONResponse("Insumo Actualizado exitosamente", 200)
+
     except Exception as e:
+
         print(e)
         return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.delete("/delete_insumos_desarrollo/", tags=['INSUMO'])
 def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
-    if id:
-        statement = """
-            --sql
-            DELETE FROM insumos 
-            WHERE id = {id};
-            """.format(id=id)
-    else:
-        statement = """
+    try:
+        if id:
+            statement = """
                 --sql
-                TRUNCATE TABLE insumos CASCADE;
-                """
-    db.execute(statement)
-    return "Los insumos fueron borrados"
+                DELETE FROM insumos 
+                WHERE id = {id};
+                """.format(id=id)
+        else:
+            statement = """
+                    --sql
+                    TRUNCATE TABLE insumos CASCADE;
+                    """
+
+        db.execute(statement)
+        return JSONResponse("Registro eliminado", 200)
+
+    except Exception as e:
+        print(e)
+        return JSONResponse("Ocurrió un error", 500)
 
 
 @insumo.delete("/delete_insumos/", tags=['INSUMO'])
@@ -164,8 +231,11 @@ def delete_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
         db.query(Alta_insumo_modelo).filter_by(id=id).\
             update({Alta_insumo_modelo.deleted_at: datetime.datetime.now()})
         db.commit()
+
         return JSONResponse({"response": "Insumo eliminado"}, status_code=200)
+
     except Exception as e:
+
         print(e)
         return JSONResponse({"response": "Ocurrió un error"}, status_code=500)
 
