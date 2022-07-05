@@ -83,6 +83,11 @@ class Encabezado_insumos_modelo(Base):
     destino_almacen_id = Column(
         Integer, ForeignKey("almacenes.id"), nullable=True)
     orden_de_compra = Column(String(255), nullable=True)
+    created_at = Column(DateTime(timezone=True),
+                        default=datetime.datetime.now(), nullable=True)
+    updated_at = Column(DateTime(timezone=True),
+                        onupdate=func.now(), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class Alta_insumo_modelo(Base):
@@ -109,10 +114,12 @@ class Alta_insumo_modelo(Base):
     rubro_insumo_id = Column(Integer, ForeignKey(
         "rubro_insumos.id"), nullable=True)
     tipo_erogacion_id = Column(Integer, ForeignKey(
-        "tipo_erogaciones.id"), nullable=True)    
+        "tipo_erogaciones.id"), nullable=True)
     # # Se agrego este campo timestamps
-    created_at = Column(DateTime(timezone=True), default=datetime.datetime.now(), nullable=True)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    created_at = Column(DateTime(timezone=True),
+                        default=datetime.datetime.now(), nullable=True)
+    updated_at = Column(DateTime(timezone=True),
+                        onupdate=func.now(), nullable=True)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
@@ -131,7 +138,12 @@ class Movimiento_detalle_modelo(Base):
     encabezado_movimiento_id = Column(UUID, ForeignKey(
         Encabezado_insumos_modelo.id), nullable=False)
     precio_total = Column(Float, nullable=True)
-
+    created_at = Column(DateTime(timezone=True),
+                        default=datetime.datetime.now(), nullable=True)
+    updated_at = Column(DateTime(timezone=True),
+                        onupdate=func.now(), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    
 
 class Stock_almacen_insumo_modelo(Base):
     __tablename__ = "stock_almacen_insumos"
@@ -147,7 +159,9 @@ class Stock_almacen_insumo_modelo(Base):
         Alta_unidad_modelo.id), nullable=False)
     precio_unitario = Column(Float, nullable=True)
     precio_total = Column(Float, nullable=True)
-    # Se agrego este campo timestamps    
-    created_at = Column(DateTime(timezone=True), default=datetime.datetime.now(), nullable=True)
-    update_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    # Se agrego este campo timestamps
+    created_at = Column(DateTime(timezone=True),
+                        default=datetime.datetime.now(), nullable=True)
+    update_at = Column(DateTime(timezone=True),
+                       onupdate=func.now(), nullable=True)
     delete_at = Column(DateTime(timezone=True), nullable=True)

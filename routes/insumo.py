@@ -1,16 +1,16 @@
-from helpers.pagination import paginate
-from insumo.schemas import *
-from insumo.models import *
-from insumo.crud import *
+from modules.helpers.pagination import paginate
+from modules.insumo.schemas import *
+from modules.insumo.models import *
+from modules.insumo.crud import *
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi import  Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from db.database import  get_db
-from valuaciones.crud import *
-from responses.errors import *
-from responses.success import * 
+from modules.valuaciones.crud import *
+from modules.helpers.errors import *
+from modules.helpers.success import * 
 insumo = APIRouter()
 
 

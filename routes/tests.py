@@ -4,10 +4,10 @@ import random
 from randomtimestamp import randomtimestamp
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from insumo.models import *
+from modules.insumo.models import *
 from sqlalchemy.orm import Session
-from db.database import engine, get_db, Base, SessionLocal
-from fastapi import FastAPI, Depends, HTTPException, status
+from db.database import get_db
+from fastapi import Depends
 
 #ENRUTADOR#
 test = APIRouter()

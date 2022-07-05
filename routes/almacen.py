@@ -1,14 +1,12 @@
-from almacen.schemas import *
-from almacen.models import *
-from almacen.crud import *
+from modulos.almacen.schemas import *
+from modulos.almacen.models import *
+from modulos.almacen.crud import *
 from fastapi import APIRouter
-from typing import Union
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import  Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from db.database import engine, get_db, Base  # , SessionLocal
+from db.database import get_db
 
 almacen = APIRouter()
 

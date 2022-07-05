@@ -1,14 +1,11 @@
-from facturacion.schemas import *
-from facturacion.models import *
-from facturacion.crud import *
+from modules.facturacion.schemas import *
+from modules.facturacion.models import *
+from modules.facturacion.crud import *
 from fastapi import APIRouter
-from typing import Union
-from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from db.database import engine, get_db, Base  # , SessionLocal
+from db.database import get_db
 
 facturacion = APIRouter()
 

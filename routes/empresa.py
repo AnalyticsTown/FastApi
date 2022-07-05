@@ -1,15 +1,12 @@
-from ctypes.wintypes import tagSIZE
-from empresa.schemas import *
-from empresa.models import *
-from empresa.crud import *
+from modules.empresa.schemas import *
+from modules.empresa.models import *
+from modules.empresa.crud import *
 from fastapi import APIRouter
-from typing import Union
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import  Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from db.database import engine, get_db, Base, SessionLocal
+from db.database import get_db
 
 empresa = APIRouter()
 ##############################################################################################################

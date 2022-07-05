@@ -6,13 +6,13 @@ from fastapi.responses import JSONResponse
 from decouple import config
 from dotenv import load_dotenv
 
-from usuario.models import *
-from usuario.schemas import *
-from usuario.crud import *
+from modules.usuario.models import *
+from modules.usuario.schemas import *
+from modules.usuario.crud import *
 
-from admin.crud import *
-from admin.models import *
-from admin.schemas import *
+from modules.admin.crud import *
+from modules.admin.models import *
+from modules.admin.schemas import *
 
 from db.database import get_db
 from fastapi import Depends

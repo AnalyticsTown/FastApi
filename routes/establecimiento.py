@@ -1,15 +1,13 @@
 from pydantic import Json
-from establecimiento.schemas import *
-from establecimiento.models import *
-from establecimiento.crud import *
+from modules.establecimiento.schemas import *
+from modules.establecimiento.models import *
+from modules.establecimiento.crud import *
 from fastapi import APIRouter
-from typing import Union
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from db.database import engine, get_db, Base  # , SessionLocal
+from db.database import get_db
 
 establecimiento = APIRouter()
 
