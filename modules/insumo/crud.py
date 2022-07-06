@@ -1,4 +1,6 @@
+from typing import Optional
 from fastapi.encoders import jsonable_encoder
+from graphene import DateTime
 from sqlalchemy.orm import Session
 from insumo import models, schemas
 from valuaciones.models import *
@@ -40,8 +42,19 @@ def get_movimiento_insumos(db: Session):  # Se agregó
 ####################################################################################################
 
 
-def get_insumos(page_size: int, page_num: int, db: Session):
+def get_insumos(db: Session, page_size: int, page_num: int, fecha: Optional[DateTime] = None):
+
+    # compruebo si esta
+    if fecha is not None:
+
+        date = "AND created_at > {fecha}".format(fecha=fecha)
+
+    else:
+
+        date = " "
+
     if page_size and page_num:
+
         statement = """
                     --sql
                     SELECT 
@@ -71,11 +84,14 @@ def get_insumos(page_size: int, page_num: int, db: Session):
                     LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
                     LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id
                     WHERE insumos.deleted_at IS NULL
+                    {date}
                     ORDER BY insumos.created_at
                     LIMIT {page_size}
                     OFFSET ({page_num} - 1) * {page_size};
-                    """.format(page_size=page_size, page_num=page_num)
+                    """.format(page_size=page_size, page_num=page_num, date=date)
+
     else:
+
         statement = """
                     --sql
                     SELECT 
@@ -105,7 +121,8 @@ def get_insumos(page_size: int, page_num: int, db: Session):
                     LEFT JOIN rubro_insumos ON rubro_insumos.id = insumos.rubro_insumo_id
                     LEFT JOIN tipo_erogaciones ON tipo_erogaciones.id = insumos.tipo_erogacion_id
                     WHERE insumos.deleted_at IS NULL
-                    ORDER BY insumos.created_at;"""
+                    {date}
+                    ORDER BY insumos.created_at;""".format(date=date)
 
     response = db.execute(statement).all()
     return jsonable_encoder(response)

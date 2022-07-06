@@ -119,12 +119,13 @@ def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
 def read_insumos(
     page_num: Optional[int] = None,
     page_size: Optional[int] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db), 
+    fecha: Optional[DateTime] = None
 ):
 
     try:
 
-        insumos = get_insumos(db=db, page_size=page_size, page_num=page_num)
+        insumos = get_insumos(db=db, page_size=page_size, page_num=page_num, fecha=fecha)
 
         response = paginate(db=db,
                             data=insumos,
