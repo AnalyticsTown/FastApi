@@ -1,6 +1,6 @@
 from datetime import date
 from sqlalchemy import Boolean, Column, Integer, String, Date, ForeignKey
-from empresa.models import Alta_empresa_modelo
+from modules.empresa.models import Alta_empresa_modelo
 from tablas_relacionales.models import *
 from db.database import Base
 
