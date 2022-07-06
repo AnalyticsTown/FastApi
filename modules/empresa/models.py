@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey, DateTime
 from sqlalchemy.sql.sqltypes import Integer, String, Date, Boolean
-from admin.models import Alta_admin_modelo
+from modules.admin.models import Alta_admin_modelo
 from db.database import Base
 from valuaciones.models import *
 from sqlalchemy.sql import func
