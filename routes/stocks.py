@@ -7,7 +7,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from db.database import get_db
 from modules.valuaciones.crud import *
-from modules.helpers.errors import * 
+from modules.helpers.errors import *
 from modules.helpers.success import *
 
 stock = APIRouter()
@@ -20,6 +20,16 @@ stock = APIRouter()
 @stock.get("/existencias/", tags=['EXISTENCIAS'])
 def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
     try:
+
+        if id:
+
+            text = "WHERE stock_almacen_insumos.almacen_id = {id}".format(
+                id=id)
+
+        else:
+
+            text = " "
+
         statement = """
                         --sql
                         SELECT 
@@ -40,24 +50,16 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                         LEFT JOIN almacenes ON almacenes.id = stock_almacen_insumos.almacen_id
                         LEFT JOIN unidades ON unidades.id = stock_almacen_insumos.unidad_id
                         {text};
-                        """
+                        """.format(text=" ")
 
-        if id:
-        
-            text = "WHERE stock_almacen_insumos.almacen_id = {id}".format(id=id)
-            statement.format(text=text)
-        
-        else:
-        
-            statement.format(text=" ")
-
-        response = db.execute(statement).all()       
+        response = db.execute(statement).all()
         return JSONResponse(response, 200)
-    
+
     except Exception as e:
-        
+
         print(e)
         return JSONResponse()
+
 
 @stock.get("/existencias/total/", tags=['EXISTENCIAS'])
 def get_existencias_total(id: Optional[int] = None, total: Optional[bool] = None, db: Session = Depends(get_db)):
@@ -131,14 +133,15 @@ def get_existencias_total(id: Optional[int] = None, total: Optional[bool] = None
                     unidad, 
                     almacenes.nombre;
                 """
-                
+
         response = db.execute(statement).all()
         return JSONResponse(response, 200)
-    
+
     except Exception as e:
-        
+
         print(e)
         return JSONResponse(error_1, 500)
+
 
 @stock.delete('/existencias_desarrollo/', tags=['EXISTENCIAS'])
 def borrar_existencias(db: Session = Depends(get_db)):

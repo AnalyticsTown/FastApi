@@ -24,7 +24,7 @@ def read_tareas(db: Session = Depends(get_db)):
     try:
 
         tareas = get_tareas(db)
-        return JSONResponse(tareas, 200)
+        return tareas
 
     except Exception as e:
 
@@ -36,7 +36,7 @@ def read_tareas(db: Session = Depends(get_db)):
 def read_unidades(db: Session = Depends(get_db)):
     try:
         unidades = get_unidades(db)
-        return JSONResponse(unidades, 200)
+        return unidades
 
     except Exception as e:
         print(e)
@@ -47,7 +47,7 @@ def read_unidades(db: Session = Depends(get_db)):
 def read_familias(db: Session = Depends(get_db)):
     try:
         familias = get_familias(db)
-        return JSONResponse(familias, 200)
+        return familias
 
     except Exception as e:
 
@@ -59,7 +59,7 @@ def read_familias(db: Session = Depends(get_db)):
 def read_subfamilias(db: Session = Depends(get_db)):
     try:
         subfamilias = get_subfamilias(db)
-        return JSONResponse(subfamilias, 200)
+        return subfamilias
     
     except Exception as e:
         
@@ -72,7 +72,7 @@ def read_rubro_insumos(db: Session = Depends(get_db)):
     try:
         
         rubro_insumos = get_rubro_insumos(db)
-        return JSONResponse(rubro_insumos, 200)
+        return rubro_insumos
 
     except Exception as e:
 
@@ -86,7 +86,7 @@ def read_tipo_erogaciones(db: Session = Depends(get_db)):
     try:
         
         tipo_erogaciones = get_tipo_erogaciones(db)
-        return JSONResponse(tipo_erogaciones, 200)
+        return tipo_erogaciones
     
     except Exception as e:
         
@@ -100,7 +100,7 @@ def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
     try:
         
         response = db.query(Alta_tipo_movimiento_modelo).all()
-        return JSONResponse(response, 200)
+        return response
 
     except Exception as e:
         
