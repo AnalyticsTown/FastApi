@@ -1,4 +1,4 @@
-from sqlalchemy import TIMESTAMP, Boolean, Column, DateTime, Integer, String, ForeignKey, Date, Float
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, ForeignKey, Date, Float
 from sqlalchemy.dialects.postgresql import UUID
 from db.database import Base
 from sqlalchemy.sql import func
@@ -115,7 +115,7 @@ class Alta_insumo_modelo(Base):
         "rubro_insumos.id"), nullable=True)
     tipo_erogacion_id = Column(Integer, ForeignKey(
         "tipo_erogaciones.id"), nullable=True)
-    # # Se agrego este campo timestamps
+    # Se agrego este campo timestamps
     created_at = Column(DateTime(timezone=True),
                         default=datetime.datetime.now(), nullable=True)
     updated_at = Column(DateTime(timezone=True),

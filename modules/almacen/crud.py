@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-
 from almacen import models, schemas
 
 
@@ -7,7 +6,7 @@ def get_tipo_almacenes(db: Session):
     return db.query(models.Tipo_almacen_modelo).all()
 
 
-def get_almacenes(db: Session):
+def get_almacenes(db: Session, page_size: int, page_num: int):
     statement = """
                    --sql
                    SELECT almacenes.id, 
@@ -20,7 +19,10 @@ def get_almacenes(db: Session):
                    detalle_tipo_almacen
                    FROM almacenes
                    INNER JOIN tipo_almacenes 
-                   ON tipo_almacenes.id = almacenes.almacenes_tipo_id;"""
+                   ON tipo_almacenes.id = almacenes.almacenes_tipo_id
+                   LIMIT {page_size}
+                   OFFSET ({page_num} - 1) * {page_size};
+                """.format(page_size=page_size, page_num=page_num)
 
     return db.execute(statement).all()
 

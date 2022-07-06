@@ -15,6 +15,7 @@ requests = "*"
 mangum = "*"
 randomtimestamp = "*"
 fastapi-pagination = {extras = ["all"], version = "*"}
+pytz = "*"
 
 [dev-packages]
 autopep8 = "*"

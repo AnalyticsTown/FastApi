@@ -1,10 +1,6 @@
-from pydoc import pager
 from fastapi.encoders import jsonable_encoder
-from typing import Optional
 from sqlalchemy.orm import Session
 from insumo import models, schemas
-from sqlalchemy import update
-from valuaciones.crud import administrar_precio_segun_criterio, create_valorizacion, ejecutar_metodo_valorizacion
 from valuaciones.models import *
 
 ####################################################################################################

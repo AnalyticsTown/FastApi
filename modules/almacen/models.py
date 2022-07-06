@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
+from sqlalchemy.sql import func
 from tablas_relacionales.models import *
 from sqlalchemy.orm import relationship
 from db.database import Base
-from establecimiento.models import Alta_establecimiento_modelo
-
+import datetime
 
 class Tipo_almacen_modelo(Base):
     __tablename__ = "tipo_almacenes"
@@ -26,3 +26,9 @@ class Alta_almacen_modelo(Base):
         "tipo_almacenes.id"), nullable=True)
     establecimientos = relationship(
         "Alta_establecimiento_modelo", secondary='establecimiento_almacenes', overlaps="almacenes")
+    created_at = Column(DateTime(timezone=True),
+                        default=datetime.datetime.now(), nullable=True)
+    updated_at = Column(DateTime(timezone=True),
+                        onupdate=func.now(), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    

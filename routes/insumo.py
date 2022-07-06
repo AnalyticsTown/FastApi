@@ -131,6 +131,7 @@ def read_insumos(
                             tabla="insumos",
                             page_size=page_size
                             )
+        
         return JSONResponse(response, status_code=200)
 
     except Exception as e:

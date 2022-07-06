@@ -1,10 +1,12 @@
-from modulos.almacen.schemas import *
-from modulos.almacen.models import *
-from modulos.almacen.crud import *
+from modules.almacen.schemas import *
+from modules.almacen.models import *
+from modules.almacen.crud import *
+from modules.helpers.pagination import paginate
+from modules.helpers.errors import *
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import  Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from db.database import get_db
 
@@ -14,22 +16,47 @@ almacen = APIRouter()
 ################################        CRUD ALMACENES     ###################################################
 ##############################################################################################################
 
+
 @almacen.get("/almacenes/", tags=['ALMACEN'])
-def read_almacenes(db: Session = Depends(get_db)):
-    almacenes = get_almacenes(db)
-    return JSONResponse(jsonable_encoder(almacenes))
+def read_almacenes(page_num: int, page_size: int, db: Session = Depends(get_db)):
+    try:
+        
+        almacenes = get_almacenes(db)
+        response = paginate(
+                            db=db, 
+                            data=almacenes,
+                            tabla="almacenes", 
+                            page_size=page_size
+                            )
+        
+        return JSONResponse(response, 200)
+    
+    except Exception as e:
+        
+        print(e)
+        return JSONResponse(error_1, 500)
 
 
-@almacen.post("/create_almacenes/", response_model=AlmacenBase, status_code=status.HTTP_201_CREATED, tags=['ALMACEN'])
+@almacen.post("/create_almacenes", response_model=AlmacenBase, status_code=status.HTTP_201_CREATED, tags=['ALMACEN'])
 def crear_almacen(almacen: AlmacenBase, db: Session = Depends(get_db)):
-    db_almacen = get_almacen(db, nombre=almacen.nombre)
-    if db_almacen:
-        raise HTTPException(status_code=400, detail="El almacen ya existe!")
-    return create_almacen(db=db, almacen=almacen)
-
+    try:
+        
+        db_almacen = get_almacen(db, nombre=almacen.nombre)
+        if db_almacen:
+            raise HTTPException(status_code=400, detail="El almacen ya existe!")
+        
+        response = create_almacen(db=db, almacen=almacen)
+        return JSONResponse(response, 200)
+    
+    except Exception as e:
+        
+        print(e)
+        return JSONResponse(error_1, 500)
+    
 @almacen.put('/update_almacen/', tags=["ALMACEN"])
 def update_almacen(almacen: AlmacenBase, id: int, db: Session = Depends(get_db)):
-    try:    
+    try:
+    
         db.query(Alta_almacen_modelo).\
             filter_by(id=id).\
             update({
@@ -42,18 +69,26 @@ def update_almacen(almacen: AlmacenBase, id: int, db: Session = Depends(get_db))
             })
         db.commit()
         return JSONResponse("Almacen actualizado", 200)
-    except:
-        return JSONResponse("Hubo un error", 500)
     
+    except Exception as e:
+        
+        print(e)
+        return JSONResponse("Hubo un error", 500)
+
+
 @almacen.delete("/delete_almacenes/", tags=['ALMACEN'])
 def delete_almacenes(id: Optional[int] = None, db: Session = Depends(get_db)):
-    try:    
+    try:
+        
         if id:
+        
             db.query(Alta_almacen_modelo).filter_by(id=id).\
                 delete(synchronize_session=False)
             db.commit()
             return JSONResponse({'response': "El Almacen eliminado"})
+        
         else:
+        
             statement = """
             --sql
             TRUNCATE TABLE establecimiento_almacenes cascade;
@@ -65,16 +100,23 @@ def delete_almacenes(id: Optional[int] = None, db: Session = Depends(get_db)):
             """
             db.execute(statement)
             db.commit()
-            return  "Almacenes eliminados"
+            return "Almacenes eliminados"
+    
     except Exception as e:
+        
         print(e)
-        return JSONResponse({'response': "El Almacen posee información relacionada para ser eliminado"})
+        return JSONResponse({'response': "El Almacen posee información relacionada para ser eliminado"}, 500)
+
 
 @almacen.get("/almacen/tipo_almacenes/", response_model=list[TipoAlmacen], tags=['ALMACEN'])
 def read_tipo_almacenes(db: Session = Depends(get_db)):
-    try:    
+    
+    try:
+                
         tipo_almacenes = get_tipo_almacenes(db)
-        return tipo_almacenes
+        return JSONResponse(tipo_almacenes, 200) 
+    
     except Exception as e:
+        
         print(e)
-        return JSONResponse({"response": "Ocurrió un error"}, 500)
+        return JSONResponse(error_1, 500)
