@@ -120,7 +120,7 @@ def read_insumos(
     page_num: Optional[int] = None,
     page_size: Optional[int] = None,
     db: Session = Depends(get_db), 
-    fecha: Optional[DateTime] = None
+    fecha: Optional[str] = None
 ):
 
     try:

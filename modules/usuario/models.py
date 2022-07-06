@@ -1,7 +1,7 @@
 from datetime import date
 from sqlalchemy import Boolean, Column, Integer, String, Date, ForeignKey
 from modules.empresa.models import Alta_empresa_modelo
-from tablas_relacionales.models import *
+from modules.tablas_relacionales.models import *
 from db.database import Base
 
 class Alta_rol_modelo(Base):

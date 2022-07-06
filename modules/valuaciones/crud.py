@@ -2,12 +2,12 @@ from ast import In
 from fastapi.encoders import jsonable_encoder
 from typing import Optional
 from sqlalchemy.orm import Session
-from insumo import models, schemas
-from valuaciones.schemas import *
+from modules.insumo import models, schemas
+from modules.valuaciones.schemas import *
 from sqlalchemy import update
 import datetime
 import json
-from valuaciones.models import *
+from modules.valuaciones.models import *
 
 
 def create_valorizacion(

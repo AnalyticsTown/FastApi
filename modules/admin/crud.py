@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from admin import models, schemas
+from modules.admin import models, schemas
 
 def create_admin(db: Session, admin: schemas.Admin_base):
     db_admin = models.Alta_admin_modelo(**admin.dict())

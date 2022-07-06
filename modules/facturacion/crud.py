@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from facturacion import models, schemas
+from modules.facturacion import models, schemas
 
 def get_facturaciones(db: Session):
     return db.query(models.Alta_facturacion_modelo).all()

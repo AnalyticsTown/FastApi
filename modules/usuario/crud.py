@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from usuario import models, schemas
+from modules.usuario import models, schemas
 
 
 def crear_empleado(db: Session, empleado: schemas.Usuario):

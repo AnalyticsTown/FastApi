@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from lote import models, schemas
+from modules.lote import models, schemas
 
 def get_lotes(db: Session):
     return db.query(models.Alta_lote_modelo).all()

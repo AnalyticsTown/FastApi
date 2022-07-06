@@ -2,8 +2,8 @@ from typing import Optional
 from fastapi.encoders import jsonable_encoder
 from graphene import DateTime
 from sqlalchemy.orm import Session
-from insumo import models, schemas
-from valuaciones.models import *
+from modules.insumo import models, schemas
+from modules.valuaciones.models import *
 
 ####################################################################################################
 ################################ DATOS DE INSUMOS DE SOLO LECTURA ##################################

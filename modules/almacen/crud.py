@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from almacen import models, schemas
+from modules.almacen import models, schemas
 
 
 def get_tipo_almacenes(db: Session):

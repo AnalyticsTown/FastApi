@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from almacen.models import Alta_almacen_modelo
+from modules.almacen.models import Alta_almacen_modelo
 
-from establecimiento import models, schemas
+from modules.establecimiento import models, schemas
 
 
 def get_zonas(db: Session):

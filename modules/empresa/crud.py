@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from empresa import models, schemas
+from modules.empresa import models, schemas
 
 
 def get_rubro_empresas(db: Session):
