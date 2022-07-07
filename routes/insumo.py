@@ -11,6 +11,7 @@ from db.database import  get_db
 from modules.valuaciones.crud import *
 from modules.helpers.errors import *
 from modules.helpers.success import * 
+
 insumo = APIRouter()
 
 
@@ -156,7 +157,7 @@ def post_insumo(insumo: InsumoBase, id_sql_lite: Optional[int] = None, db: Sessi
             'id_sql_lite': id_sql_lite,
             'id_database': response_sql['id']
             }
-        return JSONResponse(jsonable_encoder(response))
+        return JSONResponse(jsonable_encoder(response), 200)
 
     except Exception as e:
 

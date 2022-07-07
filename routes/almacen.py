@@ -18,7 +18,7 @@ almacen = APIRouter()
 
 
 @almacen.get("/almacenes/", tags=['ALMACEN'])
-def read_almacenes(page_num: int, page_size: int, db: Session = Depends(get_db)):
+def read_almacenes(page_num: Optional[int] = None, page_size: Optional[int] = None, db: Session = Depends(get_db)):
     try:
         
         almacenes = get_almacenes(db)
@@ -46,7 +46,7 @@ def crear_almacen(almacen: AlmacenBase, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="El almacen ya existe!")
         
         response = create_almacen(db=db, almacen=almacen)
-        return JSONResponse(response, 200)
+        return response
     
     except Exception as e:
         
@@ -85,6 +85,7 @@ def delete_almacenes(id: Optional[int] = None, db: Session = Depends(get_db)):
             db.query(Alta_almacen_modelo).filter_by(id=id).\
                 delete(synchronize_session=False)
             db.commit()
+            
             return JSONResponse({'response': "El Almacen eliminado"})
         
         else:
@@ -100,7 +101,8 @@ def delete_almacenes(id: Optional[int] = None, db: Session = Depends(get_db)):
             """
             db.execute(statement)
             db.commit()
-            return "Almacenes eliminados"
+            
+            return JSONResponse({'response': "Almacenes eliminados"})
     
     except Exception as e:
         
@@ -114,7 +116,7 @@ def read_tipo_almacenes(db: Session = Depends(get_db)):
     try:
                 
         tipo_almacenes = get_tipo_almacenes(db)
-        return JSONResponse(tipo_almacenes, 200) 
+        return tipo_almacenes 
     
     except Exception as e:
         
