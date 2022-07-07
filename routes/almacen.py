@@ -21,15 +21,15 @@ almacen = APIRouter()
 def read_almacenes(page_num: Optional[int] = None, page_size: Optional[int] = None, db: Session = Depends(get_db)):
     try:
         
-        almacenes = get_almacenes(db=db, page_num=page_num, page_size=page_size)
-        response = paginate(
-                            db=db, 
-                            data=almacenes,
-                            tabla="almacenes", 
-                            page_size=page_size
-                            )
+        almacenes = get_almacenes(db=db)
+        #response = paginate(
+        #                    db=db, 
+        #                    data=almacenes,
+        #                    tabla="almacenes", 
+        #                    page_size=page_size
+        #                    )
         
-        return JSONResponse(response, 200)
+        return almacenes
     
     except Exception as e:
         
