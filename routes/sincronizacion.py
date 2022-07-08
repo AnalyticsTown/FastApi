@@ -78,9 +78,37 @@ def get_auditoria_usuarios(db: Session = Depends(get_db)):
 @sincro.get('/insumos_valorizacion', tags=['SINCRONIZACION'])
 def get_insumos_valorizacion(db: Session = Depends(get_db)):
     try:
+
         return db.query(Insumos_valorizacion).all()
 
     except Exception as e:
 
+        print(e)
+        return JSONResponse(error_1, 500)
+
+
+@sincro.get('/tipo_metodo_valorizacion', tags=['SINCRONIZACION'])
+def get_tipo_metodo_valorizacion(db: Session = Depends(get_db)):
+    try:
+        return db.query(Tipo_Metodo_Valorizacion).all()
+    except Exception as e:
+        print(e)
+        return JSONResponse(error_1, 500)
+
+
+@sincro.get('/tipo_valorizacion_empresas', tags=['SINCRONIZACION'])
+def get_tipo_valorizacion_empresas(db: Session = Depends(get_db)):
+    try:
+        return db.query(Tipo_Valorizacion_Empresas).all()
+    except Exception as e:
+        print(e)
+        return JSONResponse(error_1, 500)
+
+
+@sincro.get('/historicos_precio_segun_criterio', tags=["SINCRONIZACION"])
+def get_historicos_precio_segun_criterio(db: Session = Depends(get_db)):
+    try:
+        return db.query(Historicos_Precio_Segun_Criterio).all()
+    except Exception as e:
         print(e)
         return JSONResponse(error_1, 500)
