@@ -1,5 +1,6 @@
 from typing import Optional
 from sqlalchemy.orm import Session
+from modules.helpers.pagination import pagination_sql
 from modules.insumo import models, schemas
 from modules.valuaciones.models import *
 
@@ -11,9 +12,9 @@ from modules.valuaciones.models import *
 def get_stock_almacen(db: Session):
     statement = """
                 --sql
-                SELECT * FROM stock_almacen_insumos
-                LEFT JOIN insumos ON insumos.id = stock_almacen_insumos.insumo_id
-                LEFT JOIN almacenes ON almacenes.id = stock_almacen_insumos.almacen_id;
+                SELECT * FROM stocks
+                LEFT JOIN insumos ON insumos.id = stocks.insumo_id
+                LEFT JOIN almacenes ON almacenes.id = stocks.almacen_id;
                 """
     return db.execute(statement).all()
 
@@ -41,13 +42,14 @@ def create_movimiento_detalle(db: Session, movimiento: schemas.MovimientoDetalle
 
 def get_movimiento_detalle(
     db: Session, 
-    page_size: Optional[int], 
-    page_num: Optional[int], 
-    id: Optional[int]
-    ):
-
+    id: Optional[int],
+    page_size: Optional[int] = None, 
+    page_num: Optional[int] = None 
+):
+    text = pagination_sql(page_num=page_num, page_size=page_size)
+    
     if id:
-
+        
         statement = """
                 --sql
                 SELECT
@@ -102,10 +104,9 @@ def get_movimiento_detalle(
                 LEFT JOIN almacenes ON almacenes.id = em.origen_almacen_id
                 LEFT JOIN unidades AS u ON u.id = movimiento_detalle.unidad_id
                 LEFT JOIN insumos AS i ON i.id = movimiento_detalle.insumo_id
-                LIMIT {page_size}
-                OFFSET ({page_num} - 1) * {page_size};        
-            """.format(page_size=page_size, page_num=page_num)
-
+                {text};
+                """.format(text=text)
+    
     return db.execute(statement).all()
 
 
@@ -126,6 +127,7 @@ def create_encabezado_movimiento(db: Session, encabezado: schemas.EncabezadoInsu
 
 
 def get_movimiento_encabezado(db: Session, page_size: int, page_num: int):
+    
     if page_size and page_num:
         statement = """
                 --sql

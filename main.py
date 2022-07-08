@@ -16,6 +16,7 @@ from routes.tests import test
 from routes.movimientos_stock import movimiento
 from routes.stocks import stock
 from routes.valuacion import valuacion
+from routes.sincronizacion import sincro
 from mangum import Mangum
 
 
@@ -44,6 +45,7 @@ app.include_router(test)
 app.include_router(movimiento)
 app.include_router(stock)
 app.include_router(valuacion)
+app.include_router(sincro)
 
 handler = Mangum(app=app)
 

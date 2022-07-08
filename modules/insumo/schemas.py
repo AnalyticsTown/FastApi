@@ -58,7 +58,7 @@ class TipoErogacion(BaseModel):
 #     nro_lote: str
 #     fecha_vencimiento: date
 #     stock_id: Optional[int] = Field(
-#         default=None, foreign_key="stock_almacen_insumos.id")
+#         default=None, foreign_key="stocks.id")
 
 #     class Config:
 #         orm_mode = True
@@ -131,10 +131,10 @@ class InsumoBase(BaseModel):
     lote_control: Optional[bool]
     vencimiento_control: Optional[bool]
     reposicion_control: Optional[bool]
-    # Se agrego este campo. Viene de la tabla stock_almacen_insumos
+    # Se agrego este campo. Viene de la tabla stocks
     reposicion_cantidad: Optional[float]
     reposicion_alerta: Optional[bool]
-    # Se agrego este campo. Viene de la tabla stock_almacen_insumos
+    # Se agrego este campo. Viene de la tabla stocks
     reposicion_alerta_email: Optional[EmailStr]
     tarea_id: Optional[int] = Field(default=None, foreign_key="tareas.id")
     unidad_id: Optional[int] = Field(default=None, foreign_key="unidades.id")

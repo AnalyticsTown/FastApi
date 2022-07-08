@@ -24,7 +24,11 @@ movimiento = APIRouter()
 ###################################    ENCABEZADO CRUD    ####################################################
 
 @movimiento.get("/encabezado_movimiento/", tags=['ENCABEZADO MOVIMIENTO'])
-def get_encabezado_movimiento(page_size: int = 10, page_num: int = 1, db: Session = Depends(get_db)):
+def get_encabezado_movimiento(
+    page_size: Optional[int] = None,
+    page_num: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
     try:
         movimiento = get_movimiento_encabezado(
             db=db, page_size=page_size, page_num=page_num)
@@ -83,15 +87,16 @@ def delete_encabezados(id: int, db: Session = Depends(get_db)):
 
 ###################################    DETALLE  CRUD    ####################################################
 
-@movimiento.get('/movimiento_detalle/', tags=['DETALLE-MOVIMIENTO'])
+@movimiento.get('/movimiento_detalle', tags=['DETALLE-MOVIMIENTO'])
 def movimiento_detalle(page_num: Optional[int] = None, page_size: Optional[int] = None, id: Optional[str] = None, db: Session = Depends(get_db)):
     try:
-        response = get_movimiento_detalle(
+        movimiento_detalle = get_movimiento_detalle(
             db=db,
             page_num=page_num,
             page_size=page_size,
             id=id
         )
+        response = paginate(db=db, data=movimiento_detalle, tabla="movimiento_detalle", page_size=page_size)
         return JSONResponse(response, 200)
 
     except Exception as e:

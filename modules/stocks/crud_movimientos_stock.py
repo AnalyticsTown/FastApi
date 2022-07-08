@@ -32,7 +32,7 @@ def create_compra(
 ):
     # compruebo si hay stock del insumo con nro_lote y fecha de vencimiento
     if fecha_vencimiento is not None and nro_lote is not None:
-        # busco si ese insumo esta presente en la tabla de existencias
+        # busco si ese insumo esta presente en la tabla de stocks
         nro_lote_en_almacen = db.query(models.Stock_almacen_insumo_modelo).\
             filter(
             models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,
@@ -79,7 +79,7 @@ def create_compra(
         )
         insumo_en_almacen = jsonable_encoder(insumo_en_almacen)
 
-        # si ya esta el insumo en existencias lo busco y lo actualizo
+        # si ya esta el insumo en stocks lo busco y lo actualizo
         if insumo_en_almacen and insumo_en_almacen['insumo_id'] is not None:
             db.query(models.Stock_almacen_insumo_modelo).filter(
                 models.Stock_almacen_insumo_modelo.almacen_id == id_almacen_destino,

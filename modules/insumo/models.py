@@ -58,7 +58,7 @@ class Alta_erogacion_modelo(Base):
 #     nro_lote = Column(String, nullable=True, unique=True)
 #     fecha_vencimiento = Column(Date, nullable=True)
 #     stock_id = Column(Integer, ForeignKey(
-#         "stock_almacen_insumos.id"), nullable=True)
+#         "stocks.id"), nullable=True)
 
 
 class Alta_tipo_movimiento_modelo(Base):
@@ -101,10 +101,10 @@ class Alta_insumo_modelo(Base):
     lote_control = Column(Boolean, nullable=True)
     vencimiento_control = Column(Boolean, nullable=True)
     reposicion_control = Column(Boolean, nullable=True)
-    # Se agrego este campo. Viene de la tabla stock_almacen_insumos
+    # Se agrego este campo. Viene de la tabla stocks
     reposicion_cantidad = Column(Float, nullable=True)
     reposicion_alerta = Column(Boolean, nullable=True)
-    # Se agrego este campo. Viene de la tabla stock_almacen_insumos
+    # Se agrego este campo. Viene de la tabla stocks
     reposicion_alerta_email = Column(String, nullable=True)
     tarea_id = Column(Integer, ForeignKey("tareas.id"), nullable=True)
     unidad_id = Column(Integer, ForeignKey("unidades.id"), nullable=True)
@@ -146,7 +146,7 @@ class Movimiento_detalle_modelo(Base):
     
 
 class Stock_almacen_insumo_modelo(Base):
-    __tablename__ = "stock_almacen_insumos"
+    __tablename__ = "stocks"
     # INSUMO_ALMACEN
     id = Column(Integer, primary_key=True, index=True, unique=True)
     cantidad = Column(Float, nullable=False)
