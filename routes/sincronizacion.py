@@ -52,7 +52,7 @@ def get_usuarios(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@sincro.get('/usuarios', tags=["SINCRONIZACION"])
+@sincro.get('/roles', tags=["SINCRONIZACION"])
 def get_roles_modelos(db: Session = Depends(get_db)):
 
     try:

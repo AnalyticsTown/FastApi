@@ -9,7 +9,7 @@ from db.database import get_db
 from modules.valuaciones.crud import *
 from modules.helpers.errors import *
 from modules.helpers.success import *
-from modules.helpers.pagination import pagination_sql
+from modules.helpers.pagination import paginate, pagination_sql
 stock = APIRouter()
 
 ##############################################################################################################
@@ -18,9 +18,9 @@ stock = APIRouter()
 
 
 @stock.get("/stocks/", tags=['stocks'])
-def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_db)):
+def get_movimiento_insumos(page_size: Optional[int] = None, page_num: Optional[int] = None, id: Optional[int] = None, db: Session = Depends(get_db)):
     try:
-        text = pagination_sql(id=id)
+        text = pagination_sql(page_size=page_size, page_num=page_num)
 
         statement = """
                         --sql
@@ -44,7 +44,8 @@ def get_movimiento_insumos(id: Optional[int] = None, db: Session = Depends(get_d
                         {text};
                         """.format(text=" ")
 
-        response = db.execute(statement).all()
+        stocks = db.execute(statement).all()
+        response = paginate(db=db, data=stocks, tabla="stocks", page_size=page_size)
         return JSONResponse(response, 200)
 
     except Exception as e:
