@@ -66,19 +66,19 @@ def delete_empresas(db: Session = Depends(get_db)):
     return "Las empresas fueron borradas"
 
 
-@empresa.get("/empresa/cond_ivas/", response_model=list[CondicionIva], tags=['EMPRESA'])
+@empresa.get("/empresa/cond_ivas/", response_model=list[CondicionIva], tags=['SOLO LECTURA'])
 def read_cond_ivas(db: Session = Depends(get_db)):
     cond_ivas = get_cond_ivas(db)
     return cond_ivas
 
 
-@empresa.get("/empresa/rubro_empresas/", response_model=list[RubroEmpresa], tags=['EMPRESA'])
+@empresa.get("/empresa/rubro_empresas/", response_model=list[RubroEmpresa], tags=['SOLO LECTURA'])
 def read_rubro_empresas(db: Session = Depends(get_db)):
     rubro_empresas = get_rubro_empresas(db)
     return rubro_empresas
 
 
-@empresa.get("/empresa/monedas/", response_model=list[Moneda], tags=['EMPRESA'])
+@empresa.get("/empresa/monedas/", response_model=list[Moneda], tags=['SOLO LECTURA'])
 def read_monedas(db: Session = Depends(get_db)):
     monedas = get_monedas(db)
     return monedas

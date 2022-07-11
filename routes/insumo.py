@@ -20,7 +20,7 @@ insumo = APIRouter()
 ##############################################################################################################
 
 
-@insumo.get("/insumo/tareas/", response_model=list[Tarea], tags=['INSUMO'])
+@insumo.get("/insumo/tareas/", response_model=list[Tarea], tags=['SOLO LECTURA'])
 def read_tareas(db: Session = Depends(get_db)):
     try:
 
@@ -33,7 +33,7 @@ def read_tareas(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@insumo.get("/insumo/unidades/", response_model=list[Unidad], tags=['INSUMO'])
+@insumo.get("/insumo/unidades/", response_model=list[Unidad], tags=['SOLO LECTURA'])
 def read_unidades(db: Session = Depends(get_db)):
     try:
         unidades = get_unidades(db)
@@ -44,7 +44,7 @@ def read_unidades(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@insumo.get("/insumo/familias/", response_model=list[Familia], tags=['INSUMO'])
+@insumo.get("/insumo/familias/", response_model=list[Familia], tags=['SOLO LECTURA'])
 def read_familias(db: Session = Depends(get_db)):
     try:
         familias = get_familias(db)
@@ -56,7 +56,7 @@ def read_familias(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@insumo.get("/insumo/subfamilias/", response_model=list[Subfamilia], tags=['INSUMO'])
+@insumo.get("/insumo/subfamilias/", response_model=list[Subfamilia], tags=['SOLO LECTURA'])
 def read_subfamilias(db: Session = Depends(get_db)):
     try:
         subfamilias = get_subfamilias(db)
@@ -68,7 +68,7 @@ def read_subfamilias(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@insumo.get("/insumo/rubro_insumos/", response_model=list[RubroInsumo], tags=['INSUMO'])
+@insumo.get("/insumo/rubro_insumos/", response_model=list[RubroInsumo], tags=['SOLO LECTURA'])
 def read_rubro_insumos(db: Session = Depends(get_db)):
     try:
         
@@ -81,7 +81,7 @@ def read_rubro_insumos(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@insumo.get("/insumo/tipo_erogaciones/", response_model=list[TipoErogacion], tags=['INSUMO'])
+@insumo.get("/insumo/tipo_erogaciones/", response_model=list[TipoErogacion], tags=['SOLO LECTURA'])
 def read_tipo_erogaciones(db: Session = Depends(get_db)):
 
     try:
@@ -95,7 +95,7 @@ def read_tipo_erogaciones(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['INSUMO'])
+@insumo.get("/insumo/tipo_movimiento_insumos/", response_model=list[TipoMovimientoInsumo], tags=['SOLO LECTURA'])
 def read_tipo_movimiento_insumos(db: Session = Depends(get_db)):
     
     try:
