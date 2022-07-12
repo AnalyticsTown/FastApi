@@ -31,7 +31,7 @@ def get_metodos_valorizacion(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@valuacion.get('/ver_metodos_valuacion_empresas/', tags=["VALUACIÓN"])
+@valuacion.get('/metodos_valuacion_empresas/', tags=["VALUACIÓN"])
 def get_ver_metodos_valorizacion(db: Session = Depends(get_db)):
     try:
         return db.query(Tipo_Valorizacion_Empresas).all()
@@ -41,7 +41,7 @@ def get_ver_metodos_valorizacion(db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@valuacion.post('/elegir_metodo_valuacion/', tags=["VALUACIÓN"])
+@valuacion.post('/metodo_valuacion/', tags=["VALUACIÓN"])
 def elegir_metodo_valuacion(
     empresa_id: int,
     metodo_id: int,
@@ -91,7 +91,7 @@ def elegir_metodo_valuacion(
         return JSONResponse(error_1, 500)
 
 
-@valuacion.get('/mostrar_valorizacion_entradas/', tags=["VALUACIÓN"])
+@valuacion.get('/valorizacion_entradas/', tags=["VALUACIÓN"])
 def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
     try:
         statement = """
@@ -122,7 +122,7 @@ def mostrar_valorizacin(insumo_id: int, db: Session = Depends(get_db)):
         return JSONResponse(error_1, 500)
 
 
-@valuacion.get('/mostrar_valorizacion_salidas/', tags=["VALUACIÓN"])
+@valuacion.get('/valorizacion_salidas/', tags=["VALUACIÓN"])
 def mostrar_valorizacion(insumo_id: int, db: Session = Depends(get_db)):
     try:
         
@@ -153,7 +153,7 @@ def mostrar_valorizacion(insumo_id: int, db: Session = Depends(get_db)):
         print(e)
         return JSONResponse(error_1, 500)
     
-@valuacion.get('/mostrar_valorizacion_saldo/', tags=["VALUACIÓN"])
+@valuacion.get('/valorizacion_saldo/', tags=["VALUACIÓN"])
 def mostrar_valorizacion_total(insumo_id: int, db: Session = Depends(get_db)):
     try:
         

@@ -67,13 +67,17 @@ def delete_establecimientos(db: Session = Depends(get_db)):
     return "Los establecimientos fueron borrados"
 
 
-@establecimiento.get("/establecimiento/zonas/", response_model=list[Zona], tags=['ESTABLECIMIENTO'])
+@establecimiento.get("/establecimiento/zonas/", 
+                     response_model=list[Zona], 
+                     tags=['SOLO LECTURA'])
 def read_zonas(db: Session = Depends(get_db)):
     zonas = get_zonas(db)
     return zonas
 
 
-@establecimiento.get("/establecimiento/tipo_establecimientos/", response_model=list[TipoEstablecimiento], tags=['ESTABLECIMIENTO'])
+@establecimiento.get("/establecimiento/tipo_establecimientos/", 
+                     response_model=list[TipoEstablecimiento], 
+                     tags=['SOLO LECTURA'])
 def read_tipo_establecimientos(db: Session = Depends(get_db)):
     tipo_establecimientos = get_tipo_establecimientos(db)
     return tipo_establecimientos

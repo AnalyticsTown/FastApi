@@ -110,7 +110,7 @@ def delete_almacenes(id: Optional[int] = None, db: Session = Depends(get_db)):
         return JSONResponse({'response': "El Almacen posee información relacionada para ser eliminado"}, 500)
 
 
-@almacen.get("/almacen/tipo_almacenes/", response_model=list[TipoAlmacen], tags=['ALMACEN'])
+@almacen.get("/almacen/tipo_almacenes/", response_model=list[TipoAlmacen], tags=['SOLO LECTURA'])
 def read_tipo_almacenes(db: Session = Depends(get_db)):
     
     try:
